@@ -27,21 +27,18 @@ int main(void)
 	
     while (1) 
     {
+		PORTD = CuentaRegresiva [pointer1];
 		if (activacion == 0x01)
 		{
-		PORTD = 0xBA;
-		_delay_ms(1000);
-		PORTD = 0xD2;
-		_delay_ms(1000);
-		PORTD = 0xEA;
-		_delay_ms(1000);
-		PORTD = 0x6E;
-		_delay_ms(1000);
-		PORTD = 0xC0;
-		_delay_ms(1000);
-		PORTD = 0xFC;
-		_delay_ms(1000);
-		activacion = 0;
+			if (pointer1 < 5){
+				pointer1 ++;
+				_delay_ms(1000);}
+			else {
+				activacion = 0;
+				pointer1 = 0;
+				_delay_ms(1000);
+			}
+		
 		}
     }
 }
