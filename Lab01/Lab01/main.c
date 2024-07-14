@@ -16,8 +16,12 @@ uint8_t mylist [] = {0xFC, 0xC0, 0x6E, 0xEA, 0xD2, 0xBA, 0xBE, 0xE2, 0xFE, 0xF2,
 uint8_t CuentaRegresiva [] = {0xBA, 0xD2, 0xEA, 0x6E, 0xC0, 0xFC};
 uint8_t pointer1;
 uint8_t activacion;
+uint8_t playable, puntos_jugador1, puntos_jugador2, ganador1, ganador2;
 
 void setup(void);
+void jugador1(void);
+void jugador2(void);
+void ganador(void);
 
 int main(void)
 {
@@ -27,9 +31,12 @@ int main(void)
 	
     while (1) 
     {
-		PORTD = CuentaRegresiva [pointer1];
+		jugador1();
+		jugador2();
+		ganador();	
 		if (activacion == 0x01)
 		{
+			PORTD = CuentaRegresiva [pointer1];
 			if (pointer1 < 5){
 				pointer1 ++;
 				_delay_ms(1000);}
@@ -37,6 +44,7 @@ int main(void)
 				activacion = 0;
 				pointer1 = 0;
 				_delay_ms(1000);
+				playable = 1;
 			}
 		
 		}
@@ -47,6 +55,10 @@ int main(void)
 void setup(void){
 	// Establecer la variable pointer1 en 0
 	pointer1 = 0;
+	puntos_jugador1 = 0;
+	puntos_jugador2 = 0;
+	ganador1 = 0;
+	ganador2 = 0;
 	// Se apaga tx y rx
 	UCSR0B = 0;
 	// Se establece el puerto D como salida
@@ -76,15 +88,106 @@ ISR(PCINT0_vect)
 	if(!(PINB&(1<<PINB0))) // Si PINB0 se encuentra apagado ejecutar instrucción
 	{
 		activacion = 0x01;
+		puntos_jugador1 = 0;
+		puntos_jugador2 = 0;
+		ganador1 = 0;
+		ganador2 = 0;
 	}
 	else if(!(PINB&(1<<PINB1))) // Si PINB0 se encuentra apagado ejecutar instrucción
 	{
-		PORTB &= ~(1<<PORTB5);
+		if (playable){
+			if(!ganador2){
+				puntos_jugador1++;
+			}
+		}
 	}
 	else if(!(PINB&(1<<PINB2))) // Si PINB0 se encuentra apagado ejecutar instrucción
 	{
-		PORTD = 0xFC;
+		if (playable){
+			if(!ganador1){
+			puntos_jugador2++;
+			}
+		}
 	}
 	PCIFR |= (1<<PCIF0); // Apagar la bandera de interrupción
 }
 
+void jugador1(void){
+	if (puntos_jugador1==0)
+	{
+		PORTB &= ~((1<<PORTB3)|(1<<PORTB4)|(1<<PORTB5));
+		PORTC &= ~(1<<PORTC0);
+	}
+	else if (puntos_jugador1 == 1)
+	{
+		PORTB |= (1<<PORTB4);
+		PORTB &= ~((1<<PORTB3)|(1<<PORTB5));
+		PORTC &= ~(1<<PORTC0);	
+	}
+	else if (puntos_jugador1 == 2)
+	{
+		PORTB |= (1<<PORTB3);
+		PORTB &= ~((1<<PORTB4)|(1<<PORTB5));
+		PORTC &= ~(1<<PORTC0);
+	}
+	else if (puntos_jugador1 == 3)
+	{
+		PORTB |= (1<<PORTB5);
+		PORTB &= ~((1<<PORTB3)|(1<<PORTB4));
+		PORTC &= ~(1<<PORTC0);
+	}
+	else if (puntos_jugador1 == 4){
+		PORTB &= ~((1<<PORTB3)|(1<<PORTB4)|(1<<PORTB5));
+		PORTC |= (1<<PORTC0);
+		ganador1 = 1;
+	}
+	else {
+		puntos_jugador1 = 0;	
+	}
+}
+
+void jugador2(void){
+	if (puntos_jugador2==0)
+	{
+		PORTC &= ~((1<<PORTC1)|(1<<PORTC2)|(1<<PORTC3)|(1<<PORTC4));
+	}
+	else if (puntos_jugador2 == 1)
+	{
+		PORTC |= (1<<PORTC1);
+		PORTC &= ~((1<<PORTC2)|(1<<PORTC3)|(1<<PORTC4));
+	}
+	else if (puntos_jugador2 == 2)
+	{
+		PORTC |= (1<<PORTC2);
+		PORTC &= ~((1<<PORTC1)|(1<<PORTC3)|(1<<PORTC4));
+	}
+	else if (puntos_jugador2 == 3)
+	{
+		PORTC |= (1<<PORTC3);
+		PORTC &= ~((1<<PORTC1)|(1<<PORTC2)|(1<<PORTC4));
+	}
+	else if (puntos_jugador2 == 4){
+		PORTC |= (1<<PORTC4);
+		PORTC &= ~((1<<PORTC1)|(1<<PORTC2)|(1<<PORTC3));
+		ganador2 = 1;
+	}
+	else {
+		puntos_jugador2 = 0;
+	}
+}
+//RUTINA PARA CHECKEAR EL GANADOR
+void ganador(void){
+	if (ganador1)
+	{
+		PORTB |= ((1<<PORTB3)|(1<<PORTB4)|(1<<PORTB5));
+		PORTC |= (1<<PORTC0);
+		PORTC &= ~((1<<PORTC1)|(1<<PORTC2)|(1<<PORTC3)|(1<<PORTC4));
+		PORTD = 0xC0;
+	}
+	else if (ganador2){
+		PORTC |= ((1<<PORTC4)|(1<<PORTC1)|(1<<PORTC2)|(1<<PORTC3));
+		PORTB &= ~((1<<PORTB3)|(1<<PORTB4)|(1<<PORTB5));
+		PORTC &= ~(1<<PORTC0);
+		PORTD = 0x6E;
+	}
+}

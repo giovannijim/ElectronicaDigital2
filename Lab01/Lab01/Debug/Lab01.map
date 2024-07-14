@@ -10,8 +10,13 @@ c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/..
 Allocating common symbols
 Common symbol       size              file
 
+puntos_jugador1     0x1               main.o
+ganador1            0x1               main.o
+playable            0x1               main.o
 activacion          0x1               main.o
+puntos_jugador2     0x1               main.o
 pointer1            0x1               main.o
+ganador2            0x1               main.o
 
 Discarded input sections
 
@@ -196,7 +201,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x182
+.text           0x00000000      0x2fe
  *(.vectors)
  .vectors       0x00000000       0x68 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
                 0x00000000                __vector_default
@@ -282,18 +287,26 @@ END GROUP
                 0x000000a2                __vector_20
                 0x000000a6                . = ALIGN (0x2)
  *(.text.*)
- .text.setup    0x000000a6       0x3e main.o
+ .text.setup    0x000000a6       0x4e main.o
                 0x000000a6                setup
- .text.main     0x000000e4       0x5c main.o
-                0x000000e4                main
  .text.__vector_3
-                0x00000140       0x3e main.o
-                0x00000140                __vector_3
-                0x0000017e                . = ALIGN (0x2)
+                0x000000f4       0x78 main.o
+                0x000000f4                __vector_3
+ .text.jugador1
+                0x0000016c       0x7c main.o
+                0x0000016c                jugador1
+ .text.jugador2
+                0x000001e8       0x64 main.o
+                0x000001e8                jugador2
+ .text.ganador  0x0000024c       0x40 main.o
+                0x0000024c                ganador
+ .text.main     0x0000028c       0x6e main.o
+                0x0000028c                main
+                0x000002fa                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000017e        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
-                0x0000017e                _exit
-                0x0000017e                exit
+ .fini9         0x000002fa        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+                0x000002fa                _exit
+                0x000002fa                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -312,11 +325,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000017e        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x000002fa        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00000182                _etext = .
+                0x000002fe                _etext = .
 
-.data           0x00800100        0x6 load address 0x00000182
+.data           0x00800100        0x6 load address 0x000002fe
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -331,23 +344,28 @@ END GROUP
                 0x00800106                _edata = .
                 0x00800106                PROVIDE (__data_end, .)
 
-.bss            0x00800106        0x2
+.bss            0x00800106        0x7
                 0x00800106                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  *(COMMON)
- COMMON         0x00800106        0x2 main.o
-                0x00800106                activacion
-                0x00800107                pointer1
-                0x00800108                PROVIDE (__bss_end, .)
-                0x00000182                __data_load_start = LOADADDR (.data)
-                0x00000188                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x00800106        0x7 main.o
+                0x00800106                puntos_jugador1
+                0x00800107                ganador1
+                0x00800108                playable
+                0x00800109                activacion
+                0x0080010a                puntos_jugador2
+                0x0080010b                pointer1
+                0x0080010c                ganador2
+                0x0080010d                PROVIDE (__bss_end, .)
+                0x000002fe                __data_load_start = LOADADDR (.data)
+                0x00000304                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800108        0x0
+.noinit         0x0080010d        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                PROVIDE (__noinit_end, .)
-                0x00800108                _end = .
+                0x0080010d                _end = .
                 [!provide]                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
@@ -412,42 +430,42 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000       0x30
+.debug_aranges  0x00000000       0x48
  *(.debug_aranges)
  .debug_aranges
-                0x00000000       0x30 main.o
+                0x00000000       0x48 main.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000      0x7e4
+.debug_info     0x00000000      0x899
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x5f4 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
- .debug_info    0x000005f4      0x1f0 main.o
+ .debug_info    0x000005f4      0x2a5 main.o
 
-.debug_abbrev   0x00000000      0x6db
+.debug_abbrev   0x00000000      0x6c0
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x5a2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
- .debug_abbrev  0x000005a2      0x139 main.o
+ .debug_abbrev  0x000005a2      0x11e main.o
 
-.debug_line     0x00000000      0x313
+.debug_line     0x00000000      0x4bd
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x134 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
- .debug_line    0x00000134      0x1df main.o
+ .debug_line    0x00000134      0x389 main.o
 
-.debug_frame    0x00000000       0x54
+.debug_frame    0x00000000       0x84
  *(.debug_frame)
- .debug_frame   0x00000000       0x54 main.o
+ .debug_frame   0x00000000       0x84 main.o
 
-.debug_str      0x00000000      0x3df
+.debug_str      0x00000000      0x422
  *(.debug_str)
  .debug_str     0x00000000      0x208 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
- .debug_str     0x00000208      0x1d7 main.o
-                                0x20b (size before relaxing)
+ .debug_str     0x00000208      0x21a main.o
+                                0x260 (size before relaxing)
 
-.debug_loc      0x00000000       0x84
+.debug_loc      0x00000000       0xcc
  *(.debug_loc)
- .debug_loc     0x00000000       0x84 main.o
+ .debug_loc     0x00000000       0xcc main.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -467,9 +485,9 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000       0x20
+.debug_ranges   0x00000000       0x38
  *(.debug_ranges)
- .debug_ranges  0x00000000       0x20 main.o
+ .debug_ranges  0x00000000       0x38 main.o
 
 .debug_macro
  *(.debug_macro)
