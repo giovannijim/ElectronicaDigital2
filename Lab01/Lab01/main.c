@@ -14,10 +14,9 @@
 // Variables y listas
 uint8_t mylist [] = {0xFC, 0xC0, 0x6E, 0xEA, 0xD2, 0xBA, 0xBE, 0xE2, 0xFE, 0xF2, 0xF6, 0x9E, 0x3C, 0xCE, 0x3E, 0x36};
 uint8_t CuentaRegresiva [] = {0xBA, 0xD2, 0xEA, 0x6E, 0xC0, 0xFC};
-uint8_t pointer1;
-uint8_t activacion;
-uint8_t playable, puntos_jugador1, puntos_jugador2, ganador1, ganador2;
+uint8_t pointer1, activacion, playable, puntos_jugador1, puntos_jugador2, ganador1, ganador2;
 
+// Declaracion de subrutinas
 void setup(void);
 void jugador1(void);
 void jugador2(void);
@@ -34,17 +33,20 @@ int main(void)
 		jugador1();
 		jugador2();
 		ganador();	
-		if (activacion == 0x01)
+		
+		//  Si se ha presionado el boton de activacion, comenzar la cuenta regresiva
+		if (activacion)
 		{
-			PORTD = CuentaRegresiva [pointer1];
+			// Mostrar en el SevSeg Display el numero en funcion del contador utilizando la lista
+			PORTD = CuentaRegresiva [pointer1]; 
 			if (pointer1 < 5){
-				pointer1 ++;
-				_delay_ms(1000);}
+				pointer1 ++; // Desplazar el pointer
+				_delay_ms(1000); // Delay de 1s}
 			else {
-				activacion = 0;
-				pointer1 = 0;
-				_delay_ms(1000);
-				playable = 1;
+				activacion = 0; // Desactivar la cuenta regresiva
+				pointer1 = 0;	// Reiniciar la posicion del pointer
+				_delay_ms(1000); // Delay de 1s
+				playable = 1; // Activar la bandera para que se permita jugar
 			}
 		
 		}
@@ -53,14 +55,16 @@ int main(void)
 
 // Subrutina setup ------------------------------------------------------------
 void setup(void){
-	// Establecer la variable pointer1 en 0
+	// Establecer las variables en 0
 	pointer1 = 0;
 	puntos_jugador1 = 0;
 	puntos_jugador2 = 0;
 	ganador1 = 0;
 	ganador2 = 0;
+	
 	// Se apaga tx y rx
 	UCSR0B = 0;
+	
 	// Se establece el puerto D como salida
 	PORTD = 0x00;
 	DDRD |= 0xFF;
@@ -74,10 +78,13 @@ void setup(void){
 	
 	// ESTABLECER PULLUP EN PUERTO B0, B1 y B2
 	PORTB |= (1<<PORTB0)|(1<<PORTB1)|(1<<PORTB2);
+	
 	//ESTABLECER PUERTO B0 Y B1 COMO ENTRADA
 	DDRB &= ~((1<<PORTB0)|(1<<PORTB1)|(1<<PORTB2));
+	
 	//Habilitar la interrupción puerto B
 	PCICR |= (1<<PCIE0);
+	
 	// Habilitar mascara para pines PB0, PB1, PB2
 	PCMSK0 |= 0x07;
 }
@@ -87,22 +94,25 @@ ISR(PCINT0_vect)
 {
 	if(!(PINB&(1<<PINB0))) // Si PINB0 se encuentra apagado ejecutar instrucción
 	{
-		activacion = 0x01;
+		activacion = 0x01; // Activar la badera para que comienze la cuenta regresiva
+		// Colocar en 0 las siguientes variables
 		puntos_jugador1 = 0;
 		puntos_jugador2 = 0;
 		ganador1 = 0;
 		ganador2 = 0;
 	}
-	else if(!(PINB&(1<<PINB1))) // Si PINB0 se encuentra apagado ejecutar instrucción
+	else if(!(PINB&(1<<PINB1))) // Si PINB1 se encuentra apagado ejecutar instrucción
 	{
+		// si se encuentra la bandera playable y ningun jugador ha ganado, aumentar los puntos del jugador 1
 		if (playable){
 			if(!ganador2){
 				puntos_jugador1++;
 			}
 		}
 	}
-	else if(!(PINB&(1<<PINB2))) // Si PINB0 se encuentra apagado ejecutar instrucción
+	else if(!(PINB&(1<<PINB2))) // Si PINB2 se encuentra apagado ejecutar instrucción
 	{
+		// si se encuentra la bandera playable y ningun jugador ha ganado, aumentar los puntos del jugador 2
 		if (playable){
 			if(!ganador1){
 			puntos_jugador2++;
@@ -113,6 +123,7 @@ ISR(PCINT0_vect)
 }
 
 void jugador1(void){
+	// En funcion de la puntuacion del jugador, prender los leds
 	if (puntos_jugador1==0)
 	{
 		PORTB &= ~((1<<PORTB3)|(1<<PORTB4)|(1<<PORTB5));
@@ -139,7 +150,7 @@ void jugador1(void){
 	else if (puntos_jugador1 == 4){
 		PORTB &= ~((1<<PORTB3)|(1<<PORTB4)|(1<<PORTB5));
 		PORTC |= (1<<PORTC0);
-		ganador1 = 1;
+		ganador1 = 1; // Si el jugador 1 gano prender su bandera de ganador
 	}
 	else {
 		puntos_jugador1 = 0;	
@@ -147,6 +158,7 @@ void jugador1(void){
 }
 
 void jugador2(void){
+	// En funcion de la puntuacion del jugador, prender los leds
 	if (puntos_jugador2==0)
 	{
 		PORTC &= ~((1<<PORTC1)|(1<<PORTC2)|(1<<PORTC3)|(1<<PORTC4));
@@ -169,7 +181,7 @@ void jugador2(void){
 	else if (puntos_jugador2 == 4){
 		PORTC |= (1<<PORTC4);
 		PORTC &= ~((1<<PORTC1)|(1<<PORTC2)|(1<<PORTC3));
-		ganador2 = 1;
+		ganador2 = 1; // Si el jugador 2 gano prender su bandera de ganador
 	}
 	else {
 		puntos_jugador2 = 0;
@@ -177,6 +189,7 @@ void jugador2(void){
 }
 //RUTINA PARA CHECKEAR EL GANADOR
 void ganador(void){
+	// En funcion de que jugador gano, prender los leds
 	if (ganador1)
 	{
 		PORTB |= ((1<<PORTB3)|(1<<PORTB4)|(1<<PORTB5));
