@@ -8,3 +8,5 @@ LCD_8BITS\LCD_8BITS.c
 
 main.c
 
+UART\UART.c
+

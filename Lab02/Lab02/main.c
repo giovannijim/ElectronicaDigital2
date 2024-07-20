@@ -10,7 +10,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdint.h>
-
+#include <stdio.h>
 
 #include "LCD_8BITS/LCD_8BITS.h"
 #include "ADC/initADC.h"
@@ -19,6 +19,7 @@
 
 void conversion1(char value_adch);
 void conversion2(char value_adch);
+void conversion3(char value_adch);
 
 uint8_t millares, centenas, decenas, unidades;
 // LISTADOS
@@ -26,6 +27,9 @@ char lista[10] = {'0','1','2','3','4','5','6','7','8','9'};
 char lista1[4];
 char lista2[4];
 char lista3[4] = {'0','0','0'};
+char buffer[5] = {0};
+float voltage;
+
 	
 
 int main(void)
@@ -40,11 +44,10 @@ int main(void)
 	LCD_Write_Char('1');
 	LCD_Write_Char(':');
 	
-	LCD_Set_Cursor(0,5);
+	LCD_Set_Cursor(0,6);
 	LCD_Write_Char('S');
 	LCD_Write_Char('2');
 	LCD_Write_Char(':');
-	
 	
 	
     while (1) 
@@ -52,16 +55,26 @@ int main(void)
 		initADC(7);
 		ADCSRA |= (1<< ADSC);				// Comenzar conversion
 		while(ADCSRA&(1<<ADSC));			// Revisar si la conversion ya termino
-		conversion1(ADCH);
+		conversion3(ADCH);
 		LCD_Set_Cursor(1,1);  //fila y columna
-		LCD_Write_String(lista1);
+		LCD_Write_String(buffer);
 		initADC(6);
 		ADCSRA |= (1<< ADSC);				// Comenzar conversion
 		while(ADCSRA&(1<<ADSC));			// Revisar si la conversion ya termino
-		conversion2(ADCH);
-		LCD_Set_Cursor(1,5);  //fila y columna
-		LCD_Write_String(lista2);
+		conversion3(ADCH);
+		LCD_Set_Cursor(1,6);  //fila y columna
+		LCD_Write_String(buffer);
     }
+}
+
+void conversion3(char value_adch){
+	int a, b;
+	voltage = value_adch * 0.01960784314;
+	
+	a = (int)voltage;
+	b = ((int)(voltage*1000))%1000;
+	
+	snprintf(buffer, 5, "%d.%0.3d", a, b);
 }
 
 void conversion1(char value_adch){
