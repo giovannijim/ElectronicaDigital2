@@ -8,7 +8,7 @@
 #include <util/delay.h>
 #include <avr/io.h>
 
-
+// Funcion para colocar en el puerto un valor
 void LCD_Port(char a){
 	if (a & 1)
 	//D0 = 1
@@ -67,6 +67,7 @@ void LCD_Port(char a){
 	PORTB &= ~(1<<PORTB3);
 }
 
+// Funcion para mandar un comando
 void LCD_CMD(char a){
 	// RS = 0
 	PORTD &= ~(1<<PORTD2);
@@ -89,20 +90,19 @@ void init_8bits_LCD (void){
 	
 	PORTD &= ~((1<<PORTD2)|(1<<PORTD3));
 	
-	_delay_ms(20);     //Pequeños delay que indica el fabricante del LCD
-	LCD_CMD(0x30);     //Comando que se repite 3 veces, que indica el fabricante de la LCD
+	_delay_ms(20);     // tiempo de espera 
+	LCD_CMD(0x30);    
 	_delay_ms(5);
 	LCD_CMD(0x30);
 	_delay_ms(5);
 	LCD_CMD(0x30);
 	_delay_ms(10);
 
-	LCD_CMD(0x38);  //Comando que indica el fabricante del LCD, usando la matriz de 5X8
-	LCD_CMD(0x08);  //Comando que indica el fabricante del LCD, display encendido
-	LCD_CMD(0x01);  //Comando que indica el fabricante del LCD, Limpiar LCD
+	LCD_CMD(0x38);  // CMD para usar  matriz de 5X8
+	LCD_CMD(0x08);  // CMD para encender display
+	LCD_CMD(0x01);  // CMD para limpiar LCD
 	LCD_CMD(0x06);  
 	LCD_CMD(0x0C);  
-	// LCD_CMD(0x0F);
 }
 
 // Funcion para enviar un caracter
@@ -125,16 +125,19 @@ void LCD_Write_String(char *a){
 		LCD_Write_Char(a[i]);
 }
 
+//Desplazamiento hacia la derecha
 void LCD_Shift_Right(void){
 	LCD_CMD(0x01);
 	LCD_CMD(0x0C);
 }
 
+//Desplazamiento hacia la izquierda
 void LCD_Shift_Left(void){
 	LCD_CMD(0x01);
 	LCD_CMD(0x08);
 }
 
+// Establecer cursor
 void LCD_Set_Cursor(char a, char b){
 	/*char temp, z, y;
 	if (f == 1){

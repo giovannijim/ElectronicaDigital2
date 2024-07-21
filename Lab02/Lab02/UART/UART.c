@@ -38,7 +38,7 @@ void writeUART(char Caracter)
 	
 }
 
-void cadena (unsigned char* texto){
+void cadena (char* texto){
 	uint8_t i;
 	// Se realiza un ciclo for para recorrer la cadena
 	for(i=0; texto[i]!='\0'; i++){
