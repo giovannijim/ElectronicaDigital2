@@ -25,7 +25,8 @@ volatile char Rv1, Rv2, Rv3;
 volatile uint8_t  bufferRX;
 uint8_t contador_valor_recibido, ValueReceived;
 
-uint8_t valorSPI = 0;
+uint8_t valorSPI0 = 0;
+uint8_t valorSPI1 = 0;
 
 int main(void)
 {
@@ -45,18 +46,20 @@ int main(void)
 		PORTB &= ~(1<<PORTB2);   // SLAVE SELECT
 		
 		spiWrite('c');
-		valorSPI = spiRead();
-		MostrarLEDs(valorSPI);
-		writeUART(valorSPI);
-		/*
+		valorSPI0 = spiRead();
+		
+		spiWrite('d');
+		valorSPI1 = spiRead();
+		
+		
 		digit1=CharToInt(Rv1);
 		digit2=CharToInt(Rv2);
 		digit3=CharToInt(Rv3);
 		ValueReceived = MakeOneNumber(digit1,digit2,digit3);
 		MostrarLEDs(ValueReceived);
-		*/
+		
 		PORTB |= (1<<PORTB2);	// SLAVE SELECT
-		_delay_ms(250);
+		
     }
 }
 
@@ -75,6 +78,11 @@ ISR(USART_RX_vect)
 	} else {
 		Rv3 = UDR0;
 		contador_valor_recibido = 0;
+		cadena("\n POT1:");
+		writeUART(valorSPI0);
+		
+		cadena("\n POT2:");
+		writeUART(valorSPI1);
 	}
 }
 

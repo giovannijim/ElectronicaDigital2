@@ -15,7 +15,7 @@
 #include "ADC/initADC.h"
 #include "SPI/SPI.h"
 
-uint8_t valorADC;
+uint8_t valorADC0, valorADC1;
 
 int main(void)
 {
@@ -26,6 +26,13 @@ int main(void)
     {
 		initADC(0);							// Inicializar ADC [0]
 		ADCSRA |= (1<< ADSC);				// Comenzar conversion
+		while(ADCSRA&(1<<ADSC));			// Revisar si la conversion ya termino
+		valorADC0 = ADCH;
+		_delay_ms(100);
+		initADC(1);							// Inicializar ADC [1]
+		ADCSRA |= (1<< ADSC);				// Comenzar conversion
+		while(ADCSRA&(1<<ADSC));			// Revisar si la conversion ya termino
+		valorADC1 = ADCH;
 		_delay_ms(100);
     }
 }
@@ -34,7 +41,7 @@ int main(void)
 // Vector de interrupcion ADC -------------------------------------------------
 ISR(ADC_vect)
 {
-	valorADC = ADCH;
+	
 	// Se escribe con un 1 lógico la bandera para apagarla
 	ADCSRA |= (1<<ADIF);
 }
@@ -42,6 +49,9 @@ ISR(ADC_vect)
 ISR(SPI_STC_vect){
 	uint8_t spiValor = SPDR;
 	if(spiValor == 'c'){
-		spiWrite(valorADC);
+		spiWrite(valorADC0);
+	}
+	else if (spiValor == 'd'){
+		spiWrite(valorADC1);
 	}
 }
