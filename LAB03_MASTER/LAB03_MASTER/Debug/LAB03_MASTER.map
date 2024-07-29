@@ -233,7 +233,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x404
+.text           0x00000000      0x416
  *(.vectors)
  .vectors       0x00000000       0x68 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
                 0x00000000                __vector_default
@@ -333,30 +333,30 @@ END GROUP
  .text.MostrarLEDs
                 0x0000017e       0x92 main.o
                 0x0000017e                MostrarLEDs
- .text.main     0x00000210       0xa6 main.o
+ .text.main     0x00000210       0xb8 main.o
                 0x00000210                main
- .text.spiInit  0x000002b6       0xca SPI/SPI.o
-                0x000002b6                spiInit
+ .text.spiInit  0x000002c8       0xca SPI/SPI.o
+                0x000002c8                spiInit
  .text.spiWrite
-                0x00000380        0x4 SPI/SPI.o
-                0x00000380                spiWrite
- .text.spiRead  0x00000384        0xa SPI/SPI.o
-                0x00000384                spiRead
+                0x00000392        0x4 SPI/SPI.o
+                0x00000392                spiWrite
+ .text.spiRead  0x00000396        0xa SPI/SPI.o
+                0x00000396                spiRead
  .text.initUART9600
-                0x0000038e       0x36 UART/UART.o
-                0x0000038e                initUART9600
+                0x000003a0       0x36 UART/UART.o
+                0x000003a0                initUART9600
  .text.writeUART
-                0x000003c4        0xe UART/UART.o
-                0x000003c4                writeUART
- .text.cadena   0x000003d2       0x22 UART/UART.o
-                0x000003d2                cadena
- .text.libgcc   0x000003f4        0xc c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_tablejump2.o)
-                0x000003f4                __tablejump2__
-                0x00000400                . = ALIGN (0x2)
+                0x000003d6        0xe UART/UART.o
+                0x000003d6                writeUART
+ .text.cadena   0x000003e4       0x22 UART/UART.o
+                0x000003e4                cadena
+ .text.libgcc   0x00000406        0xc c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_tablejump2.o)
+                0x00000406                __tablejump2__
+                0x00000412                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000400        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
-                0x00000400                _exit
-                0x00000400                exit
+ .fini9         0x00000412        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+                0x00000412                _exit
+                0x00000412                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -375,11 +375,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000400        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x00000412        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00000404                _etext = .
+                0x00000416                _etext = .
 
-.data           0x00800100       0x10 load address 0x00000404
+.data           0x00800100        0x8 load address 0x00000416
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -387,42 +387,42 @@ END GROUP
  *(.rodata)
  *(.rodata*)
  .rodata.str1.1
-                0x00800100       0x10 main.o
+                0x00800100        0x8 main.o
  *(.gnu.linkonce.r*)
-                0x00800110                . = ALIGN (0x2)
-                0x00800110                _edata = .
-                0x00800110                PROVIDE (__data_end, .)
+                0x00800108                . = ALIGN (0x2)
+                0x00800108                _edata = .
+                0x00800108                PROVIDE (__data_end, .)
 
-.bss            0x00800110        0xe
-                0x00800110                PROVIDE (__bss_start, .)
+.bss            0x00800108        0xe
+                0x00800108                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  .bss.valorSPI1
-                0x00800110        0x1 main.o
-                0x00800110                valorSPI1
+                0x00800108        0x1 main.o
+                0x00800108                valorSPI1
  .bss.valorSPI0
-                0x00800111        0x1 main.o
-                0x00800111                valorSPI0
+                0x00800109        0x1 main.o
+                0x00800109                valorSPI0
  *(COMMON)
- COMMON         0x00800112        0xc main.o
-                0x00800112                ValueReceived
-                0x00800113                Rv3
-                0x00800114                Rv2
-                0x00800115                contador_valor_recibido
-                0x00800116                digit2
-                0x00800118                digit3
-                0x0080011a                bufferRX
-                0x0080011b                Rv1
-                0x0080011c                digit1
-                0x0080011e                PROVIDE (__bss_end, .)
-                0x00000404                __data_load_start = LOADADDR (.data)
-                0x00000414                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x0080010a        0xc main.o
+                0x0080010a                ValueReceived
+                0x0080010b                Rv3
+                0x0080010c                Rv2
+                0x0080010d                contador_valor_recibido
+                0x0080010e                digit2
+                0x00800110                digit3
+                0x00800112                bufferRX
+                0x00800113                Rv1
+                0x00800114                digit1
+                0x00800116                PROVIDE (__bss_end, .)
+                0x00000416                __data_load_start = LOADADDR (.data)
+                0x0000041e                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0080011e        0x0
+.noinit         0x00800116        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                PROVIDE (__noinit_end, .)
-                0x0080011e                _end = .
+                0x00800116                _end = .
                 [!provide]                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
@@ -501,26 +501,26 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000      0xd18
+.debug_info     0x00000000      0xd9c
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x5f4 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
- .debug_info    0x000005f4      0x3dc main.o
- .debug_info    0x000009d0      0x1f1 SPI/SPI.o
- .debug_info    0x00000bc1      0x157 UART/UART.o
+ .debug_info    0x000005f4      0x460 main.o
+ .debug_info    0x00000a54      0x1f1 SPI/SPI.o
+ .debug_info    0x00000c45      0x157 UART/UART.o
 
-.debug_abbrev   0x00000000      0x889
+.debug_abbrev   0x00000000      0x8f1
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x5a2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
- .debug_abbrev  0x000005a2      0x14c main.o
- .debug_abbrev  0x000006ee       0xe2 SPI/SPI.o
- .debug_abbrev  0x000007d0       0xb9 UART/UART.o
+ .debug_abbrev  0x000005a2      0x1b4 main.o
+ .debug_abbrev  0x00000756       0xe2 SPI/SPI.o
+ .debug_abbrev  0x00000838       0xb9 UART/UART.o
 
-.debug_line     0x00000000      0x733
+.debug_line     0x00000000      0x7a9
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x134 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
- .debug_line    0x00000134      0x28b main.o
- .debug_line    0x000003bf      0x1de SPI/SPI.o
- .debug_line    0x0000059d      0x196 UART/UART.o
+ .debug_line    0x00000134      0x301 main.o
+ .debug_line    0x00000435      0x1de SPI/SPI.o
+ .debug_line    0x00000613      0x196 UART/UART.o
 
 .debug_frame    0x00000000      0x164
  *(.debug_frame)
@@ -528,21 +528,21 @@ END GROUP
  .debug_frame   0x000000ac       0x54 SPI/SPI.o
  .debug_frame   0x00000100       0x64 UART/UART.o
 
-.debug_str      0x00000000      0x5fa
+.debug_str      0x00000000      0x645
  *(.debug_str)
  .debug_str     0x00000000      0x208 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
- .debug_str     0x00000208      0x328 main.o
-                                0x361 (size before relaxing)
- .debug_str     0x00000530       0x86 SPI/SPI.o
+ .debug_str     0x00000208      0x373 main.o
+                                0x3ac (size before relaxing)
+ .debug_str     0x0000057b       0x86 SPI/SPI.o
                                 0x330 (size before relaxing)
- .debug_str     0x000005b6       0x44 UART/UART.o
+ .debug_str     0x00000601       0x44 UART/UART.o
                                 0x1df (size before relaxing)
 
-.debug_loc      0x00000000      0x38f
+.debug_loc      0x00000000      0x3d7
  *(.debug_loc)
- .debug_loc     0x00000000      0x172 main.o
- .debug_loc     0x00000172      0x162 SPI/SPI.o
- .debug_loc     0x000002d4       0xbb UART/UART.o
+ .debug_loc     0x00000000      0x1ba main.o
+ .debug_loc     0x000001ba      0x162 SPI/SPI.o
+ .debug_loc     0x0000031c       0xbb UART/UART.o
 
 .debug_macinfo
  *(.debug_macinfo)

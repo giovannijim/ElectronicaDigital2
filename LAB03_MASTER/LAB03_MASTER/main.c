@@ -47,7 +47,7 @@ int main(void)
 		
 		spiWrite('c');
 		valorSPI0 = spiRead();
-		
+		_delay_ms(100);
 		spiWrite('d');
 		valorSPI1 = spiRead();
 		
@@ -78,10 +78,10 @@ ISR(USART_RX_vect)
 	} else {
 		Rv3 = UDR0;
 		contador_valor_recibido = 0;
-		cadena("\n POT1:");
+		cadena("P1\n");
 		writeUART(valorSPI0);
 		
-		cadena("\n POT2:");
+		cadena("P2\n");
 		writeUART(valorSPI1);
 	}
 }
