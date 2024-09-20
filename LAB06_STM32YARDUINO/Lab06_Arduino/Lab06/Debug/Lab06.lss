@@ -1,0 +1,316 @@
+
+Lab06.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00800100  00000226  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         000001b2  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .bss          00000001  00800100  00800100  00000226  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  00000226  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000258  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 00000070  00000000  00000000  00000298  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   000008b2  00000000  00000000  00000308  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 00000737  00000000  00000000  00000bba  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   00000424  00000000  00000000  000012f1  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  00000100  00000000  00000000  00001718  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    000003d7  00000000  00000000  00001818  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    000001c2  00000000  00000000  00001bef  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000050  00000000  00000000  00001db1  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 34 00 	jmp	0x68	; 0x68 <__ctors_end>
+   4:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+   8:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+   c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  10:	0c 94 5d 00 	jmp	0xba	; 0xba <__vector_4>
+  14:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  18:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  1c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  20:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  24:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  28:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  2c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  30:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  34:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  38:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  3c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  40:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  44:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  48:	0c 94 a5 00 	jmp	0x14a	; 0x14a <__vector_18>
+  4c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  50:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  54:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  58:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  5c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  60:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  64:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+
+00000068 <__ctors_end>:
+  68:	11 24       	eor	r1, r1
+  6a:	1f be       	out	0x3f, r1	; 63
+  6c:	cf ef       	ldi	r28, 0xFF	; 255
+  6e:	d8 e0       	ldi	r29, 0x08	; 8
+  70:	de bf       	out	0x3e, r29	; 62
+  72:	cd bf       	out	0x3d, r28	; 61
+
+00000074 <__do_clear_bss>:
+  74:	21 e0       	ldi	r18, 0x01	; 1
+  76:	a0 e0       	ldi	r26, 0x00	; 0
+  78:	b1 e0       	ldi	r27, 0x01	; 1
+  7a:	01 c0       	rjmp	.+2      	; 0x7e <.do_clear_bss_start>
+
+0000007c <.do_clear_bss_loop>:
+  7c:	1d 92       	st	X+, r1
+
+0000007e <.do_clear_bss_start>:
+  7e:	a1 30       	cpi	r26, 0x01	; 1
+  80:	b2 07       	cpc	r27, r18
+  82:	e1 f7       	brne	.-8      	; 0x7c <.do_clear_bss_loop>
+  84:	0e 94 48 00 	call	0x90	; 0x90 <main>
+  88:	0c 94 d7 00 	jmp	0x1ae	; 0x1ae <_exit>
+
+0000008c <__bad_interrupt>:
+  8c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000090 <main>:
+
+uint8_t bufferRX;
+
+int main(void)
+{
+	cli();
+  90:	f8 94       	cli
+	initUART9600();
+  92:	0e 94 b5 00 	call	0x16a	; 0x16a <initUART9600>
+    // ESTABLECER PULLUP EN PUERTO
+    PORTC |= (1<<PORTC0)|(1<<PORTC1)|(1<<PORTC2)|(1<<PORTC3)|(1<<PORTC4)|(1<<PORTC5);
+  96:	88 b1       	in	r24, 0x08	; 8
+  98:	8f 63       	ori	r24, 0x3F	; 63
+  9a:	88 b9       	out	0x08, r24	; 8
+    
+    //ESTABLECER PUERTO C0-C5 COMO ENTRADA
+    DDRC &= ~((1<<PORTC0)|(1<<PORTC1)|(1<<PORTC2)|(1<<PORTC3)|(1<<PORTC4)|(1<<PORTC5));
+  9c:	87 b1       	in	r24, 0x07	; 7
+  9e:	80 7c       	andi	r24, 0xC0	; 192
+  a0:	87 b9       	out	0x07, r24	; 7
+    
+    //Habilitar la interrupción puerto 1
+    PCICR |= (1<<PCIE1);
+  a2:	e8 e6       	ldi	r30, 0x68	; 104
+  a4:	f0 e0       	ldi	r31, 0x00	; 0
+  a6:	80 81       	ld	r24, Z
+  a8:	82 60       	ori	r24, 0x02	; 2
+  aa:	80 83       	st	Z, r24
+    
+    // Habilitar mascara para pines 
+    PCMSK1 |= 0x3F;
+  ac:	ec e6       	ldi	r30, 0x6C	; 108
+  ae:	f0 e0       	ldi	r31, 0x00	; 0
+  b0:	80 81       	ld	r24, Z
+  b2:	8f 63       	ori	r24, 0x3F	; 63
+  b4:	80 83       	st	Z, r24
+	sei();
+  b6:	78 94       	sei
+  b8:	ff cf       	rjmp	.-2      	; 0xb8 <main+0x28>
+
+000000ba <__vector_4>:
+    }
+}
+
+// Vector de interrupcion PCINT0 ----------------------------------------------
+ISR(PCINT1_vect)
+{
+  ba:	1f 92       	push	r1
+  bc:	0f 92       	push	r0
+  be:	0f b6       	in	r0, 0x3f	; 63
+  c0:	0f 92       	push	r0
+  c2:	11 24       	eor	r1, r1
+  c4:	2f 93       	push	r18
+  c6:	3f 93       	push	r19
+  c8:	4f 93       	push	r20
+  ca:	5f 93       	push	r21
+  cc:	6f 93       	push	r22
+  ce:	7f 93       	push	r23
+  d0:	8f 93       	push	r24
+  d2:	9f 93       	push	r25
+  d4:	af 93       	push	r26
+  d6:	bf 93       	push	r27
+  d8:	ef 93       	push	r30
+  da:	ff 93       	push	r31
+	if(!(PINC&(1<<PINC0))) // Si PINC0 se encuentra apagado ejecutar instrucción
+  dc:	30 99       	sbic	0x06, 0	; 6
+  de:	04 c0       	rjmp	.+8      	; 0xe8 <__vector_4+0x2e>
+	{
+		writeUART('1');
+  e0:	81 e3       	ldi	r24, 0x31	; 49
+  e2:	0e 94 d0 00 	call	0x1a0	; 0x1a0 <writeUART>
+  e6:	1d c0       	rjmp	.+58     	; 0x122 <__vector_4+0x68>
+	}
+	else if(!(PINC&(1<<PINC1))) // Si PINC1 se encuentra apagado ejecutar instrucción
+  e8:	31 99       	sbic	0x06, 1	; 6
+  ea:	04 c0       	rjmp	.+8      	; 0xf4 <__vector_4+0x3a>
+	{
+		writeUART('2');
+  ec:	82 e3       	ldi	r24, 0x32	; 50
+  ee:	0e 94 d0 00 	call	0x1a0	; 0x1a0 <writeUART>
+  f2:	17 c0       	rjmp	.+46     	; 0x122 <__vector_4+0x68>
+	}
+	else if(!(PINC&(1<<PINC2))) // Si PINC2 se encuentra apagado ejecutar instrucción
+  f4:	32 99       	sbic	0x06, 2	; 6
+  f6:	04 c0       	rjmp	.+8      	; 0x100 <__vector_4+0x46>
+	{
+		writeUART('3');
+  f8:	83 e3       	ldi	r24, 0x33	; 51
+  fa:	0e 94 d0 00 	call	0x1a0	; 0x1a0 <writeUART>
+  fe:	11 c0       	rjmp	.+34     	; 0x122 <__vector_4+0x68>
+	}
+	else if(!(PINC&(1<<PINC3))) // Si PINC3 se encuentra apagado ejecutar instrucción
+ 100:	33 99       	sbic	0x06, 3	; 6
+ 102:	04 c0       	rjmp	.+8      	; 0x10c <__vector_4+0x52>
+	{
+		writeUART('4');
+ 104:	84 e3       	ldi	r24, 0x34	; 52
+ 106:	0e 94 d0 00 	call	0x1a0	; 0x1a0 <writeUART>
+ 10a:	0b c0       	rjmp	.+22     	; 0x122 <__vector_4+0x68>
+	}
+	else if(!(PINC&(1<<PINC4))) // Si PINC4 se encuentra apagado ejecutar instrucción
+ 10c:	34 99       	sbic	0x06, 4	; 6
+ 10e:	04 c0       	rjmp	.+8      	; 0x118 <__vector_4+0x5e>
+	{
+		writeUART('5');
+ 110:	85 e3       	ldi	r24, 0x35	; 53
+ 112:	0e 94 d0 00 	call	0x1a0	; 0x1a0 <writeUART>
+ 116:	05 c0       	rjmp	.+10     	; 0x122 <__vector_4+0x68>
+	}
+	else if(!(PINC&(1<<PINC5))) // Si PINC5 se encuentra apagado ejecutar instrucción
+ 118:	35 99       	sbic	0x06, 5	; 6
+ 11a:	03 c0       	rjmp	.+6      	; 0x122 <__vector_4+0x68>
+	{
+		writeUART('6');
+ 11c:	86 e3       	ldi	r24, 0x36	; 54
+ 11e:	0e 94 d0 00 	call	0x1a0	; 0x1a0 <writeUART>
+	}
+	PCIFR |= (1<<PCIF1); // Apagar la bandera de interrupción
+ 122:	8b b3       	in	r24, 0x1b	; 27
+ 124:	82 60       	ori	r24, 0x02	; 2
+ 126:	8b bb       	out	0x1b, r24	; 27
+}
+ 128:	ff 91       	pop	r31
+ 12a:	ef 91       	pop	r30
+ 12c:	bf 91       	pop	r27
+ 12e:	af 91       	pop	r26
+ 130:	9f 91       	pop	r25
+ 132:	8f 91       	pop	r24
+ 134:	7f 91       	pop	r23
+ 136:	6f 91       	pop	r22
+ 138:	5f 91       	pop	r21
+ 13a:	4f 91       	pop	r20
+ 13c:	3f 91       	pop	r19
+ 13e:	2f 91       	pop	r18
+ 140:	0f 90       	pop	r0
+ 142:	0f be       	out	0x3f, r0	; 63
+ 144:	0f 90       	pop	r0
+ 146:	1f 90       	pop	r1
+ 148:	18 95       	reti
+
+0000014a <__vector_18>:
+
+ISR(USART_RX_vect)
+{
+ 14a:	1f 92       	push	r1
+ 14c:	0f 92       	push	r0
+ 14e:	0f b6       	in	r0, 0x3f	; 63
+ 150:	0f 92       	push	r0
+ 152:	11 24       	eor	r1, r1
+ 154:	8f 93       	push	r24
+	bufferRX = UDR0;
+ 156:	80 91 c6 00 	lds	r24, 0x00C6	; 0x8000c6 <__TEXT_REGION_LENGTH__+0x7f80c6>
+ 15a:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <__DATA_REGION_ORIGIN__>
+ 15e:	8f 91       	pop	r24
+ 160:	0f 90       	pop	r0
+ 162:	0f be       	out	0x3f, r0	; 63
+ 164:	0f 90       	pop	r0
+ 166:	1f 90       	pop	r1
+ 168:	18 95       	reti
+
+0000016a <initUART9600>:
+#include <stdint.h>
+
+void initUART9600(void){
+	
+	//Paso 1: RX y TX como salida
+	DDRD &= ~(1<<DDD0);
+ 16a:	8a b1       	in	r24, 0x0a	; 10
+ 16c:	8e 7f       	andi	r24, 0xFE	; 254
+ 16e:	8a b9       	out	0x0a, r24	; 10
+	DDRD |= (1<<DDD1);
+ 170:	8a b1       	in	r24, 0x0a	; 10
+ 172:	82 60       	ori	r24, 0x02	; 2
+ 174:	8a b9       	out	0x0a, r24	; 10
+	
+	//Paso 2:Configurar UCSR0A
+	UCSR0A = 0;
+ 176:	10 92 c0 00 	sts	0x00C0, r1	; 0x8000c0 <__TEXT_REGION_LENGTH__+0x7f80c0>
+	
+	//Paso 3: configurar UCSR0B donde se habilita ISR de recepcion y se habilita RX y TX
+	UCSR0B = 0;
+ 17a:	e1 ec       	ldi	r30, 0xC1	; 193
+ 17c:	f0 e0       	ldi	r31, 0x00	; 0
+ 17e:	10 82       	st	Z, r1
+	UCSR0B |= (1<<RXCIE0) | (1<<RXEN0) | (1<<TXEN0);
+ 180:	80 81       	ld	r24, Z
+ 182:	88 69       	ori	r24, 0x98	; 152
+ 184:	80 83       	st	Z, r24
+	
+	//Paso 4: Configurar UCSR0C, asincrono, paridad: none, 1 bit stop, data bits de 8 bits
+	UCSR0C = 0;
+ 186:	e2 ec       	ldi	r30, 0xC2	; 194
+ 188:	f0 e0       	ldi	r31, 0x00	; 0
+ 18a:	10 82       	st	Z, r1
+	UCSR0C |= (1<<UCSZ01) | (1<<UCSZ00);
+ 18c:	80 81       	ld	r24, Z
+ 18e:	86 60       	ori	r24, 0x06	; 6
+ 190:	80 83       	st	Z, r24
+	
+	//Paso 5: COnfigurar velocidad de baudrate a 9600
+	UBRR0 = 103;
+ 192:	87 e6       	ldi	r24, 0x67	; 103
+ 194:	90 e0       	ldi	r25, 0x00	; 0
+ 196:	90 93 c5 00 	sts	0x00C5, r25	; 0x8000c5 <__TEXT_REGION_LENGTH__+0x7f80c5>
+ 19a:	80 93 c4 00 	sts	0x00C4, r24	; 0x8000c4 <__TEXT_REGION_LENGTH__+0x7f80c4>
+ 19e:	08 95       	ret
+
+000001a0 <writeUART>:
+	
+}
+
+void writeUART(char Caracter)
+{
+	while(!(UCSR0A & (1<<UDRE0)));  // hasta que la bandera este en 1
+ 1a0:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__TEXT_REGION_LENGTH__+0x7f80c0>
+ 1a4:	95 ff       	sbrs	r25, 5
+ 1a6:	fc cf       	rjmp	.-8      	; 0x1a0 <writeUART>
+	UDR0 = Caracter;				// Enviar el caracter al arduino
+ 1a8:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__TEXT_REGION_LENGTH__+0x7f80c6>
+ 1ac:	08 95       	ret
+
+000001ae <_exit>:
+ 1ae:	f8 94       	cli
+
+000001b0 <__stop_program>:
+ 1b0:	ff cf       	rjmp	.-2      	; 0x1b0 <__stop_program>
