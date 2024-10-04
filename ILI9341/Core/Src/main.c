@@ -41,21 +41,54 @@
 
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi1;
+
+UART_HandleTypeDef huart2;
+
 /* USER CODE BEGIN PV */
 extern uint8_t fondo[];
+uint8_t buffer[10];
+uint16_t contador=0;
+position_p1 [3] = {40,40,8};
+position_e1[3]={80,80,3};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+/*
+void movimiento_e1(void){
+	HAL_Delay(100);
+	position_e1[0]+=20;
+	HAL_Delay(100);
+	position_e1[0]-=40;
+	HAL_Delay(100);
+	position_e1[1]+=20;
+	HAL_Delay(100);
+	position_e1[1]-=40;
 
+}*/
+void P1_erasePath(void){
+	if (position_p1[2]==8){
+		FillRect(position_p1[0]-20, position_p1[1], 20, 20, 0xFFFF);
+	}
+	if (position_p1[2]==2){
+		FillRect(position_p1[0]+20, position_p1[1], 20, 20, 0xFFFF);
+	}
+	if (position_p1[2]==6){
+		FillRect(position_p1[0], position_p1[1]-20, 20, 20, 0xFFFF);
+	}
+	if (position_p1[2]==4){
+		FillRect(position_p1[0], position_p1[1]+20, 20, 20, 0xFFFF);
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -88,29 +121,47 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SPI1_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
 	LCD_Init();
-
 	LCD_Clear(0x00);
+
+	//Fondo
 	FillRect(0, 0, 319, 239, 0xFFFF);
-	FillRect(50, 60, 20, 20, 0xF800);
-	FillRect(70, 60, 20, 20, 0x07E0);
-	FillRect(90, 60, 20, 20, 0x001F);
+	//Linea de en medio
+	V_line(160, 0, 240, 0x0000);
+	//FillRect(50, 60, 20, 20, 0xF800);
+	//FillRect(70, 60, 20, 20, 0x07E0);
+	//FillRect(90, 60, 20, 20, 0x001F);
 
 	//LCD_Bitmap(0, 0, 320, 240, fondo);
-	 FillRect(0, 0, 319, 206, 0x1911);
+	//FillRect(0, 0, 319, 206, 0x1911);
 
-	  LCD_Print("Hola Mundo", 20, 100, 1, 0x001F, 0xCAB9);
+	//LCD_Print("Hola Mundo", 20, 100, 1, 0x001F, 0xCAB9);
 
+	  // Activar bandera interrupcion
+	  HAL_UART_Receive_IT(&huart2, buffer, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
+		//Jugador 1
+		FillRect(position_p1[0], position_p1[1], 20, 20, 0xF800);
+		//Enemigo 1
+		if (position_e1[2]>0){
+		FillRect(position_e1[0], position_e1[1], 20, 20, 0x07E0);}
+		else{
+			FillRect(position_e1[0], position_e1[1], 20, 20, 0xFFFF);}
+
+		P1_erasePath();
+		//movimiento_e1();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
 	}
   /* USER CODE END 3 */
 }
@@ -201,6 +252,39 @@ static void MX_SPI1_Init(void)
 }
 
 /**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -258,6 +342,54 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if(buffer[0] == 'u'){
+		if (position_p1[0]<140){
+		position_p1[0]+=20;
+		position_p1[2]=8;}
+	}
+	if(buffer[0] == 'd'){
+		if (position_p1[0]>0){
+		position_p1[0]-=20;
+		position_p1[2]=2;}
+	}
+	if(buffer[0] == 'r'){
+		if (position_p1[1]<220){
+		position_p1[1]+=20;
+		position_p1[2]=6;}
+	}
+	if(buffer[0] == 'l'){
+		if(position_p1[1]>0){
+		position_p1[1]-=20;
+		position_p1[2]=4;}
+	}
+	if (buffer[0]=='b'){
+		if (position_p1[2]==8){
+			if (position_e1[0]==position_p1[0]+20){
+				position_e1[2]-=1;
+			}
+		}
+		if (position_p1[2]==2){
+					if (position_e1[0]==position_p1[0]-20){
+						position_e1[2]-=1;
+					}
+				}
+		if (position_p1[2]==6){
+					if (position_e1[1]==position_p1[1]+20){
+						position_e1[2]-=1;
+					}
+				}
+		if (position_p1[2]==8){
+					if (position_e1[1]==position_p1[1]-20){
+						position_e1[2]-=1;
+					}
+				}
+	}
+	// Vuelve a activar la recepción por interrupción
+	HAL_UART_Receive_IT(&huart2, buffer, 1);
+}
 
 /* USER CODE END 4 */
 
