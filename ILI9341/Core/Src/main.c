@@ -26,7 +26,13 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+//Estructura del primer tipo de enemigo
+typedef struct {
+    unsigned int x;         // Coordenada x
+    unsigned int y;         // Coordenada y
+    unsigned int v;         // Puntos de vida
+    unsigned int eliminado; // Bandera para indicar si el enemigo fue eliminado (1 = eliminado)
+} enemigo_c1;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -48,8 +54,8 @@ UART_HandleTypeDef huart2;
 extern uint8_t fondo[];
 uint8_t buffer[10];
 uint16_t contador=0;
+enemigo_c1 e1;
 position_p1 [3] = {40,40,8};
-position_e1[3]={80,80,3};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -89,6 +95,54 @@ void P1_erasePath(void){
 		FillRect(position_p1[0], position_p1[1]+20, 20, 20, 0xFFFF);
 	}
 }
+//Enemigo tipo 1
+	//Iniciar enemigo
+	void init_enemigo(enemigo_c1 *enemigo, unsigned int x, unsigned int y, unsigned int vida) {
+		enemigo->x = x;
+		enemigo->y = y;
+		enemigo->v = vida;
+		enemigo->eliminado = 0; // Inicialmente no está eliminado
+	}
+	//Dibujar enemigo
+	void dibujar_enemigo(enemigo_c1 *enemigo, unsigned int color) {
+	    FillRect(enemigo->x, enemigo->y, 20, 20, color);
+	}
+
+	//Validar vida enemigo
+	void verificar_vida(enemigo_c1 *enemigo, unsigned int color_fondo) {
+	    if (enemigo->v == 0 && enemigo->eliminado == 0) {
+	        // Dibuja el cuadrado del color de fondo solo una vez
+	        dibujar_enemigo(enemigo, color_fondo);
+	        enemigo->eliminado = 1;  // Marca al enemigo como eliminado
+	    }
+	}
+	//Validar si se golpeo un enemigo del tipo 1
+	void verificar_golpe(enemigo_c1 *enemigo, unsigned int *position_p1) {
+	    if (position_p1[2] == 8) {  // Jugador mirando hacia la derecha
+	        if (enemigo->x == position_p1[0] + 20) {
+	            enemigo->v -= 1;  // Resta un punto de vida
+	        }
+	    }
+
+	    if (position_p1[2] == 2) {  // Jugador mirando hacia la izquierda
+	        if (enemigo->x == position_p1[0] - 20) {
+	            enemigo->v -= 1;
+	        }
+	    }
+
+	    if (position_p1[2] == 6) {  // Jugador mirando hacia abajo
+	        if (enemigo->y == position_p1[1] + 20) {
+	            enemigo->v -= 1;
+	        }
+	    }
+
+	    if (position_p1[2] == 4) {  // Jugador mirando hacia arriba
+	        if (enemigo->y == position_p1[1] - 20) {
+	            enemigo->v -= 1;
+	        }
+	    }
+	}
+
 /* USER CODE END 0 */
 
 /**
@@ -142,6 +196,18 @@ int main(void)
 
 	  // Activar bandera interrupcion
 	  HAL_UART_Receive_IT(&huart2, buffer, 1);
+
+	  //Enemigo 1
+	  init_enemigo(&e1, 20, 20, 3);
+	  dibujar_enemigo(&e1, 0x07E0);
+
+	  //Enemigo 2
+	  //init_enemigo(&e1, 100, 20, 3);
+	  //dibujar_enemigo(&e1, 0x07E0);
+
+	  	 //Enemigo 3
+	  	//init_enemigo(&e1, 20, 100, 3);
+	  	//dibujar_enemigo(&e1, 0x07E0);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -149,13 +215,10 @@ int main(void)
 	while (1) {
 		//Jugador 1
 		FillRect(position_p1[0], position_p1[1], 20, 20, 0xF800);
-		//Enemigo 1
-		if (position_e1[2]>0){
-		FillRect(position_e1[0], position_e1[1], 20, 20, 0x07E0);}
-		else{
-			FillRect(position_e1[0], position_e1[1], 20, 20, 0xFFFF);}
-
 		P1_erasePath();
+
+		//Enemigo 1
+		verificar_vida(&e1, 0xFFFF);
 		//movimiento_e1();
 
     /* USER CODE END WHILE */
@@ -366,26 +429,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		position_p1[2]=4;}
 	}
 	if (buffer[0]=='b'){
-		if (position_p1[2]==8){
-			if (position_e1[0]==position_p1[0]+20){
-				position_e1[2]-=1;
-			}
-		}
-		if (position_p1[2]==2){
-					if (position_e1[0]==position_p1[0]-20){
-						position_e1[2]-=1;
-					}
-				}
-		if (position_p1[2]==6){
-					if (position_e1[1]==position_p1[1]+20){
-						position_e1[2]-=1;
-					}
-				}
-		if (position_p1[2]==8){
-					if (position_e1[1]==position_p1[1]-20){
-						position_e1[2]-=1;
-					}
-				}
+	    verificar_golpe(&e1, position_p1);
+	    //verificar_golpe(&e2, position_p1);
+	    //verificar_golpe(&e3, position_p1);
 	}
 	// Vuelve a activar la recepción por interrupción
 	HAL_UART_Receive_IT(&huart2, buffer, 1);
