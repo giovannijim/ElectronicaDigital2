@@ -12,10 +12,11 @@ void recibirCallback(const esp_now_recv_info *info, const uint8_t *incomingData,
   
   // Imprimir el valor recibido
   //Serial.print("Valor recibido: ");
-  Serial.println(mensajeRecibido);
+  Serial2.println(mensajeRecibido);
 }
 
 void setup() {
+  Serial2.begin(115200);
   Serial.begin(115200);
   WiFi.mode(WIFI_STA);
   

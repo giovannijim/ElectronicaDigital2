@@ -1,124 +1,63 @@
-12:17:50 **** Incremental Build of configuration Debug for project ILI9341 ****
+11:24:36 **** Incremental Build of configuration Debug for project ProbandoRecepcionControles ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:51:1: warning: data definition has no type or storage class
-   51 | position_p1 [3] = {40,40,8};
-      | ^~~~~~~~~~~
-../Core/Src/main.c:51:1: warning: type defaults to 'int' in declaration of 'position_p1' [-Wimplicit-int]
-../Core/Src/main.c:52:1: warning: data definition has no type or storage class
-   52 | position_e1[3]={0,0,8};
-      | ^~~~~~~~~~~
-../Core/Src/main.c:52:1: warning: type defaults to 'int' in declaration of 'position_e1' [-Wimplicit-int]
-arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: ILI9341.elf
+arm-none-eabi-gcc -o "ProbandoRecepcionControles.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ProbandoRecepcionControles\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ProbandoRecepcionControles.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ProbandoRecepcionControles.elf
  
-arm-none-eabi-size  ILI9341.elf 
-arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
+arm-none-eabi-size  ProbandoRecepcionControles.elf 
+arm-none-eabi-objdump -h -S ProbandoRecepcionControles.elf  > "ProbandoRecepcionControles.list"
    text	   data	    bss	    dec	    hex	filename
-  13864	     36	   1740	  15640	   3d18	ILI9341.elf
+  12036	     12	   1724	  13772	   35cc	ProbandoRecepcionControles.elf
 Finished building: default.size.stdout
  
-Finished building: ILI9341.list
+Finished building: ProbandoRecepcionControles.list
  
-12:17:55 **** Incremental Build of configuration Debug for project ILI9341 ****
+11:24:40 **** Incremental Build of configuration Debug for project ProbandoRecepcionControles ****
 make -j8 all 
-arm-none-eabi-size  ILI9341.elf 
+arm-none-eabi-size  ProbandoRecepcionControles.elf 
    text	   data	    bss	    dec	    hex	filename
-  13864	     36	   1740	  15640	   3d18	ILI9341.elf
+  12036	     12	   1724	  13772	   35cc	ProbandoRecepcionControles.elf
 Finished building: default.size.stdout
  
-12:20:17 **** Incremental Build of configuration Debug for project ILI9341 ****
+11:30:25 **** Incremental Build of configuration Debug for project ProbandoRecepcionControles ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:51:1: warning: data definition has no type or storage class
-   51 | position_p1 [3] = {40,40,8};
-      | ^~~~~~~~~~~
-../Core/Src/main.c:51:1: warning: type defaults to 'int' in declaration of 'position_p1' [-Wimplicit-int]
-../Core/Src/main.c:52:1: warning: data definition has no type or storage class
-   52 | position_e1[3]={0,0,8};
-      | ^~~~~~~~~~~
-../Core/Src/main.c:52:1: warning: type defaults to 'int' in declaration of 'position_e1' [-Wimplicit-int]
-arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: ILI9341.elf
+arm-none-eabi-gcc -o "ProbandoRecepcionControles.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ProbandoRecepcionControles\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ProbandoRecepcionControles.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ProbandoRecepcionControles.elf
  
-arm-none-eabi-size  ILI9341.elf 
-arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
+arm-none-eabi-size  ProbandoRecepcionControles.elf 
+arm-none-eabi-objdump -h -S ProbandoRecepcionControles.elf  > "ProbandoRecepcionControles.list"
    text	   data	    bss	    dec	    hex	filename
-  13808	     36	   1740	  15584	   3ce0	ILI9341.elf
+  12040	     24	   1728	  13792	   35e0	ProbandoRecepcionControles.elf
 Finished building: default.size.stdout
  
-Finished building: ILI9341.list
+Finished building: ProbandoRecepcionControles.list
  
-12:25:38 **** Incremental Build of configuration Debug for project ILI9341 ****
+11:38:01 **** Incremental Build of configuration Debug for project ProbandoRecepcionControles ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:51:1: warning: data definition has no type or storage class
-   51 | position_p1 [3] = {40,40,8};
-      | ^~~~~~~~~~~
-../Core/Src/main.c:51:1: warning: type defaults to 'int' in declaration of 'position_p1' [-Wimplicit-int]
-../Core/Src/main.c:52:1: warning: data definition has no type or storage class
-   52 | position_e1[3]={0,0,8};
-      | ^~~~~~~~~~~
-../Core/Src/main.c:52:1: warning: type defaults to 'int' in declaration of 'position_e1' [-Wimplicit-int]
-../Core/Src/main.c:168:1: error: expected identifier or '(' before '}' token
-  168 | }
-      | ^
-make: *** [Core/Src/subdir.mk:43: Core/Src/main.o] Error 1
-"make -j8 all" terminated with exit code 2. Build might be incomplete.
-12:26:27 **** Incremental Build of configuration Debug for project ILI9341 ****
+arm-none-eabi-gcc -o "ProbandoRecepcionControles.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ProbandoRecepcionControles\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ProbandoRecepcionControles.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ProbandoRecepcionControles.elf
+ 
+arm-none-eabi-size  ProbandoRecepcionControles.elf 
+arm-none-eabi-objdump -h -S ProbandoRecepcionControles.elf  > "ProbandoRecepcionControles.list"
+   text	   data	    bss	    dec	    hex	filename
+  12100	     16	   1728	  13844	   3614	ProbandoRecepcionControles.elf
+Finished building: default.size.stdout
+ 
+Finished building: ProbandoRecepcionControles.list
+ 
+11:40:13 **** Incremental Build of configuration Debug for project ProbandoRecepcionControles ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:51:1: warning: data definition has no type or storage class
-   51 | position_p1 [3] = {40,40,8};
-      | ^~~~~~~~~~~
-../Core/Src/main.c:51:1: warning: type defaults to 'int' in declaration of 'position_p1' [-Wimplicit-int]
-../Core/Src/main.c:52:1: warning: data definition has no type or storage class
-   52 | position_e1[3]={80,80,3};
-      | ^~~~~~~~~~~
-../Core/Src/main.c:52:1: warning: type defaults to 'int' in declaration of 'position_e1' [-Wimplicit-int]
-arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: ILI9341.elf
+arm-none-eabi-gcc -o "ProbandoRecepcionControles.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ProbandoRecepcionControles\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ProbandoRecepcionControles.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ProbandoRecepcionControles.elf
  
-arm-none-eabi-size  ILI9341.elf 
-arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
+arm-none-eabi-size  ProbandoRecepcionControles.elf 
+arm-none-eabi-objdump -h -S ProbandoRecepcionControles.elf  > "ProbandoRecepcionControles.list"
    text	   data	    bss	    dec	    hex	filename
-  13980	     36	   1740	  15756	   3d8c	ILI9341.elf
+  11552	     12	   1724	  13288	   33e8	ProbandoRecepcionControles.elf
 Finished building: default.size.stdout
  
-Finished building: ILI9341.list
- 
-12:43:18 **** Incremental Build of configuration Debug for project ILI9341 ****
-make -j8 all 
-arm-none-eabi-size  ILI9341.elf 
-   text	   data	    bss	    dec	    hex	filename
-  13980	     36	   1740	  15756	   3d8c	ILI9341.elf
-Finished building: default.size.stdout
- 
-12:43:29 **** Incremental Build of configuration Debug for project ILI9341 ****
-make -j8 all 
-arm-none-eabi-size  ILI9341.elf 
-   text	   data	    bss	    dec	    hex	filename
-  13980	     36	   1740	  15756	   3d8c	ILI9341.elf
-Finished building: default.size.stdout
- 
-12:43:42 **** Incremental Build of configuration Debug for project ILI9341 ****
-make -j8 all 
-arm-none-eabi-size  ILI9341.elf 
-   text	   data	    bss	    dec	    hex	filename
-  13980	     36	   1740	  15756	   3d8c	ILI9341.elf
-Finished building: default.size.stdout
- 
-12:43:58 **** Incremental Build of configuration Debug for project ILI9341 ****
-make -j8 all 
-arm-none-eabi-size  ILI9341.elf 
-   text	   data	    bss	    dec	    hex	filename
-  13980	     36	   1740	  15756	   3d8c	ILI9341.elf
-Finished building: default.size.stdout
- 
-12:44:49 **** Incremental Build of configuration Debug for project ILI9341 ****
-make -j8 all 
-arm-none-eabi-size  ILI9341.elf 
-   text	   data	    bss	    dec	    hex	filename
-  13980	     36	   1740	  15756	   3d8c	ILI9341.elf
-Finished building: default.size.stdout
+Finished building: ProbandoRecepcionControles.list
  
