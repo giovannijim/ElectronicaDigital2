@@ -26,18 +26,60 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+
+//Estructura del jugador
+typedef struct{
+	unsigned int x;
+	unsigned int y;
+	unsigned int w;
+	unsigned int h;
+	unsigned int v;
+	unsigned int eliminado;
+	unsigned int vel;
+	unsigned int vista;
+} player;
+
 //Estructura del primer tipo de enemigo
 typedef struct {
-    unsigned int x;         // Coordenada x
-    unsigned int y;         // Coordenada y
-    unsigned int v;         // Puntos de vida
-    unsigned int eliminado; // Bandera para indicar si el enemigo fue eliminado (1 = eliminado)
+    unsigned int x;    // Coordenada en X
+    unsigned int y;    // Coordenada en Y
+    unsigned int v;    // Vida
+    unsigned int eliminado; //Enemigo eliminado o no
+    unsigned int w;    // Ancho de la hitbox
+    unsigned int h;    // Altura de la hitbox
 } enemigo_c1;
+
+//Estructura del segundp tipo de enemigo
+typedef struct {
+    unsigned int x;    // Coordenada en X
+    unsigned int y;    // Coordenada en Y
+    unsigned int v;    // Vida
+    unsigned int eliminado; //Enemigo eliminado o no
+    unsigned int w;    // Ancho de la hitbox
+    unsigned int h;    // Altura de la hitbox
+} enemigo_c1;
+
+//
+typedef struct {
+    unsigned int x;         // Coordenada en X
+    unsigned int y;         // Coordenada en Y
+    unsigned int w;         // Anchura de la hitbox
+    unsigned int h;         // Altura de la hitbox
+    unsigned int v;         // Vida actual
+    unsigned int vida_inicial; // Vida inicial
+    unsigned int vivo;      // 1 si está vivo, 0 si está muerto
+    unsigned int direccion; // Dirección de movimiento (0: derecha, 1: abajo, 2: izquierda, 3: arriba)
+    unsigned int velocidad; // Velocidad de movimiento
+} enemigo_c2;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define MOVIMIENTO_DERECHA  0
+#define MOVIMIENTO_ABAJO    1
+#define MOVIMIENTO_IZQUIERDA 2
+#define MOVIMIENTO_ARRIBA   3
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -54,8 +96,11 @@ UART_HandleTypeDef huart2;
 extern uint8_t fondo[];
 uint8_t buffer[10];
 uint16_t contador=0;
-enemigo_c1 e1;
-position_p1 [3] = {40,40,8};
+enemigo_c1 e1,e2,e3;
+enemigo_c2 e4,e5,e6;
+player p1;
+
+position_p1 [3] = {40,40,8,20,20};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -69,18 +114,20 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-/*
-void movimiento_e1(void){
-	HAL_Delay(100);
-	position_e1[0]+=20;
-	HAL_Delay(100);
-	position_e1[0]-=40;
-	HAL_Delay(100);
-	position_e1[1]+=20;
-	HAL_Delay(100);
-	position_e1[1]-=40;
 
-}*/
+//Funciones Player
+void init_player(player *p, unsigned int x, unsigned int y, unsigned int w, unsigned int h, unsigned int vel, unsigned int color, unsigned int vista) {
+    p->x = x;               // Posición inicial en X
+    p->y = y;               // Posición inicial en Y
+    p->w = w;               // Ancho del jugador
+    p->h = h;               // Altura del jugador
+    p->v = 0;               // Velocidad vertical inicial (si es necesario)
+    p->eliminado = 0;       // El jugador está activo
+    p->vel = vel;           // Velocidad del jugador
+    p->vista = vista;
+    FillRect(p->x, p->y, p->w, p->h, color);  // Dibuja el jugador en la pantalla usando el color especificado
+}
+
 void P1_erasePath(void){
 	if (position_p1[2]==8){
 		FillRect(position_p1[0]-20, position_p1[1], 20, 20, 0xFFFF);
@@ -117,32 +164,136 @@ void P1_erasePath(void){
 	    }
 	}
 	//Validar si se golpeo un enemigo del tipo 1
-	void verificar_golpe(enemigo_c1 *enemigo, unsigned int *position_p1) {
-	    if (position_p1[2] == 8) {  // Jugador mirando hacia la derecha
-	        if (enemigo->x == position_p1[0] + 20) {
-	            enemigo->v -= 1;  // Resta un punto de vida
+	void verificar_golpe(enemigo_c1 *enemigo, int *position_p1) {
+	    // Jugador mirando hacia la derecha (p1[2] == 8)
+	    if (position_p1[2] == 8) {
+	        if (position_p1[0] + 20 >= enemigo->x && position_p1[0] <= enemigo->x + enemigo->w) {
+	            if (position_p1[1] >= enemigo->y && position_p1[1] <= enemigo->y + enemigo->h) {
+	                enemigo->v -= 1;
+	            }
 	        }
 	    }
 
-	    if (position_p1[2] == 2) {  // Jugador mirando hacia la izquierda
-	        if (enemigo->x == position_p1[0] - 20) {
-	            enemigo->v -= 1;
+	    // Jugador mirando hacia la izquierda (p1[2] == 2)
+	    if (position_p1[2] == 2) {
+	        if (position_p1[0] - 20 <= enemigo->x + enemigo->w && position_p1[0] >= enemigo->x) {
+	            if (position_p1[1] >= enemigo->y && position_p1[1] <= enemigo->y + enemigo->h) {
+	                enemigo->v -= 1;
+	            }
 	        }
 	    }
 
-	    if (position_p1[2] == 6) {  // Jugador mirando hacia abajo
-	        if (enemigo->y == position_p1[1] + 20) {
-	            enemigo->v -= 1;
+	    // Jugador mirando hacia abajo (p1[2] == 6)
+	    if (position_p1[2] == 6) {
+	        if (position_p1[1] + 20 >= enemigo->y && position_p1[1] <= enemigo->y + enemigo->h) {
+	            if (position_p1[0] >= enemigo->x && position_p1[0] <= enemigo->x + enemigo->w) {
+	                enemigo->v -= 1;
+	            }
 	        }
 	    }
 
-	    if (position_p1[2] == 4) {  // Jugador mirando hacia arriba
-	        if (enemigo->y == position_p1[1] - 20) {
-	            enemigo->v -= 1;
+	    // Jugador mirando hacia arriba (p1[2] == 4)
+	    if (position_p1[2] == 4) {
+	        if (position_p1[1] - 20 <= enemigo->y + enemigo->h && position_p1[1] >= enemigo->y) {
+	            if (position_p1[0] >= enemigo->x && position_p1[0] <= enemigo->x + enemigo->w) {
+	                enemigo->v -= 1;
+	            }
 	        }
 	    }
 	}
 
+//Enemigo tipo 2
+
+void init_enemigo2(enemigo_c2 *enemigo, unsigned int x, unsigned int y, unsigned int w, unsigned int h, unsigned int v, unsigned int direccion, unsigned int velocidad) {
+	enemigo->x = x;               // Coordenada inicial en X
+	enemigo->y = y;               // Coordenada inicial en Y
+	enemigo->w = w;               // Ancho de la hitbox
+	enemigo->h = h;               // Altura de la hitbox
+	enemigo->v = v;               // Vida inicial
+	enemigo->direccion = direccion; // Dirección inicial de movimiento
+	enemigo->velocidad = velocidad; // Velocidad del movimiento
+}
+
+// Función para verificar si el enemigo ha sido golpeado
+void verificar_golpe(enemigo_c2 *enemigo, unsigned int *position_p1) {
+	// Jugador mirando hacia la derecha (p1[2] == 8)
+	if (position_p1[2] == 8) {
+		if (position_p1[0] + 20 >= enemigo->x && position_p1[0] <= enemigo->x + enemigo->w) {
+			if (position_p1[1] >= enemigo->y && position_p1[1] <= enemigo->y + enemigo->h) {
+				enemigo->v -= 1;
+			}
+		}
+	}
+
+	// Jugador mirando hacia la izquierda (p1[2] == 2)
+	if (position_p1[2] == 2) {
+		if (position_p1[0] - 20 <= enemigo->x + enemigo->w && position_p1[0] >= enemigo->x) {
+			if (position_p1[1] >= enemigo->y && position_p1[1] <= enemigo->y + enemigo->h) {
+				enemigo->v -= 1;
+			}
+		}
+	}
+
+	// Jugador mirando hacia abajo (p1[2] == 6)
+	if (position_p1[1] + 20 >= enemigo->y && position_p1[1] <= enemigo->y + enemigo->h) {
+		if (position_p1[0] >= enemigo->x && position_p1[0] <= enemigo->x + enemigo->w) {
+			enemigo->v -= 1;
+		}
+	}
+
+	// Jugador mirando hacia arriba (p1[2] == 4)
+	if (position_p1[1] - 20 <= enemigo->y + enemigo->h && position_p1[1] >= enemigo->y) {
+		if (position_p1[0] >= enemigo->x && position_p1[0] <= enemigo->x + enemigo->w) {
+			enemigo->v -= 1;
+		}
+	}
+}
+
+// Función para mover el enemigo en forma de cuadrado, con validación de vida
+void mover_enemigo_cuadrado(Enemigo_cuadrado *enemigo) {
+    if (enemigo->v == 0) {
+        // Si la vida es 0, pintar el cuadro de fondo y detener el movimiento
+        FillRect(enemigo->x, enemigo->y, enemigo->w, enemigo->h, COLOR_FONDO);
+        return;  // Salimos de la función ya que el enemigo ha muerto
+    }
+
+    // Pintar la posición anterior con el color de fondo
+    FillRect(enemigo->x, enemigo->y, enemigo->w, enemigo->h, COLOR_FONDO);
+
+    // Mover el enemigo según su dirección actual
+    switch (enemigo->direccion) {
+        case MOVIMIENTO_DERECHA:
+            enemigo->x += enemigo->velocidad;
+            if (enemigo->x >= 140) {  // Límite derecho ajustado
+                enemigo->direccion = MOVIMIENTO_ABAJO;
+            }
+            break;
+
+        case MOVIMIENTO_ABAJO:
+            enemigo->y += enemigo->velocidad;
+            if (enemigo->y >= 220) {  // Límite inferior ajustado
+                enemigo->direccion = MOVIMIENTO_IZQUIERDA;
+            }
+            break;
+
+        case MOVIMIENTO_IZQUIERDA:
+            enemigo->x -= enemigo->velocidad;
+            if (enemigo->x <= 0) {  // Límite izquierdo ajustado
+                enemigo->direccion = MOVIMIENTO_ARRIBA;
+            }
+            break;
+
+        case MOVIMIENTO_ARRIBA:
+            enemigo->y -= enemigo->velocidad;
+            if (enemigo->y <= 0) {  // Límite superior ajustado
+                enemigo->direccion = MOVIMIENTO_DERECHA;
+            }
+            break;
+    }
+
+    // Dibujar el enemigo en la nueva posición
+    FillRect(enemigo->x, enemigo->y, enemigo->w, enemigo->h, 0xFFFF);
+}
 /* USER CODE END 0 */
 
 /**
@@ -197,17 +348,17 @@ int main(void)
 	  // Activar bandera interrupcion
 	  HAL_UART_Receive_IT(&huart2, buffer, 1);
 
-	  //Enemigo 1
-	  init_enemigo(&e1, 20, 20, 3);
+	  //EnemigoC1 1
+	  init_enemigo(&e1, 100, 100, 3);
 	  dibujar_enemigo(&e1, 0x07E0);
 
-	  //Enemigo 2
-	  //init_enemigo(&e1, 100, 20, 3);
-	  //dibujar_enemigo(&e1, 0x07E0);
+	  //EnemigoC1 2
+	  init_enemigo(&e2, 100, 20, 3);
+	  dibujar_enemigo(&e2, 0x0E0E);
 
-	  	 //Enemigo 3
-	  	//init_enemigo(&e1, 20, 100, 3);
-	  	//dibujar_enemigo(&e1, 0x07E0);
+	  //EnemigoC1 3
+	  init_enemigo(&e3, 20, 100, 3);
+	  dibujar_enemigo(&e3, 0x0FFF);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -219,6 +370,8 @@ int main(void)
 
 		//Enemigo 1
 		verificar_vida(&e1, 0xFFFF);
+		verificar_vida(&e2, 0xFFFF);
+		verificar_vida(&e3, 0xFFFF);
 		//movimiento_e1();
 
     /* USER CODE END WHILE */
@@ -412,26 +565,46 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		if (position_p1[0]<140){
 		position_p1[0]+=20;
 		position_p1[2]=8;}
+
+		if(p1.x<140){
+			p1.x=p1.x+p1.vel;
+			p1.vista=8;
+		}
 	}
 	if(buffer[0] == 'd'){
 		if (position_p1[0]>0){
 		position_p1[0]-=20;
 		position_p1[2]=2;}
+
+		if (p1.x>0){
+			p1.x=p1.x-p1.vel;
+			p1.vista=4;
+		}
 	}
 	if(buffer[0] == 'r'){
 		if (position_p1[1]<220){
 		position_p1[1]+=20;
 		position_p1[2]=6;}
+
+		if (p1.y<220){
+			p1.y=p1.y+p1.vel;
+			p1.vista=6;
+		}
 	}
 	if(buffer[0] == 'l'){
 		if(position_p1[1]>0){
 		position_p1[1]-=20;
 		position_p1[2]=4;}
+
+		if (p1.y>0){
+			p1.y=p1.y-p1.vel;
+			p1.vista=4;
+		}
 	}
 	if (buffer[0]=='b'){
 	    verificar_golpe(&e1, position_p1);
-	    //verificar_golpe(&e2, position_p1);
-	    //verificar_golpe(&e3, position_p1);
+	    verificar_golpe(&e2, position_p1);
+	    verificar_golpe(&e3, position_p1);
 	}
 	// Vuelve a activar la recepción por interrupción
 	HAL_UART_Receive_IT(&huart2, buffer, 1);
