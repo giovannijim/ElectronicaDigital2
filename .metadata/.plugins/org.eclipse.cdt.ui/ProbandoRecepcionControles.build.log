@@ -1,17 +1,10 @@
-11:40:13 **** Incremental Build of configuration Debug for project ProbandoRecepcionControles ****
+10:20:19 **** Incremental Build of configuration Debug for project ProbandoRecepcionControles ****
 make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc -o "ProbandoRecepcionControles.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ProbandoRecepcionControles\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ProbandoRecepcionControles.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: ProbandoRecepcionControles.elf
- 
 arm-none-eabi-size  ProbandoRecepcionControles.elf 
-arm-none-eabi-objdump -h -S ProbandoRecepcionControles.elf  > "ProbandoRecepcionControles.list"
    text	   data	    bss	    dec	    hex	filename
-  11552	     12	   1724	  13288	   33e8	ProbandoRecepcionControles.elf
+  12036	     12	   1732	  13780	   35d4	ProbandoRecepcionControles.elf
 Finished building: default.size.stdout
  
-Finished building: ProbandoRecepcionControles.list
- 
 
-11:40:15 Build Finished. 0 errors, 0 warnings. (took 2s.305ms)
+10:20:20 Build Finished. 0 errors, 0 warnings. (took 270ms)
 

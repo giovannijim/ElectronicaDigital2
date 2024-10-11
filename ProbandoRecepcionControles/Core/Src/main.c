@@ -44,7 +44,7 @@ UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-unsigned char buffer[10];
+uint8_t buffer[10];
 uint8_t temp[2];
 int indx = 0;
 uint8_t Boton1[] = "ARRIBA\r\n";
@@ -53,6 +53,7 @@ uint8_t Boton3[] = "4";
 uint8_t Boton4[] = "IZQUIERDA\r\n";
 uint8_t Boton5[] = "PODER\r\n";
 uint8_t Boton6[] = "ARMA\r\n";
+uint8_t BufferRx[] = "\0";
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -108,6 +109,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  //HAL_UART_Transmit(&huart5, Boton3, sizeof(Boton3), 1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -269,10 +271,12 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+	BufferRx[0] = buffer[0];
 	//HAL_UART_Transmit(&huart2, Boton1, sizeof(Boton1), 100);
-	//HAL_UART_Transmit(&huart2, buffer, sizeof(buffer), 1000);
+	HAL_UART_Transmit(&huart2, BufferRx, sizeof(BufferRx), 1000);
 	// Procesa el dato recibido por USART1
-	/*if(buffer[0] == '1'){
+	/*
+	if(buffer[0] == '1'){
 		HAL_UART_Transmit(&huart2, Boton1, sizeof(Boton1), 1000);
 	}
 	if(buffer[0] == '2'){
@@ -290,8 +294,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	if(buffer[0] == '6'){
 		HAL_UART_Transmit(&huart2, Boton6, sizeof(Boton6), 1000);
 	}
-	// Vuelve a activar la recepción por interrupción*/
-	//HAL_UART_Receive_IT(&huart5, buffer, 1);
+	// Vuelve a activar la recepción por interrupción
+	HAL_UART_Receive_IT(&huart5, buffer, 1);
+	*/
 }
 /* USER CODE END 4 */
 

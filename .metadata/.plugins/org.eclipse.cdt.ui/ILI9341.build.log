@@ -1,10 +1,10 @@
-12:44:49 **** Incremental Build of configuration Debug for project ILI9341 ****
+10:10:23 **** Incremental Build of configuration Debug for project ILI9341 ****
 make -j8 all 
 arm-none-eabi-size  ILI9341.elf 
    text	   data	    bss	    dec	    hex	filename
-  13980	     36	   1740	  15756	   3d8c	ILI9341.elf
+  14464	     24	   1816	  16304	   3fb0	ILI9341.elf
 Finished building: default.size.stdout
  
 
-12:44:49 Build Finished. 0 errors, 0 warnings. (took 400ms)
+10:10:23 Build Finished. 0 errors, 0 warnings. (took 322ms)
 
