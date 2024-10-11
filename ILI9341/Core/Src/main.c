@@ -28,58 +28,35 @@
 /* USER CODE BEGIN PTD */
 
 //Estructura del jugador
-typedef struct{
-	unsigned int x;
-	unsigned int y;
-	unsigned int w;
-	unsigned int h;
-	unsigned int v;
-	unsigned int eliminado;
-	unsigned int vel;
-	unsigned int vista;
+typedef struct {
+    unsigned int x;         // Coordenada x del jugador
+    unsigned int y;         // Coordenada y del jugador
+    unsigned int width;     // Ancho del hitbox (y sprite)
+    unsigned int height;    // Largo del hitbox (y sprite)
+    unsigned int speed;     // Velocidad de movimiento del jugador
+    unsigned int life;      // Vida del jugador
+    unsigned int score;     // Puntuación actual del jugador
+    unsigned int isAlive;   // Estado del jugador (1: vivo, 0: muerto)
+    unsigned int direction; // Dirección de movimiento (0: arriba, 1: derecha, 2: abajo, 3: izquierda)
+    unsigned int limitWidth; // Ancho de los límites de desplazamiento
+    unsigned int limitHeight; // Largo de los límites de desplazamiento
+    unsigned int colision;
 } player;
 
-//Estructura del primer tipo de enemigo
+//Estructura enemigo 1
 typedef struct {
-    unsigned int x;    // Coordenada en X
-    unsigned int y;    // Coordenada en Y
-    unsigned int v;    // Vida
-    unsigned int eliminado; //Enemigo eliminado o no
-    unsigned int w;    // Ancho de la hitbox
-    unsigned int h;    // Altura de la hitbox
-} enemigo_c1;
-
-//Estructura del segundp tipo de enemigo
-typedef struct {
-    unsigned int x;    // Coordenada en X
-    unsigned int y;    // Coordenada en Y
-    unsigned int v;    // Vida
-    unsigned int eliminado; //Enemigo eliminado o no
-    unsigned int w;    // Ancho de la hitbox
-    unsigned int h;    // Altura de la hitbox
-} enemigo_c1;
-
-//
-typedef struct {
-    unsigned int x;         // Coordenada en X
-    unsigned int y;         // Coordenada en Y
-    unsigned int w;         // Anchura de la hitbox
-    unsigned int h;         // Altura de la hitbox
-    unsigned int v;         // Vida actual
-    unsigned int vida_inicial; // Vida inicial
-    unsigned int vivo;      // 1 si está vivo, 0 si está muerto
-    unsigned int direccion; // Dirección de movimiento (0: derecha, 1: abajo, 2: izquierda, 3: arriba)
-    unsigned int velocidad; // Velocidad de movimiento
-} enemigo_c2;
+    unsigned int x;         // Coordenada X del enemigo
+    unsigned int y;         // Coordenada Y del enemigo
+    unsigned int width;     // Ancho de la hitbox del enemigo
+    unsigned int height;    // Alto de la hitbox del enemigo
+    int health;             // Vida del enemigo
+    int isAlive;            // Estado del enemigo (1 = vivo, 0 = muerto)
+} enemy_type1;
 
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define MOVIMIENTO_DERECHA  0
-#define MOVIMIENTO_ABAJO    1
-#define MOVIMIENTO_IZQUIERDA 2
-#define MOVIMIENTO_ARRIBA   3
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -96,11 +73,8 @@ UART_HandleTypeDef huart2;
 extern uint8_t fondo[];
 uint8_t buffer[10];
 uint16_t contador=0;
-enemigo_c1 e1,e2,e3;
-enemigo_c2 e4,e5,e6;
-player p1;
-
-position_p1 [3] = {40,40,8,20,20};
+player p1,p2;
+enemy_type1 e1_1, e1_2, e1_3;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -116,18 +90,111 @@ static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN 0 */
 
 //Funciones Player
-void init_player(player *p, unsigned int x, unsigned int y, unsigned int w, unsigned int h, unsigned int vel, unsigned int color, unsigned int vista) {
-    p->x = x;               // Posición inicial en X
-    p->y = y;               // Posición inicial en Y
-    p->w = w;               // Ancho del jugador
-    p->h = h;               // Altura del jugador
-    p->v = 0;               // Velocidad vertical inicial (si es necesario)
-    p->eliminado = 0;       // El jugador está activo
-    p->vel = vel;           // Velocidad del jugador
-    p->vista = vista;
-    FillRect(p->x, p->y, p->w, p->h, color);  // Dibuja el jugador en la pantalla usando el color especificado
+void initPlayer(player* player, unsigned int startX, unsigned int startY, unsigned int playerWidth, unsigned int playerHeight, unsigned int speed, unsigned int life, unsigned int limitWidth, unsigned int limitHeight) {
+    // Inicializar las propiedades del jugador
+    player->x = startX;
+    player->y = startY;
+    player->width = playerWidth;
+    player->height = playerHeight;
+    player->speed = speed;
+    player->life = life;
+    player->score = 0;          // Puntuación inicial en 0
+    player->isAlive = 1;        // El jugador comienza vivo
+    player->direction = 0;      // Dirección inicial (arriba)
+    player->limitWidth = limitWidth;
+    player->limitHeight = limitHeight;
+
+    // Dibujar el jugador en pantalla
+    FillRect(player->x - (player->width / 2), player->y - (player->height / 2), player->width, player->height, 0xFFFB00);
+    FillRect(player->x , player->y, 1, 1, 0x000000);
 }
 
+int playerCanMove(player* player, unsigned int direction) {
+    // Variables para calcular la posición futura del jugador según la dirección
+    int futureX = player->x;
+    int futureY = player->y;
+
+    // Calcular las nuevas coordenadas dependiendo de la dirección
+    switch (direction) {
+        case 0:  // Abajo
+            futureY += player->speed;
+            break;
+        case 1:  // Derecha
+            futureX += player->speed;
+            break;
+        case 2:  // Arriba
+            futureY -= player->speed;
+            break;
+        case 3:  // Izquierda
+            futureX -= player->speed;
+            break;
+    }
+
+    // Verificar colisiones con los bordes en base a la posición futura
+    if (futureX <= 0) {
+        return 0;  // Colisión con el borde izquierdo
+    }
+    if (futureX >= player->limitWidth) {
+        return 0;  // Colisión con el borde derecho
+    }
+    if (futureY  <= 0) {
+        return 0;  // Colisión con el borde superior
+    }
+    if (futureY>= player->limitHeight) {
+        return 0;  // Colisión con el borde inferior
+    }
+    /*
+    // Verificar colisiones con e1_1
+    if (player->x - (player->width / 2) < e1_1.x + (e1_1.width / 2) ||
+		player->x + (player->width / 2) > e1_1.x - (e1_1.width / 2) ||
+		player->y - (player->height / 2) < e1_1.y + (e1_1.height / 2) ||
+		player->y + (player->height / 2) > e1_1.y - (e1_1.height / 2)) {
+		return 0;  // Colisión con el enemigo
+	}*/
+    if (player->x < e1_1.x + e1_1.width &&
+            player->x + player->width > e1_1.x &&
+            player->y < e1_1.y + e1_1.height &&
+            player->y + player->height > e1_1.y){
+    	player->colision=1;
+    	switch (direction) {
+    	        case 0:  // Abajo
+    	            player->y -= player->speed;
+    	            break;
+    	        case 1:  // Derecha
+    	        	player->x -= player->speed;
+    	            break;
+    	        case 2:  // Arriba
+    	        	player->y += player->speed;
+    	            break;
+    	        case 3:  // Izquierda
+    	        	player->x += player->speed;
+    	            break;
+    	    }
+    	return 0;
+    }
+
+    // No hay colisiones, se puede mover
+    return 1;
+}
+
+//Funciones Enemigo tipo 1
+void initEnemy1(enemy_type1* enemy, unsigned int startX, unsigned int startY, unsigned int width, unsigned int height, int health) {
+    // Inicializar las coordenadas y dimensiones
+    enemy->x = startX;
+    enemy->y = startY;
+    enemy->width = width;
+    enemy->height = height;
+
+    // Inicializar la vida y el estado
+    enemy->health = health;
+    enemy->isAlive = 1;  // El enemigo comienza vivo
+
+    // Dibujar el enemigo en pantalla
+    FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
+    FillRect(enemy->x , enemy->y, 1, 1, 0xFFFFFF);
+}
+
+/*
 void P1_erasePath(void){
 	if (position_p1[2]==8){
 		FillRect(position_p1[0]-20, position_p1[1], 20, 20, 0xFFFF);
@@ -141,159 +208,8 @@ void P1_erasePath(void){
 	if (position_p1[2]==4){
 		FillRect(position_p1[0], position_p1[1]+20, 20, 20, 0xFFFF);
 	}
-}
-//Enemigo tipo 1
-	//Iniciar enemigo
-	void init_enemigo(enemigo_c1 *enemigo, unsigned int x, unsigned int y, unsigned int vida) {
-		enemigo->x = x;
-		enemigo->y = y;
-		enemigo->v = vida;
-		enemigo->eliminado = 0; // Inicialmente no está eliminado
-	}
-	//Dibujar enemigo
-	void dibujar_enemigo(enemigo_c1 *enemigo, unsigned int color) {
-	    FillRect(enemigo->x, enemigo->y, 20, 20, color);
-	}
+}*/
 
-	//Validar vida enemigo
-	void verificar_vida(enemigo_c1 *enemigo, unsigned int color_fondo) {
-	    if (enemigo->v == 0 && enemigo->eliminado == 0) {
-	        // Dibuja el cuadrado del color de fondo solo una vez
-	        dibujar_enemigo(enemigo, color_fondo);
-	        enemigo->eliminado = 1;  // Marca al enemigo como eliminado
-	    }
-	}
-	//Validar si se golpeo un enemigo del tipo 1
-	void verificar_golpe(enemigo_c1 *enemigo, int *position_p1) {
-	    // Jugador mirando hacia la derecha (p1[2] == 8)
-	    if (position_p1[2] == 8) {
-	        if (position_p1[0] + 20 >= enemigo->x && position_p1[0] <= enemigo->x + enemigo->w) {
-	            if (position_p1[1] >= enemigo->y && position_p1[1] <= enemigo->y + enemigo->h) {
-	                enemigo->v -= 1;
-	            }
-	        }
-	    }
-
-	    // Jugador mirando hacia la izquierda (p1[2] == 2)
-	    if (position_p1[2] == 2) {
-	        if (position_p1[0] - 20 <= enemigo->x + enemigo->w && position_p1[0] >= enemigo->x) {
-	            if (position_p1[1] >= enemigo->y && position_p1[1] <= enemigo->y + enemigo->h) {
-	                enemigo->v -= 1;
-	            }
-	        }
-	    }
-
-	    // Jugador mirando hacia abajo (p1[2] == 6)
-	    if (position_p1[2] == 6) {
-	        if (position_p1[1] + 20 >= enemigo->y && position_p1[1] <= enemigo->y + enemigo->h) {
-	            if (position_p1[0] >= enemigo->x && position_p1[0] <= enemigo->x + enemigo->w) {
-	                enemigo->v -= 1;
-	            }
-	        }
-	    }
-
-	    // Jugador mirando hacia arriba (p1[2] == 4)
-	    if (position_p1[2] == 4) {
-	        if (position_p1[1] - 20 <= enemigo->y + enemigo->h && position_p1[1] >= enemigo->y) {
-	            if (position_p1[0] >= enemigo->x && position_p1[0] <= enemigo->x + enemigo->w) {
-	                enemigo->v -= 1;
-	            }
-	        }
-	    }
-	}
-
-//Enemigo tipo 2
-
-void init_enemigo2(enemigo_c2 *enemigo, unsigned int x, unsigned int y, unsigned int w, unsigned int h, unsigned int v, unsigned int direccion, unsigned int velocidad) {
-	enemigo->x = x;               // Coordenada inicial en X
-	enemigo->y = y;               // Coordenada inicial en Y
-	enemigo->w = w;               // Ancho de la hitbox
-	enemigo->h = h;               // Altura de la hitbox
-	enemigo->v = v;               // Vida inicial
-	enemigo->direccion = direccion; // Dirección inicial de movimiento
-	enemigo->velocidad = velocidad; // Velocidad del movimiento
-}
-
-// Función para verificar si el enemigo ha sido golpeado
-void verificar_golpe(enemigo_c2 *enemigo, unsigned int *position_p1) {
-	// Jugador mirando hacia la derecha (p1[2] == 8)
-	if (position_p1[2] == 8) {
-		if (position_p1[0] + 20 >= enemigo->x && position_p1[0] <= enemigo->x + enemigo->w) {
-			if (position_p1[1] >= enemigo->y && position_p1[1] <= enemigo->y + enemigo->h) {
-				enemigo->v -= 1;
-			}
-		}
-	}
-
-	// Jugador mirando hacia la izquierda (p1[2] == 2)
-	if (position_p1[2] == 2) {
-		if (position_p1[0] - 20 <= enemigo->x + enemigo->w && position_p1[0] >= enemigo->x) {
-			if (position_p1[1] >= enemigo->y && position_p1[1] <= enemigo->y + enemigo->h) {
-				enemigo->v -= 1;
-			}
-		}
-	}
-
-	// Jugador mirando hacia abajo (p1[2] == 6)
-	if (position_p1[1] + 20 >= enemigo->y && position_p1[1] <= enemigo->y + enemigo->h) {
-		if (position_p1[0] >= enemigo->x && position_p1[0] <= enemigo->x + enemigo->w) {
-			enemigo->v -= 1;
-		}
-	}
-
-	// Jugador mirando hacia arriba (p1[2] == 4)
-	if (position_p1[1] - 20 <= enemigo->y + enemigo->h && position_p1[1] >= enemigo->y) {
-		if (position_p1[0] >= enemigo->x && position_p1[0] <= enemigo->x + enemigo->w) {
-			enemigo->v -= 1;
-		}
-	}
-}
-
-// Función para mover el enemigo en forma de cuadrado, con validación de vida
-void mover_enemigo_cuadrado(Enemigo_cuadrado *enemigo) {
-    if (enemigo->v == 0) {
-        // Si la vida es 0, pintar el cuadro de fondo y detener el movimiento
-        FillRect(enemigo->x, enemigo->y, enemigo->w, enemigo->h, COLOR_FONDO);
-        return;  // Salimos de la función ya que el enemigo ha muerto
-    }
-
-    // Pintar la posición anterior con el color de fondo
-    FillRect(enemigo->x, enemigo->y, enemigo->w, enemigo->h, COLOR_FONDO);
-
-    // Mover el enemigo según su dirección actual
-    switch (enemigo->direccion) {
-        case MOVIMIENTO_DERECHA:
-            enemigo->x += enemigo->velocidad;
-            if (enemigo->x >= 140) {  // Límite derecho ajustado
-                enemigo->direccion = MOVIMIENTO_ABAJO;
-            }
-            break;
-
-        case MOVIMIENTO_ABAJO:
-            enemigo->y += enemigo->velocidad;
-            if (enemigo->y >= 220) {  // Límite inferior ajustado
-                enemigo->direccion = MOVIMIENTO_IZQUIERDA;
-            }
-            break;
-
-        case MOVIMIENTO_IZQUIERDA:
-            enemigo->x -= enemigo->velocidad;
-            if (enemigo->x <= 0) {  // Límite izquierdo ajustado
-                enemigo->direccion = MOVIMIENTO_ARRIBA;
-            }
-            break;
-
-        case MOVIMIENTO_ARRIBA:
-            enemigo->y -= enemigo->velocidad;
-            if (enemigo->y <= 0) {  // Límite superior ajustado
-                enemigo->direccion = MOVIMIENTO_DERECHA;
-            }
-            break;
-    }
-
-    // Dibujar el enemigo en la nueva posición
-    FillRect(enemigo->x, enemigo->y, enemigo->w, enemigo->h, 0xFFFF);
-}
 /* USER CODE END 0 */
 
 /**
@@ -348,32 +264,15 @@ int main(void)
 	  // Activar bandera interrupcion
 	  HAL_UART_Receive_IT(&huart2, buffer, 1);
 
-	  //EnemigoC1 1
-	  init_enemigo(&e1, 100, 100, 3);
-	  dibujar_enemigo(&e1, 0x07E0);
-
-	  //EnemigoC1 2
-	  init_enemigo(&e2, 100, 20, 3);
-	  dibujar_enemigo(&e2, 0x0E0E);
-
-	  //EnemigoC1 3
-	  init_enemigo(&e3, 20, 100, 3);
-	  dibujar_enemigo(&e3, 0x0FFF);
+	  //Inicializar Jugador 1
+	  initPlayer(&p1, 50, 50, 20, 20, 20, 3, 160, 240);
+	  //Inicializar enemigo 1
+	  initEnemy1(&e1_1, 100, 100, 20, 20, 3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
-		//Jugador 1
-		FillRect(position_p1[0], position_p1[1], 20, 20, 0xF800);
-		P1_erasePath();
-
-		//Enemigo 1
-		verificar_vida(&e1, 0xFFFF);
-		verificar_vida(&e2, 0xFFFF);
-		verificar_vida(&e3, 0xFFFF);
-		//movimiento_e1();
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -561,50 +460,56 @@ static void MX_GPIO_Init(void)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	if(buffer[0] == 'u'){
-		if (position_p1[0]<140){
-		position_p1[0]+=20;
-		position_p1[2]=8;}
-
-		if(p1.x<140){
-			p1.x=p1.x+p1.vel;
-			p1.vista=8;
+	if(buffer[0] == 'd'){
+		FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFFFF);
+		if (playerCanMove(&p1, 0)) {
+		    p1.y=p1.y+p1.speed;
+		    FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+		    FillRect(p1.x , p1.y, 1, 1, 0x000000);
+		} else {
+			FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+			FillRect(p1.x , p1.y, 1, 1, 0x000000);
 		}
 	}
-	if(buffer[0] == 'd'){
-		if (position_p1[0]>0){
-		position_p1[0]-=20;
-		position_p1[2]=2;}
-
-		if (p1.x>0){
-			p1.x=p1.x-p1.vel;
-			p1.vista=4;
+	if(buffer[0] == 'u'){
+		FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFFFF);
+		if (playerCanMove(&p1, 2)) {
+			p1.y=p1.y-p1.speed;
+			FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+			FillRect(p1.x , p1.y, 1, 1, 0x000000);
+		} else {
+			FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+			FillRect(p1.x , p1.y, 1, 1, 0x000000);
 		}
 	}
 	if(buffer[0] == 'r'){
-		if (position_p1[1]<220){
-		position_p1[1]+=20;
-		position_p1[2]=6;}
-
-		if (p1.y<220){
-			p1.y=p1.y+p1.vel;
-			p1.vista=6;
+		FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFFFF);
+		if (playerCanMove(&p1, 1)) {
+			p1.x=p1.x+p1.speed;
+			FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+			FillRect(p1.x , p1.y, 1, 1, 0x000000);
+		} else {
+			FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+			FillRect(p1.x , p1.y, 1, 1, 0x000000);
 		}
 	}
 	if(buffer[0] == 'l'){
-		if(position_p1[1]>0){
-		position_p1[1]-=20;
-		position_p1[2]=4;}
-
-		if (p1.y>0){
-			p1.y=p1.y-p1.vel;
-			p1.vista=4;
+		FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFFFF);
+		if (playerCanMove(&p1, 3)) {
+			p1.x=p1.x-p1.speed;
+			FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+			FillRect(p1.x , p1.y, 1, 1, 0x000000);
+		} else {
+			FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+			FillRect(p1.x , p1.y, 1, 1, 0x000000);
 		}
 	}
 	if (buffer[0]=='b'){
+		/*
 	    verificar_golpe(&e1, position_p1);
 	    verificar_golpe(&e2, position_p1);
 	    verificar_golpe(&e3, position_p1);
+	    */
 	}
 	// Vuelve a activar la recepción por interrupción
 	HAL_UART_Receive_IT(&huart2, buffer, 1);
