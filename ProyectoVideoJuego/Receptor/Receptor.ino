@@ -12,17 +12,16 @@ void recibirCallback(const esp_now_recv_info *info, const uint8_t *incomingData,
   
   // Imprimir el valor recibido
   //Serial.print("Valor recibido: ");
-  Serial2.println(mensajeRecibido);
+  Serial.print(mensajeRecibido);
 }
 
 void setup() {
-  Serial2.begin(115200);
   Serial.begin(115200);
   WiFi.mode(WIFI_STA);
   
   // Inicialización de ESP-NOW
   if (esp_now_init() != ESP_OK) {
-    Serial.println("Error al inicializar ESP-NOW");
+    //Serial.println("Error al inicializar ESP-NOW");
     return;
   }
   
