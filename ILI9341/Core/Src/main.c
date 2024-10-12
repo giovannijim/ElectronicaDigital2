@@ -20,6 +20,7 @@
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
+#include "sprites.h"
 /* USER CODE BEGIN Includes */
 #include "ili9341.h"
 /* USER CODE END Includes */
@@ -87,6 +88,7 @@ player p1,p2;
 enemy_type1 e1_1, e1_2, e1_3;
 int i;
 uint8_t modo, fase_p1, fase_p2;
+uint8_t P1_WalkUp = 0;
 /*  modo=1 1 jugadores
  *  modo=2 2 jugadores
  *  fase_p1 La fase en la que está el jugador 1
@@ -139,78 +141,36 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int futu
 	// Verificar colisión con el enemigo basado en la dirección de movimiento
 	    switch (direction) {
 	        case 0: // Movimiento hacia abajo
-	        	if (futureY >= enemy->e1Up && (player->playerRight<=enemy->e1Right && player->playerLeft>=enemy->e1Left)){
+	        	if (futureY >= enemy->e1Up && futureY<=enemy->e1Down && ((player->playerRight >= enemy->e1Left && player->playerRight <= enemy->e1Right)||(player->playerLeft <= enemy->e1Right && player->playerLeft >= enemy->e1Left))){
 	        		player->y -= player->speed;
+	        		FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
 	        		return 0;  // Colisión con el enemigo
-	        	}
-	        	 break;
-	        return 1;
-
-/*
-	            if (player->y - player->speed < enemyBottom &&
-	                player->x > enemyLeft &&
-	                player->x < enemyRight) {
-	            	player->y -= player->speed;
-	                return 1;  // Colisión con el enemigo
-	            }
-	            break;
-	        case 1: // Movimiento hacia dercha
-	            if (player->y + player->speed > enemyTop &&
-	                player->x > enemyLeft &&
-	                player->x < enemyRight) {
-	            	player->y += player->speed;
-	                return 1;  // Colisión con el enemigo
-	            }
-	            break;
-	        case 2: // Movimiento hacia arriba
-	            if (player->x - player->speed < enemyRight &&
-	                player->y > enemyTop &&
-	                player->y < enemyBottom) {
-	            	player->x += player->speed;
-	                return 1;  // Colisión con el enemigo
-	            }
-	            break;
-	        case 3: // Movimiento hacia izquierda
-	            if (player->x + player->speed > enemyLeft &&
-	                player->y > enemyTop &&
-	                player->y < enemyBottom) {
-	            	player->x -= player->speed;
-	                return 1;  // Colisión con el enemigo
-	            }
-	            break;
+	        		}
+	        	break;
+	        case 1: //Movimiento hacia derecha
+	        	if (futureX >= enemy->e1Left && futureX <= enemy->e1Right && ((player->playerUp<=enemy->e1Down && player->playerUp >= enemy->e1Up)||(player->playerDown<=enemy->e1Down && player->playerDown >= enemy->e1Up))){
+	        		player->x -=player->speed;
+	        		FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
+	        		return 0;
+	        		}
+	        	break;
+	        case 2: //Movimiento hacia arriba
+	        	if (futureY <= enemy->e1Down && futureY>=enemy->e1Up && ((player->playerRight >= enemy->e1Left && player->playerRight <= enemy->e1Right)||(player->playerLeft <= enemy->e1Right && player->playerLeft >= enemy->e1Left))){
+					player->y += player->speed;
+					FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
+					return 0;  // Colisión con el enemigo
+					}
+	        	break;
+	        case 3: //Movimiento hacia izquierda
+	        	if (futureX <= enemy->e1Right && futureX >= enemy->e1Left && ((player->playerUp<=enemy->e1Down && player->playerUp >= enemy->e1Up)||(player->playerDown<=enemy->e1Down && player->playerDown >= enemy->e1Up))){
+					player->x +=player->speed;
+					FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
+					return 0;
+					}
+	        	break;
+		return 1;
 	    }
-*/
 }
-}
-
-/*
-   // Verificar colisiones con Enemy_type1
-    if (player->x - (player->width / 2) < enemy->x + (enemy->width / 2) &&
-            player->x + (player->width / 2) > enemy->x - (enemy->width / 2) &&
-            player->y - (player->height / 2) < enemy->y + (enemy->height / 2) &&
-            player->y + (player->height / 2) > enemy->y - (enemy->height / 2)){
-    	player->colision=1;
-    	switch (direction) {
-    	        case 0:  // Abajo
-    	            player->y -= player->speed;
-    	            break;
-    	        case 1:  // Derecha
-    	        	player->x -= player->speed;
-    	            break;
-    	        case 2:  // Arriba
-    	        	player->y += player->speed;
-    	            break;
-    	        case 3:  // Izquierda
-    	        	player->x += player->speed;
-    	            break;
-    	    }
-    	FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
-    	FillRect(enemy->x , enemy->y, 1, 1, 0xFFFFFF);
-    	player->life -=1;
-    	return 1;
-
-    }
- */
 
 //Funciones Player
 void initPlayer(player* player, unsigned int startX, unsigned int startY, unsigned int playerWidth, unsigned int playerHeight, unsigned int speed, unsigned int life, unsigned int limitWidth, unsigned int limitHeight) {
@@ -223,12 +183,13 @@ void initPlayer(player* player, unsigned int startX, unsigned int startY, unsign
     player->life = life;
     player->score = 0;          // Puntuación inicial en 0
     player->isAlive = 1;        // El jugador comienza vivo
-    player->direction = 0;      // Dirección inicial (arriba)
+    player->direction = 2;      // Dirección inicial (abajo)
     player->limitWidth = limitWidth;
     player->limitHeight = limitHeight;
 
     // Dibujar el jugador en pantalla
     FillRect(player->x - (player->width / 2), player->y - (player->height / 2), player->width, player->height, 0xFFFB00);
+    LCD_Bitmap(player->x - (player->width / 2), player->y - (player->height / 2), player->width, player->height, LinkIdeDown);
     FillRect(player->x , player->y, 1, 1, 0x000000);
 
     //HITBOX DEBUG
@@ -265,7 +226,7 @@ int playerCanMove(player* player, unsigned int direction) {
             break;
     }
 
-    if (ColisionPlayer_e1(&e1_2, player, direction,futureX,futureY)==0){
+    if (ColisionPlayer_e1(&e1_1, player, direction,futureX,futureY)==0){
     	return 0;
     }
     if (ColisionPlayer_e1(&e1_2, player, direction,futureX,futureY)==0){
@@ -293,15 +254,94 @@ int playerCanMove(player* player, unsigned int direction) {
 }
 
 void HitboxPlayer(player* player){
+
     //HITBOX DEBUG
     player->playerLeft=player->x-(player->width / 2);
     player->playerRight=(player->x+(player->width / 2)-1);
     player->playerUp=player->y-(player->height / 2);
     player->playerDown=(player->y+(player->height / 2)-1);
-    FillRect(player->playerLeft , player->y, 1, 1, 0xFFFFFF); //Izquierda
-    FillRect(player->playerRight , player->y, 1, 1, 0x0420); //Derecha
-    FillRect(player->x , player->playerUp, 1, 1, 0xFFFFFF); //Arriba
-    FillRect(player->x , player->playerDown, 1, 1, 0x0420); //Abajo
+    //FillRect(player->playerLeft , player->y, 1, 1, 0xFFFFFF); //Izquierda
+    //FillRect(player->playerRight , player->y, 1, 1, 0x0420); //Derecha
+    //FillRect(player->x , player->playerUp, 1, 1, 0xFFFFFF); //Arriba
+    //FillRect(player->x , player->playerDown, 1, 1, 0x0420); //Abajo
+}
+
+void PlayerHit(player* player, enemy_type1* enemy){
+	if (enemy->isAlive == 1){
+		// Verificar si le pego a un enemigo del tipo 1
+		switch (player->direction){
+			case 0: { // Golpe hacia arriba
+				int rangoY = player->y - 35;
+				int rangoX_i = player->x - 5;
+				int rangoX_s = player->x + 5;
+
+				if (rangoY <= enemy->e1Down && rangoY >= enemy->e1Up &&
+				   ((rangoX_s >= enemy->e1Left && rangoX_s <= enemy->e1Right) ||
+				    (rangoX_i <= enemy->e1Right && rangoX_i >= enemy->e1Left))) {
+
+					enemy->health -= 1;
+
+					if (enemy->health == 0){
+						enemy->isAlive = 0;
+						FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFFFFF);
+					}
+				}
+				break;
+			}
+			case 1: { // Golpe hacia la derecha
+				int rangoX = player->x + 35;
+				int rangoY_i = player->y - 5;
+				int rangoY_s = player->y + 5;
+
+				if (rangoX >= enemy->e1Left && rangoX <= enemy->e1Right) {
+
+					enemy->health -= 1;
+
+					if (enemy->health == 0){
+						enemy->isAlive = 0;
+						FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFFFFF);
+					}
+				}
+				break;
+			}
+			case 2: { // Golpe hacia abajo
+							int rangoY = player->y + 35;
+							int rangoX_i = player->x - 5;
+							int rangoX_s = player->x + 5;
+
+							if (rangoY <= enemy->e1Down && rangoY >= enemy->e1Up) {
+
+								enemy->health -= 1;
+
+								if (enemy->health == 0){
+									enemy->isAlive = 0;
+									FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFFFFF);
+								}
+							}
+							break;
+			}
+			case 3: { // Golpe hacia la izquierda
+							int rangoX = player->x - 35;
+							int rangoY_i = player->y - 5;
+							int rangoY_s = player->y + 5;
+
+							if (rangoX >= enemy->e1Left && rangoX <= enemy->e1Right) {
+
+								enemy->health -= 1;
+
+								if (enemy->health == 0){
+									enemy->isAlive = 0;
+									FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFFFFF);
+								}
+							}
+							break;
+						}
+		}
+	}
+}
+
+void player1WalkUp(player* player){
+	LCD_Sprite(p1.x - (p1.width / 2),  p1.y - (p1.height / 2), p1.width, p1.height, LinkWalkUp191x26, 10, P1_WalkUp, 0, 0);
 }
 /* USER CODE END 0 */
 
@@ -355,17 +395,18 @@ int main(void)
 	//LCD_Print("Hola Mundo", 20, 100, 1, 0x001F, 0xCAB9);
 
 	  // Activar bandera interrupcion
-	  HAL_UART_Receive_IT(&huart5, buffer, 1);
+	  HAL_UART_Receive_IT(&huart2, buffer, 1);
 	  modo=1;
 	  if (modo==1){
+		fase_p1=1;
 	    //Inicializar Jugador 1
-		initPlayer(&p1, 160, 200, 20, 20, 20, 3, 320, 240);
+		initPlayer(&p1, 160, 200, 18, 26, 5, 3, 320, 240);
 		//Inicializar enemigo 1
-		initEnemy1(&e1_1, 50, 80, 20, 20, 3);
+		initEnemy1(&e1_1, 40, 80, 20, 20, 3);
 		//Inicializar enemigo 2
 		initEnemy1(&e1_2, 160, 80, 20, 20, 3);
 		//Inicializar enemigo 3
-		initEnemy1(&e1_3, 270, 80, 20, 20, 3);}
+		initEnemy1(&e1_3, 280, 80, 20, 20, 3);}
 	  if (modo==2){
 		//Linea de en medio
 		V_line(160, 0, 240, 0x0000);
@@ -598,6 +639,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(buffer[0] == 'd'){
 		FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFFFF);
+		p1.direction=2;
 		if (playerCanMove(&p1, 0)) {
 		    p1.y=p1.y+p1.speed;
 		    FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
@@ -609,10 +651,18 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 	if(buffer[0] == 'u'){
 		FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFFFF);
+		p1.direction=0;
 		if (playerCanMove(&p1, 2)) {
 			p1.y=p1.y-p1.speed;
-			FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
-			FillRect(p1.x , p1.y, 1, 1, 0x000000);
+
+			if (P1_WalkUp<10){
+				P1_WalkUp+=1;
+			} else{
+				P1_WalkUp=0;
+			}
+			//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+			player1WalkUp(&p1);
+
 		} else {
 			FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 			FillRect(p1.x , p1.y, 1, 1, 0x000000);
@@ -620,8 +670,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 	if(buffer[0] == 'r'){
 		FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFFFF);
+		p1.direction=1;
 		if (playerCanMove(&p1, 1)) {
 			p1.x=p1.x+p1.speed;
+
 			FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 			FillRect(p1.x , p1.y, 1, 1, 0x000000);
 		} else {
@@ -631,6 +683,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 	if(buffer[0] == 'l'){
 		FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFFFF);
+		p1.direction=3;
 		if (playerCanMove(&p1, 3)) {
 			p1.x=p1.x-p1.speed;
 			FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
@@ -641,15 +694,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		}
 	}
 	if (buffer[0]=='b'){
-		/*
-	    verificar_golpe(&e1, position_p1);
-	    verificar_golpe(&e2, position_p1);
-	    verificar_golpe(&e3, position_p1);
-	    */
+		if (fase_p1==1){
+		PlayerHit(&p1, &e1_2);
+		}
 	}
 	HitboxPlayer(&p1);
 	// Vuelve a activar la recepción por interrupción
-	HAL_UART_Receive_IT(&huart5, buffer, 1);
+	HAL_UART_Receive_IT(&huart2, buffer, 1);
 }
 
 /* USER CODE END 4 */
