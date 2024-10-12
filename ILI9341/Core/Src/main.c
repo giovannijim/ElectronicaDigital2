@@ -75,6 +75,14 @@ uint8_t buffer[10];
 uint16_t contador=0;
 player p1,p2;
 enemy_type1 e1_1, e1_2, e1_3;
+int i;
+uint8_t modo, fase_p1, fase_p2;
+/*  modo=1 1 jugadores
+ *  modo=2 2 jugadores
+ *  fase_p1 La fase en la que está el jugador 1
+ *  fase_p2 La fase en la que está el jugador 2
+*/
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -88,6 +96,95 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+//Funciones Enemigo tipo 1
+void initEnemy1(enemy_type1* enemy, unsigned int startX, unsigned int startY, unsigned int width, unsigned int height, int health) {
+    // Inicializar las coordenadas y dimensiones
+    enemy->x = startX;
+    enemy->y = startY;
+    enemy->width = width;
+    enemy->height = height;
+
+    // Inicializar la vida y el estado
+    enemy->health = health;
+    enemy->isAlive = 1;  // El enemigo comienza vivo
+
+    // Dibujar el enemigo en pantalla
+    FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
+    FillRect(enemy->x , enemy->y, 1, 1, 0xFFFFFF);
+}
+
+int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction ){
+	unsigned int enemyLeft = enemy->x - (enemy->width / 2);
+	unsigned int enemyRight = enemy->x + (enemy->width / 2);
+	unsigned int enemyTop = enemy->y - (enemy->height / 2);
+	unsigned int enemyBottom = enemy->y + (enemy->height / 2);
+
+	// Verificar colisión con el enemigo basado en la dirección de movimiento
+	    switch (player->direction) {
+	        case 0: // Movimiento hacia arriba
+	            if (player->y - player->speed < enemyBottom &&
+	                player->x > enemyLeft &&
+	                player->x < enemyRight) {
+	            	player->y -= player->speed;
+	                return 1;  // Colisión con el enemigo
+	            }
+	            break;
+	        case 1: // Movimiento hacia abajo
+	            if (player->y + player->speed > enemyTop &&
+	                player->x > enemyLeft &&
+	                player->x < enemyRight) {
+	            	player->y += player->speed;
+	                return 1;  // Colisión con el enemigo
+	            }
+	            break;
+	        case 2: // Movimiento hacia la izquierda
+	            if (player->x - player->speed < enemyRight &&
+	                player->y > enemyTop &&
+	                player->y < enemyBottom) {
+	            	player->x += player->speed;
+	                return 1;  // Colisión con el enemigo
+	            }
+	            break;
+	        case 3: // Movimiento hacia la derecha
+	            if (player->x + player->speed > enemyLeft &&
+	                player->y > enemyTop &&
+	                player->y < enemyBottom) {
+	            	player->x -= player->speed;
+	                return 1;  // Colisión con el enemigo
+	            }
+	            break;
+	    }
+}
+
+/*
+   // Verificar colisiones con Enemy_type1
+    if (player->x - (player->width / 2) < enemy->x + (enemy->width / 2) &&
+            player->x + (player->width / 2) > enemy->x - (enemy->width / 2) &&
+            player->y - (player->height / 2) < enemy->y + (enemy->height / 2) &&
+            player->y + (player->height / 2) > enemy->y - (enemy->height / 2)){
+    	player->colision=1;
+    	switch (direction) {
+    	        case 0:  // Abajo
+    	            player->y -= player->speed;
+    	            break;
+    	        case 1:  // Derecha
+    	        	player->x -= player->speed;
+    	            break;
+    	        case 2:  // Arriba
+    	        	player->y += player->speed;
+    	            break;
+    	        case 3:  // Izquierda
+    	        	player->x += player->speed;
+    	            break;
+    	    }
+    	FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
+    	FillRect(enemy->x , enemy->y, 1, 1, 0xFFFFFF);
+    	player->life -=1;
+    	return 1;
+
+    }
+ */
 
 //Funciones Player
 void initPlayer(player* player, unsigned int startX, unsigned int startY, unsigned int playerWidth, unsigned int playerHeight, unsigned int speed, unsigned int life, unsigned int limitWidth, unsigned int limitHeight) {
@@ -129,6 +226,15 @@ int playerCanMove(player* player, unsigned int direction) {
             futureX -= player->speed;
             break;
     }
+    if (ColisionPlayer_e1(&e1_1, player, direction)){
+    	return 0;
+    }
+    if (ColisionPlayer_e1(&e1_2, player, direction)){
+        	return 0;
+        }
+    if (ColisionPlayer_e1(&e1_3, player, direction)){
+        	return 0;
+        }
 
     // Verificar colisiones con los bordes en base a la posición futura
     if (futureX <= 0) {
@@ -143,72 +249,9 @@ int playerCanMove(player* player, unsigned int direction) {
     if (futureY>= player->limitHeight) {
         return 0;  // Colisión con el borde inferior
     }
-    /*
-    // Verificar colisiones con e1_1
-    if (player->x - (player->width / 2) < e1_1.x + (e1_1.width / 2) ||
-		player->x + (player->width / 2) > e1_1.x - (e1_1.width / 2) ||
-		player->y - (player->height / 2) < e1_1.y + (e1_1.height / 2) ||
-		player->y + (player->height / 2) > e1_1.y - (e1_1.height / 2)) {
-		return 0;  // Colisión con el enemigo
-	}*/
-    if (player->x < e1_1.x + e1_1.width &&
-            player->x + player->width > e1_1.x &&
-            player->y < e1_1.y + e1_1.height &&
-            player->y + player->height > e1_1.y){
-    	player->colision=1;
-    	switch (direction) {
-    	        case 0:  // Abajo
-    	            player->y -= player->speed;
-    	            break;
-    	        case 1:  // Derecha
-    	        	player->x -= player->speed;
-    	            break;
-    	        case 2:  // Arriba
-    	        	player->y += player->speed;
-    	            break;
-    	        case 3:  // Izquierda
-    	        	player->x += player->speed;
-    	            break;
-    	    }
-    	return 0;
-    }
-
     // No hay colisiones, se puede mover
     return 1;
 }
-
-//Funciones Enemigo tipo 1
-void initEnemy1(enemy_type1* enemy, unsigned int startX, unsigned int startY, unsigned int width, unsigned int height, int health) {
-    // Inicializar las coordenadas y dimensiones
-    enemy->x = startX;
-    enemy->y = startY;
-    enemy->width = width;
-    enemy->height = height;
-
-    // Inicializar la vida y el estado
-    enemy->health = health;
-    enemy->isAlive = 1;  // El enemigo comienza vivo
-
-    // Dibujar el enemigo en pantalla
-    FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
-    FillRect(enemy->x , enemy->y, 1, 1, 0xFFFFFF);
-}
-
-/*
-void P1_erasePath(void){
-	if (position_p1[2]==8){
-		FillRect(position_p1[0]-20, position_p1[1], 20, 20, 0xFFFF);
-	}
-	if (position_p1[2]==2){
-		FillRect(position_p1[0]+20, position_p1[1], 20, 20, 0xFFFF);
-	}
-	if (position_p1[2]==6){
-		FillRect(position_p1[0], position_p1[1]-20, 20, 20, 0xFFFF);
-	}
-	if (position_p1[2]==4){
-		FillRect(position_p1[0], position_p1[1]+20, 20, 20, 0xFFFF);
-	}
-}*/
 
 /* USER CODE END 0 */
 
@@ -250,8 +293,7 @@ int main(void)
 
 	//Fondo
 	FillRect(0, 0, 319, 239, 0xFFFF);
-	//Linea de en medio
-	V_line(160, 0, 240, 0x0000);
+
 	//FillRect(50, 60, 20, 20, 0xF800);
 	//FillRect(70, 60, 20, 20, 0x07E0);
 	//FillRect(90, 60, 20, 20, 0x001F);
@@ -263,11 +305,20 @@ int main(void)
 
 	  // Activar bandera interrupcion
 	  HAL_UART_Receive_IT(&huart2, buffer, 1);
-
-	  //Inicializar Jugador 1
-	  initPlayer(&p1, 50, 50, 20, 20, 20, 3, 160, 240);
-	  //Inicializar enemigo 1
-	  initEnemy1(&e1_1, 100, 100, 20, 20, 3);
+	  modo=1;
+	  if (modo==1){
+	    //Inicializar Jugador 1
+		initPlayer(&p1, 160, 200, 20, 20, 20, 3, 320, 240);
+		//Inicializar enemigo 1
+		initEnemy1(&e1_1, 50, 80, 20, 20, 3);
+		//Inicializar enemigo 2
+		initEnemy1(&e1_2, 160, 80, 20, 20, 3);
+		//Inicializar enemigo 3
+		initEnemy1(&e1_3, 270, 80, 20, 20, 3);}
+	  if (modo==2){
+		//Linea de en medio
+		V_line(160, 0, 240, 0x0000);
+	  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
