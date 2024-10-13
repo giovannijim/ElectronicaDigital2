@@ -105,7 +105,7 @@ uint8_t P1_WalkDown = 0;
  *  fase_p1 La fase en la que está el jugador 1
  *  fase_p2 La fase en la que está el jugador 2
 */
-uint8_t DrawHitbox=0;
+uint8_t DrawHitbox=3;
 
 
 /* USER CODE END PV */
@@ -289,21 +289,10 @@ int playerCanMove(player* player, unsigned int direction) {
     int futureX = player->x;
     int futureY = player->y;
 
-    // Calcular las nuevas coordenadas dependiendo de la dirección
-    switch (direction) {
-        case 0:  // Abajo
-            futureY += player->speed;
-            break;
-        case 1:  // Derecha
-            futureX += player->speed;
-            break;
-        case 2:  // Arriba
-            futureY -= player->speed;
-            break;
-        case 3:  // Izquierda
-            futureX -= player->speed;
-            break;
-    }
+    int FutureplayerDown=((player->y+ player->speed)+(player->height / 2));
+    int FutureplayerRight = ((player->x+ player->speed)+(player->width / 2));
+    int FutureplayerUp = (player->y - player->speed)-(player->height / 2);
+    int FutureplayerLeft = ((player->x-player->speed)-(player->width / 2));
 
     if (ColisionPlayer_e1(&e1_1, player, direction,futureX,futureY)==0){
     	return 0;
@@ -315,17 +304,19 @@ int playerCanMove(player* player, unsigned int direction) {
         	return 0;
         }
 
+
+
     // Verificar colisiones con los bordes en base a la posición futura
-    if (futureX <= 0) {
+    if (FutureplayerLeft <= 0) {
         return 0;  // Colisión con el borde izquierdo
     }
-    if (futureX >= player->limitWidth) {
+    if (FutureplayerRight >= player->limitWidth) {
         return 0;  // Colisión con el borde derecho
     }
-    if (futureY  <= 0) {
+    if (FutureplayerUp <= 0) {
         return 0;  // Colisión con el borde superior
     }
-    if (futureY>= player->limitHeight) {
+    if (FutureplayerDown >= player->limitHeight) {
         return 0;  // Colisión con el borde inferior
     }
     // No hay colisiones, se puede mover
@@ -543,6 +534,8 @@ HAL_Init();
 		initEnemy1(&e1_2, 160, 80, 16, 19, 3);
 		//Inicializar enemigo 3
 		initEnemy1(&e1_3, 280, 80, 16, 19, 3);}
+
+	    HitboxPlayer(&p1);
 
 	  if (modo==2){
 		//Linea de en medio
@@ -781,6 +774,7 @@ static void MX_GPIO_Init(void)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+	HitboxPlayer(&p1);
 	if(buffer[0] == 'd'){
 		if (p1.IsAttack==0){
 			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
@@ -795,7 +789,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		    PlayerAnimation(&p1);
 		    FillRect(p1.x , p1.y, 1, 1, 0x000000);
 		} else {
-			LCD_Sprite(p1.x - (18 / 2), p1.y - (26 / 2), 18, 26, LinkDownWalk180x24_10, 10, 0, 0, 0);
+			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
+			LCD_Sprite(p1.x - (18 / 2)+1, p1.y - (26 / 2)+1, 18, 26, LinkDownWalk180x24_10, 10, 0, 0, 0);
 			FillRect(p1.x , p1.y, 1, 1, 0x000000);
 		}
 	}
@@ -813,9 +808,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 						  }
 			PlayerAnimation(&p1);
 			FillRect(p1.x , p1.y, 1, 1, 0x000000);
-
 			} else {
-				LCD_Sprite(p1.x - (18 / 2), p1.y - (26 / 2), 19, 26, LinkUpWalk180x26_10, 10, 0, 0, 0);
+				LCD_Sprite(p1.x - (18 / 2)+1, p1.y - (26 / 2), 18, 26, LinkUpWalk180x26_10, 10, 0, 0, 0);
 				FillRect(p1.x , p1.y, 1, 1, 0x000000);
 				//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 			}
@@ -836,7 +830,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			FillRect(p1.x , p1.y, 1, 1, 0x000000);
 						  //FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 			} else {
-				LCD_Sprite(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, 0, 1, 0);
+				LCD_Sprite(p1.x - (22 / 2)+1, p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, 0, 1, 0);
 				FillRect(p1.x , p1.y, 1, 1, 0x000000);
 				//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 			}
@@ -858,7 +852,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 						  //FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 
 			} else {
-				LCD_Sprite(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, 0, 0, 0);
+				LCD_Sprite(p1.x - (22 / 2)+1, p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, 0, 0, 0);
 				FillRect(p1.x , p1.y, 1, 1, 0x000000);
 				//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 			}
@@ -871,7 +865,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		//PlayerHit(&p1, &e1_2);
 		//}
 	}
-	HitboxPlayer(&p1);
 	// Vuelve a activar la recepción por interrupción
 	HAL_UART_Receive_IT(&huart2, buffer, 1);
 }
