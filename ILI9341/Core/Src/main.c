@@ -94,6 +94,10 @@ uint8_t P1_WalkUp = 0;
  *  fase_p1 La fase en la que está el jugador 1
  *  fase_p2 La fase en la que está el jugador 2
 */
+uint8_t DrawHitbox=1;
+//Contadores de animación
+int control_animation_e1_1,control_animation_e1_2,control_animation_e1_3;
+int control_damage_animation_e1_1,control_damage_animation_e1_2,control_damage_animation_e1_3;
 
 /* USER CODE END PV */
 
@@ -111,6 +115,31 @@ static void MX_UART5_Init(void);
 /* USER CODE BEGIN 0 */
 
 //Funciones Enemigo tipo 1
+void animation_e1_control(enemy_type1* enemy,int variable_animacion_daño_e1,int* variable_animacion_e1){
+	if (enemy->isAlive==1){
+		if (variable_animacion_daño_e1==0){
+			if (*variable_animacion_e1<16){
+				*variable_animacion_e1+=1;
+			} else{
+				*variable_animacion_e1=0;
+			}
+		} else{
+			variable_animacion_daño_e1-=1;
+		}
+	}
+}
+void animation_e1(enemy_type1* enemy,int variable_animacion_daño_e1,int variable_animacion_e1){
+	if (enemy->isAlive==1){
+		if (variable_animacion_daño_e1==0){
+			LCD_Sprite(enemy->x - (16 / 2), enemy->y - (19 / 2), 16, 19, E1_Ide256x19_16, 16, variable_animacion_e1, 0, 0);
+			if (DrawHitbox==1){
+				Rect(enemy->x - (enemy->width / 2)-2, enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0x0000);
+			}
+			//FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
+		}
+	}
+}
+
 void initEnemy1(enemy_type1* enemy, unsigned int startX, unsigned int startY, unsigned int width, unsigned int height, int health) {
     // Inicializar las coordenadas y dimensiones
     enemy->x = startX;
@@ -123,8 +152,11 @@ void initEnemy1(enemy_type1* enemy, unsigned int startX, unsigned int startY, un
     enemy->isAlive = 1;  // El enemigo comienza vivo
 
     // Dibujar el enemigo en pantalla
-    FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
-    FillRect(enemy->x , enemy->y, 1, 1, 0xFFFFFF);
+    //FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
+    LCD_Sprite(enemy->x - (16 / 2), enemy->y - (19 / 2), 16, 19, E1_Ide256x19_16, 16, 0, 0, 0);
+    if (DrawHitbox==1){
+    	Rect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0x0000);
+    }
 
     //HITBOX DEBUG
 	enemy->e1Left = enemy->x - (enemy->width / 2);
@@ -171,6 +203,7 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int futu
 		return 1;
 	    }
 }
+
 
 //Funciones Player
 void initPlayer(player* player, unsigned int startX, unsigned int startY, unsigned int playerWidth, unsigned int playerHeight, unsigned int speed, unsigned int life, unsigned int limitWidth, unsigned int limitHeight) {
@@ -398,15 +431,23 @@ int main(void)
 	  HAL_UART_Receive_IT(&huart2, buffer, 1);
 	  modo=1;
 	  if (modo==1){
+
 		fase_p1=1;
+		control_animation_e1_1=0;
+		control_animation_e1_2=0;
+		control_animation_e1_3=0;
+		control_damage_animation_e1_1=0;
+		control_damage_animation_e1_2=0;
+		control_damage_animation_e1_3=0;
+
 	    //Inicializar Jugador 1
 		initPlayer(&p1, 160, 200, 18, 26, 5, 3, 320, 240);
 		//Inicializar enemigo 1
-		initEnemy1(&e1_1, 40, 80, 20, 20, 3);
+		initEnemy1(&e1_1, 40, 80, 13, 19, 3);
 		//Inicializar enemigo 2
-		initEnemy1(&e1_2, 160, 80, 20, 20, 3);
+		initEnemy1(&e1_2, 160, 80, 13, 19, 3);
 		//Inicializar enemigo 3
-		initEnemy1(&e1_3, 280, 80, 20, 20, 3);}
+		initEnemy1(&e1_3, 280, 80, 13, 19, 3);}
 	  if (modo==2){
 		//Linea de en medio
 		V_line(160, 0, 240, 0x0000);
@@ -416,6 +457,12 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
+		animation_e1(&e1_1,0,control_animation_e1_1);
+		animation_e1_control(&e1_1, 0, &control_animation_e1_1);
+		animation_e1(&e1_2,0,control_animation_e1_2);
+		animation_e1_control(&e1_2, 0, &control_animation_e1_2);
+		//animation_e3(&e1_3,0,control_animation_e1_3);
+		//animation_e3_control(&e1_2, 0, &control_animation_e1_3);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
