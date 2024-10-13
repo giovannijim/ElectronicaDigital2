@@ -41,6 +41,7 @@ typedef struct {
     unsigned int direction; // Dirección de movimiento (0: arriba, 1: derecha, 2: abajo, 3: izquierda)
     unsigned int limitWidth; // Ancho de los límites de desplazamiento
     unsigned int limitHeight; // Largo de los límites de desplazamiento
+    unsigned int limitWidth_i;
     unsigned int colision;
     unsigned int playerDown;
     unsigned int playerUp;
@@ -249,7 +250,7 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int futu
 }
 
 //Funciones Player
-void initPlayer(player* player, unsigned int startX, unsigned int startY, unsigned int playerWidth, unsigned int playerHeight, unsigned int speed, unsigned int life, unsigned int limitWidth, unsigned int limitHeight) {
+void initPlayer(player* player, unsigned int startX, unsigned int startY, unsigned int playerWidth, unsigned int playerHeight, unsigned int speed, unsigned int life, unsigned int limitWidth, unsigned int limitHeight,unsigned int limitWidth_i) {
     // Inicializar las propiedades del jugador
     player->x = startX;
     player->y = startY;
@@ -261,6 +262,7 @@ void initPlayer(player* player, unsigned int startX, unsigned int startY, unsign
     player->isAlive = 1;        // El jugador comienza vivo
     player->direction = 2;      // Dirección inicial (abajo)
     player->limitWidth = limitWidth;
+    player->limitWidth_i = limitWidth_i; //
     player->limitHeight = limitHeight;
     player->IsAttack = 0;
     player->animationAttack=7;
@@ -285,14 +287,37 @@ void initPlayer(player* player, unsigned int startX, unsigned int startY, unsign
 }
 
 int playerCanMove(player* player, unsigned int direction) {
+	// Dirección de movimiento (0: arriba, 1: derecha, 2: abajo, 3: izquierda)
+	switch(player->direction){
+	case 0: //Colisiones HITBOX Superior
+		int FutureplayerUp = (player->y - player->speed)-(player->height / 2);
+		//Borde
+		if (FutureplayerUp<=0){
+			return 0;
+		}
+		break;
+	case 1: //Colisiones HITBOX Derecha
+		int FutureplayerRight = ((player->x+ player->speed)+(player->width / 2));
+		if (FutureplayerRight>=player->limitWidth){
+			return 0;
+		}
+		break;
+	case 2: //Colisiones HITBOX Abajo
+		int FutureplayerDown=((player->y+ player->speed)+(player->height / 2));
+		if (FutureplayerDown>=player->limitHeight){
+			return 0;
+		}
+		break;
+	case 3: //Colisiones HITBOX Izquierda (Cambiar a Width_limite inferior)
+		int FutureplayerLeft = ((player->x-player->speed)-(player->width / 2));
+		if (FutureplayerLeft<=0){
+			return 0;
+		}
+	}
+
     // Variables para calcular la posición futura del jugador según la dirección
     int futureX = player->x;
     int futureY = player->y;
-
-    int FutureplayerDown=((player->y+ player->speed)+(player->height / 2));
-    int FutureplayerRight = ((player->x+ player->speed)+(player->width / 2));
-    int FutureplayerUp = (player->y - player->speed)-(player->height / 2);
-    int FutureplayerLeft = ((player->x-player->speed)-(player->width / 2));
 
     if (ColisionPlayer_e1(&e1_1, player, direction,futureX,futureY)==0){
     	return 0;
@@ -303,22 +328,6 @@ int playerCanMove(player* player, unsigned int direction) {
     if (ColisionPlayer_e1(&e1_3, player, direction,futureX,futureY)==0){
         	return 0;
         }
-
-
-
-    // Verificar colisiones con los bordes en base a la posición futura
-    if (FutureplayerLeft <= 0) {
-        return 0;  // Colisión con el borde izquierdo
-    }
-    if (FutureplayerRight >= player->limitWidth) {
-        return 0;  // Colisión con el borde derecho
-    }
-    if (FutureplayerUp <= 0) {
-        return 0;  // Colisión con el borde superior
-    }
-    if (FutureplayerDown >= player->limitHeight) {
-        return 0;  // Colisión con el borde inferior
-    }
     // No hay colisiones, se puede mover
     return 1;
 }
@@ -527,7 +536,7 @@ HAL_Init();
 		fase_p1=1;
 
 	    //Inicializar Jugador 1
-		initPlayer(&p1, 160, 200, 22, 30, 5, 3, 320, 240);
+		initPlayer(&p1, 160, 200, 22, 30, 5, 3, 320, 240,0);
 		//Inicializar enemigo 1
 		initEnemy1(&e1_1, 40, 80, 16, 19, 3);
 		//Inicializar enemigo 2
