@@ -1,10 +1,42 @@
-22:10:09 **** Incremental Build of configuration Debug for project ILI9341 ****
+22:09:26 **** Incremental Build of configuration Debug for project ILI9341 ****
 make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/stm32f4xx_hal_msp.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32f4xx_hal_msp.d" -MT"Core/Src/stm32f4xx_hal_msp.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32f4xx_hal_msp.o"
+arm-none-eabi-gcc "../Core/Src/stm32f4xx_it.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32f4xx_it.d" -MT"Core/Src/stm32f4xx_it.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32f4xx_it.o"
+../Core/Src/main.c: In function 'PlayerHit':
+../Core/Src/main.c:294:37: warning: unused variable 'rangoY_s' [-Wunused-variable]
+  294 |                                 int rangoY_s = player->y + 5;
+      |                                     ^~~~~~~~
+../Core/Src/main.c:293:37: warning: unused variable 'rangoY_i' [-Wunused-variable]
+  293 |                                 int rangoY_i = player->y - 5;
+      |                                     ^~~~~~~~
+../Core/Src/main.c:310:61: warning: unused variable 'rangoX_s' [-Wunused-variable]
+  310 |                                                         int rangoX_s = player->x + 5;
+      |                                                             ^~~~~~~~
+../Core/Src/main.c:309:61: warning: unused variable 'rangoX_i' [-Wunused-variable]
+  309 |                                                         int rangoX_i = player->x - 5;
+      |                                                             ^~~~~~~~
+../Core/Src/main.c:326:61: warning: unused variable 'rangoY_s' [-Wunused-variable]
+  326 |                                                         int rangoY_s = player->y + 5;
+      |                                                             ^~~~~~~~
+../Core/Src/main.c:325:61: warning: unused variable 'rangoY_i' [-Wunused-variable]
+  325 |                                                         int rangoY_i = player->y - 5;
+      |                                                             ^~~~~~~~
+../Core/Src/main.c: In function 'ColisionPlayer_e1':
+../Core/Src/main.c:173:1: warning: control reaches end of non-void function [-Wreturn-type]
+  173 | }
+      | ^
+arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ILI9341.elf
+ 
 arm-none-eabi-size  ILI9341.elf 
+arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
    text	   data	    bss	    dec	    hex	filename
-  15828	     12	   2004	  17844	   45b4	ILI9341.elf
+  17548	  10200	   2000	  29748	   7434	ILI9341.elf
 Finished building: default.size.stdout
  
+Finished building: ILI9341.list
+ 
 
-22:10:10 Build Finished. 0 errors, 0 warnings. (took 486ms)
+22:09:29 Build Finished. 0 errors, 7 warnings. (took 3s.181ms)
 
