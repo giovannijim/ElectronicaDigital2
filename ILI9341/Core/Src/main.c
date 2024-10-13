@@ -50,7 +50,8 @@ typedef struct {
     unsigned int animationWalkRight;
     unsigned int animationWalkUp;
     unsigned int animationWalkDown;
-
+    unsigned int IsAttack;
+    float animationAttack;
 } player;
 
 //Estructura enemigo 1
@@ -65,8 +66,8 @@ typedef struct {
     unsigned int e1Right;
     unsigned int e1Up;
     unsigned int e1Down;
-    unsigned int animationV;
-    unsigned int animationDV;
+    float animationV;
+    float animationDV;
 
 } enemy_type1;
 
@@ -104,7 +105,7 @@ uint8_t P1_WalkDown = 0;
  *  fase_p1 La fase en la que está el jugador 1
  *  fase_p2 La fase en la que está el jugador 2
 */
-uint8_t DrawHitbox=1;
+uint8_t DrawHitbox=0;
 
 
 /* USER CODE END PV */
@@ -124,30 +125,48 @@ static void MX_UART5_Init(void);
 
 //Funciones Enemigo tipo 1
 void animation_e1_control(enemy_type1* enemy){
+	int variableAnimationDV = enemy->animationDV;
+	int variableAnimationV= enemy->animationV;
 	if (enemy->isAlive==1){
-		if (enemy->animationDV>4){
-			if (enemy->animationV<16){
-				enemy->animationV+=1;
+		if (variableAnimationDV>4){
+			if (variableAnimationV<16){
+				enemy->animationV+=0.1;
 			} else{
 				enemy->animationV=0;
 			}
 		} else{
-			enemy->animationDV+=1;
+			enemy->animationDV+=0.1;
 		}
 	}
 }
 
 void animation_e1(enemy_type1* enemy){
+	int variableAnimationV=enemy->animationV;
+	int variableAnimationDV = enemy->animationDV;
 	if (enemy->isAlive==1){
-		if (enemy->animationDV>4){
-			LCD_Sprite(enemy->x - (16 / 2), enemy->y - (19 / 2), 16, 19, E1_Ide256x19_16, 16, enemy->animationV, 0, 0);
-			if (DrawHitbox==1){
-				Rect(enemy->x - (enemy->width / 2)-2, enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0x0000);
-			}
+		if (variableAnimationDV>4){
+			LCD_Sprite(enemy->x - (16 / 2)+2, enemy->y - (19 / 2), 16, 19, E1_Ide256x19_16, 16, variableAnimationV, 0, 0);
+		    if (DrawHitbox==1){
+		    	Rect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0x0000);
+		    }
+		    if (DrawHitbox==2){
+		    	FillRect(enemy->e1Left , enemy->y, 1, 1, 0xd685); //Izquierda
+		    	FillRect(enemy->e1Right , enemy->y, 1, 1, 0xd685); //Derecha
+		    	FillRect(enemy->x , enemy->e1Up, 1, 1, 0xd685); //Arriba
+		    	FillRect(enemy->x , enemy->e1Down, 1, 1, 0xd685); //Abajo
+		    }
+		    if (DrawHitbox==3){
+		    	Rect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0x0000);
+				FillRect(enemy->e1Left , enemy->y, 1, 1, 0xd685); //Izquierda
+				FillRect(enemy->e1Right , enemy->y, 1, 1, 0xd685); //Derecha
+				FillRect(enemy->x , enemy->e1Up, 1, 1, 0xd685); //Arriba
+				FillRect(enemy->x , enemy->e1Down, 1, 1, 0xd685); //Abajo
+		        }
 			//FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
 		}
 	}
 }
+
 
 void initEnemy1(enemy_type1* enemy, unsigned int startX, unsigned int startY, unsigned int width, unsigned int height, int health) {
     // Inicializar las coordenadas y dimensiones
@@ -164,22 +183,34 @@ void initEnemy1(enemy_type1* enemy, unsigned int startX, unsigned int startY, un
     enemy->animationV = 0;
     enemy->animationDV = 5;
 
+    //HITBOX DEBUG
+	enemy->e1Left = enemy->x - (enemy->width / 2);
+	enemy->e1Right = (enemy->x + enemy->width / 2); //+1
+	enemy->e1Up = enemy->y - (enemy->height / 2);
+	enemy->e1Down= (enemy->y + enemy->height / 2); //+1
+
     // Dibujar el enemigo en pantalla
-    //FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
     LCD_Sprite(enemy->x - (16 / 2), enemy->y - (19 / 2), 16, 19, E1_Ide256x19_16, 16, 0, 0, 0);
+
     if (DrawHitbox==1){
     	Rect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0x0000);
     }
+    if (DrawHitbox==2){
+    	FillRect(enemy->e1Left , enemy->y, 1, 1, 0xd685); //Izquierda
+    	FillRect(enemy->e1Right , enemy->y, 1, 1, 0xd685); //Derecha
+    	FillRect(enemy->x , enemy->e1Up, 1, 1, 0xd685); //Arriba
+    	FillRect(enemy->x , enemy->e1Down, 1, 1, 0xd685); //Abajo
+    }
+    if (DrawHitbox==2){
+    	Rect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0x0000);
+		FillRect(enemy->e1Left , enemy->y, 1, 1, 0xd685); //Izquierda
+		FillRect(enemy->e1Right , enemy->y, 1, 1, 0xd685); //Derecha
+		FillRect(enemy->x , enemy->e1Up, 1, 1, 0xd685); //Arriba
+		FillRect(enemy->x , enemy->e1Down, 1, 1, 0xd685); //Abajo
+        }
 
-    //HITBOX DEBUG
-	enemy->e1Left = enemy->x - (enemy->width / 2);
-	enemy->e1Right = (enemy->x + (enemy->width / 2)-1);
-	enemy->e1Up = enemy->y - (enemy->height / 2);
-	enemy->e1Down= (enemy->y + (enemy->height / 2)-1);
-	FillRect(enemy->e1Left , enemy->y, 1, 1, 0xFFFFFF); //Izquierda
-	FillRect(enemy->e1Right , enemy->y, 1, 1, 0x0420); //Derecha
-	FillRect(enemy->x , enemy->e1Up, 1, 1, 0xFFFFFF); //Arriba
-	FillRect(enemy->x , enemy->e1Down, 1, 1, 0x0420); //Abajo
+
+
 }
 
 int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int futureX, int futureY){
@@ -231,10 +262,11 @@ void initPlayer(player* player, unsigned int startX, unsigned int startY, unsign
     player->direction = 2;      // Dirección inicial (abajo)
     player->limitWidth = limitWidth;
     player->limitHeight = limitHeight;
+    player->IsAttack = 0;
+    player->animationAttack=7;
 
     // Dibujar el jugador en pantalla
-    FillRect(player->x - (player->width / 2), player->y - (player->height / 2), player->width, player->height, 0xFFFB00);
-    LCD_Bitmap(player->x - (player->width / 2), player->y - (player->height / 2), player->width, player->height, LinkIdeDown);
+    LCD_Sprite(player->x - (18 / 2)+1, player->y - (23 / 2), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
     FillRect(player->x , player->y, 1, 1, 0x000000);
 
     //HITBOX DEBUG
@@ -242,10 +274,12 @@ void initPlayer(player* player, unsigned int startX, unsigned int startY, unsign
     player->playerRight=(player->x+(player->width / 2)-1);
     player->playerUp=player->y-(player->height / 2);
     player->playerDown=(player->y+(player->height / 2)-1);
+
+    /*
     FillRect(player->playerLeft , player->y, 1, 1, 0xFFFFFF); //Izquierda
     FillRect(player->playerRight , player->y, 1, 1, 0x0420); //Derecha
     FillRect(player->x , player->playerUp, 1, 1, 0xFFFFFF); //Arriba
-    FillRect(player->x , player->playerDown, 1, 1, 0x0420); //Abajo
+    FillRect(player->x , player->playerDown, 1, 1, 0x0420); //Abajo*/
 
 
 }
@@ -309,11 +343,20 @@ void HitboxPlayer(player* player){
     if (DrawHitbox==1){
         	Rect(player->x - (player->width / 2), player->y - (player->height / 2), player->width, player->height, 0x0000);
         }
+    if (DrawHitbox==2){
+		FillRect(player->playerLeft , player->y, 1, 1, 0xd685); //Izquierda
+		FillRect(player->playerRight , player->y, 1, 1, 0xd685); //Derecha
+		FillRect(player->x , player->playerUp, 1, 1, 0xd685); //Arriba
+		FillRect(player->x , player->playerDown, 1, 1, 0xd685); //Abajo}
+    }
+    if (DrawHitbox==3){
+    	 Rect(player->x - (player->width / 2), player->y - (player->height / 2), player->width, player->height, 0x0000);
+        FillRect(player->playerLeft , player->y, 1, 1, 0xd685); //Izquierda
+        FillRect(player->playerRight , player->y, 1, 1, 0xd685); //Derecha
+        FillRect(player->x , player->playerUp, 1, 1, 0xd685); //Arriba
+        FillRect(player->x , player->playerDown, 1, 1, 0xd685); //Abajo}
 
-    //FillRect(player->playerLeft , player->y, 1, 1, 0xFFFFFF); //Izquierda
-    //FillRect(player->playerRight , player->y, 1, 1, 0x0420); //Derecha
-    //FillRect(player->x , player->playerUp, 1, 1, 0xFFFFFF); //Arriba
-    //FillRect(player->x , player->playerDown, 1, 1, 0x0420); //Abajo
+        }
 }
 
 void PlayerHit(player* player, enemy_type1* enemy){
@@ -394,19 +437,52 @@ void PlayerAnimation(player* player){
 	if (player->isAlive==1){
 		//(0: arriba, 1: derecha, 2: abajo, 3: izquierda)
 		if (player->direction==0){
-			LCD_Sprite(p1.x - (18 / 2), p1.y - (26 / 2), 18, 26, LinkUpWalk180x26_10, 10, player->animationWalkUp, 0, 0);
+			//FillRect(p1.x - (18 / 2), p1.y - (26 / 2), 18, 26,0xFFFFFF);
+			LCD_Sprite(p1.x - (18 / 2)+1, p1.y - (26 / 2), 18, 26, LinkUpWalk180x26_10, 10, player->animationWalkUp, 0, 0);
 		}
 		if (player->direction==1){
-					LCD_Sprite(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, player->animationWalkRight, 1, 0);
+			//FillRect(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23,0xFFFFFF);
+			LCD_Sprite(p1.x - (22 / 2)+1, p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, player->animationWalkRight, 1, 0);
 		}
 		if (player->direction==2){
-					LCD_Sprite(p1.x - (18 / 2), p1.y - (26 / 2), 18, 26, LinkDownWalk180x24_10, 10, player->animationWalkDown, 0, 0);
-				}
+			//FillRect(p1.x - (18 / 2), p1.y - (26 / 2), 18, 26,0xFFFFFF);
+			LCD_Sprite(p1.x - (18 / 2)+1, p1.y - (24 / 2)+1, 18, 24, LinkDownWalk180x24_10, 10, player->animationWalkDown, 0, 0);
+			}
 		if (player->direction==3){
-							LCD_Sprite(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, player->animationWalkLeft, 0, 0);
-				}
+			//FillRect(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23,0xFFFFFF);
+			LCD_Sprite(p1.x - (22 / 2)+1, p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, player->animationWalkLeft, 0, 0);
+			}
 	}
 }
+
+void PlayerAttackAnimation(player* player){
+	int variableAnimationAttack=player->animationAttack;
+	if (player->isAlive==1){
+		if (variableAnimationAttack<6){
+			//(0: arriba, 1: derecha, 2: abajo, 3: izquierda)
+			if (player->direction==0){
+
+				LCD_Sprite(p1.x - (18 / 2)+1, p1.y - (22 / 2), 18, 22, LinkAttackUp_18x22_6, 6, variableAnimationAttack, 0, 0);
+			}
+			if (player->direction==1){
+
+				LCD_Sprite(p1.x - (20 / 2)+1, p1.y - (22 / 2), 20, 22, LinkAttackSide_20x22_6, 6, variableAnimationAttack, 1, 0);
+			}
+			if (player->direction==2){
+
+				LCD_Sprite(p1.x - (18 / 2)+1, p1.y - (23 / 2), 18, 23, LinkAttackDown_18x23_6, 6, variableAnimationAttack, 0, 0);
+					}
+			if (player->direction==3){
+
+				LCD_Sprite(p1.x - (20 / 2)+1, p1.y - (22 / 2), 20, 22, LinkAttackSide_20x22_6, 6, variableAnimationAttack, 0, 0);
+					}
+			player->animationAttack+=0.2;
+			}else{
+				player->IsAttack=0;
+			}
+		}
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -460,13 +536,13 @@ HAL_Init();
 		fase_p1=1;
 
 	    //Inicializar Jugador 1
-		initPlayer(&p1, 160, 200, 20, 28, 5, 3, 320, 240);
+		initPlayer(&p1, 160, 200, 22, 30, 5, 3, 320, 240);
 		//Inicializar enemigo 1
-		initEnemy1(&e1_1, 40, 80, 13, 19, 3);
+		initEnemy1(&e1_1, 40, 80, 16, 19, 3);
 		//Inicializar enemigo 2
-		initEnemy1(&e1_2, 160, 80, 13, 19, 3);
+		initEnemy1(&e1_2, 160, 80, 16, 19, 3);
 		//Inicializar enemigo 3
-		initEnemy1(&e1_3, 280, 80, 13, 19, 3);}
+		initEnemy1(&e1_3, 280, 80, 16, 19, 3);}
 
 	  if (modo==2){
 		//Linea de en medio
@@ -483,6 +559,7 @@ HAL_Init();
 		animation_e1_control(&e1_2);
 		animation_e1(&e1_3);
 		animation_e1_control(&e1_3);
+		PlayerAttackAnimation(&p1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -705,7 +782,8 @@ static void MX_GPIO_Init(void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(buffer[0] == 'd'){
-		FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFFFF);
+		if (p1.IsAttack==0){
+			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
 		p1.direction=2;
 		if (playerCanMove(&p1, 0)) {
 		    p1.y=p1.y+p1.speed;
@@ -716,75 +794,82 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		    			}
 		    PlayerAnimation(&p1);
 		    FillRect(p1.x , p1.y, 1, 1, 0x000000);
-		    //FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 		} else {
 			LCD_Sprite(p1.x - (18 / 2), p1.y - (26 / 2), 18, 26, LinkDownWalk180x24_10, 10, 0, 0, 0);
 			FillRect(p1.x , p1.y, 1, 1, 0x000000);
-			//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 		}
 	}
+}
 	if(buffer[0] == 'u'){
-		FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFFFF);
-		p1.direction=0;
-		if (playerCanMove(&p1, 2)) {
-			p1.y=p1.y-p1.speed;
-			if (p1.animationWalkUp<10){
-					p1.animationWalkUp+=1;
-					} else{
-					  p1.animationWalkUp=0;
-					  }
-	    PlayerAnimation(&p1);
-	    FillRect(p1.x , p1.y, 1, 1, 0x000000);
-
-		} else {
-			LCD_Sprite(p1.x - (18 / 2), p1.y - (26 / 2), 19, 26, LinkUpWalk180x26_10, 10, 0, 0, 0);
+		if (p1.IsAttack==0){
+			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
+			p1.direction=0;
+			if (playerCanMove(&p1, 2)) {
+				p1.y=p1.y-p1.speed;
+				if (p1.animationWalkUp<10){
+						p1.animationWalkUp+=1;
+						} else{
+						  p1.animationWalkUp=0;
+						  }
+			PlayerAnimation(&p1);
 			FillRect(p1.x , p1.y, 1, 1, 0x000000);
-			//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+
+			} else {
+				LCD_Sprite(p1.x - (18 / 2), p1.y - (26 / 2), 19, 26, LinkUpWalk180x26_10, 10, 0, 0, 0);
+				FillRect(p1.x , p1.y, 1, 1, 0x000000);
+				//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+			}
 		}
-	}
+}
 	if(buffer[0] == 'r'){
-		FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width, p1.height, 0xFFFFFF);
-		p1.direction=1;
-		if (playerCanMove(&p1, 1)) {
-			p1.x=p1.x+p1.speed;
-			if (p1.animationWalkRight<10){
-					p1.animationWalkRight+=1;
-					} else{
-					  p1.animationWalkRight=0;
-					  }
-		PlayerAnimation(&p1);
-		FillRect(p1.x , p1.y, 1, 1, 0x000000);
-					  //FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
-		} else {
-			LCD_Sprite(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, 0, 1, 0);
+		if (p1.IsAttack==0){
+			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
+			p1.direction=1;
+			if (playerCanMove(&p1, 1)) {
+				p1.x=p1.x+p1.speed;
+				if (p1.animationWalkRight<10){
+						p1.animationWalkRight+=1;
+						} else{
+						  p1.animationWalkRight=0;
+						  }
+			PlayerAnimation(&p1);
 			FillRect(p1.x , p1.y, 1, 1, 0x000000);
-			//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
-		}
+						  //FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+			} else {
+				LCD_Sprite(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, 0, 1, 0);
+				FillRect(p1.x , p1.y, 1, 1, 0x000000);
+				//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+			}
 	}
+}
 	if(buffer[0] == 'l'){
-		FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width, p1.height, 0xFFFFFF);
-		p1.direction=3;
-		if (playerCanMove(&p1, 3)) {
-			p1.x=p1.x-p1.speed;
-			if (p1.animationWalkLeft<10){
-					p1.animationWalkLeft+=1;
-					} else{
-					  p1.animationWalkLeft=0;
-					  }
-		 PlayerAnimation(&p1);
-		 FillRect(p1.x , p1.y, 1, 1, 0x000000);
-					  //FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+		if (p1.IsAttack==0){
+			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
+			p1.direction=3;
+			if (playerCanMove(&p1, 3)) {
+				p1.x=p1.x-p1.speed;
+				if (p1.animationWalkLeft<10){
+						p1.animationWalkLeft+=1;
+						} else{
+						  p1.animationWalkLeft=0;
+						  }
+			 PlayerAnimation(&p1);
+			 FillRect(p1.x , p1.y, 1, 1, 0x000000);
+						  //FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 
-		} else {
-			LCD_Sprite(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, 0, 0, 0);
-			FillRect(p1.x , p1.y, 1, 1, 0x000000);
-			//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
-		}
+			} else {
+				LCD_Sprite(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, 0, 0, 0);
+				FillRect(p1.x , p1.y, 1, 1, 0x000000);
+				//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
+			}
 	}
+}
 	if (buffer[0]=='b'){
-		if (fase_p1==1){
-		PlayerHit(&p1, &e1_2);
-		}
+		p1.IsAttack=1;
+		p1.animationAttack=0;
+		//if (fase_p1==1){
+		//PlayerHit(&p1, &e1_2);
+		//}
 	}
 	HitboxPlayer(&p1);
 	// Vuelve a activar la recepción por interrupción
