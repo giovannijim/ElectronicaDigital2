@@ -53,6 +53,10 @@ typedef struct {
     unsigned int animationWalkDown;
     unsigned int IsAttack;
     float animationAttack;
+	unsigned int IsDamage;
+	float animationDamage;
+	unsigned int IsDie;
+	float animationDie;
 } player;
 
 //Estructura enemigo 1
@@ -69,6 +73,7 @@ typedef struct {
     unsigned int e1Down;
     float animationV;
     float animationDV;
+    float animationDie;
 
 } enemy_type1;
 
@@ -106,7 +111,7 @@ uint8_t P1_WalkDown = 0;
  *  fase_p1 La fase en la que está el jugador 1
  *  fase_p2 La fase en la que está el jugador 2
 */
-uint8_t DrawHitbox=3;
+uint8_t DrawHitbox=0;
 
 
 /* USER CODE END PV */
@@ -168,6 +173,19 @@ void animation_e1(enemy_type1* enemy){
 	}
 }
 
+void animation_e1_die(enemy_type1* enemy){
+	int variableAnimationDie=enemy->animationDie;
+		if (enemy->isAlive==0){
+			if (variableAnimationDie<11){
+				LCD_Sprite(enemy->x - (14 / 2)+1, enemy->y - (25 / 2), 14,25, E1_Die14x25_11, 11, variableAnimationDie, 0, 0);
+				enemy->animationDie+=0.2;
+				}else{
+					enemy->x=5000;
+					enemy->y=5000;
+				}
+			}
+}
+
 
 void initEnemy1(enemy_type1* enemy, unsigned int startX, unsigned int startY, unsigned int width, unsigned int height, int health) {
     // Inicializar las coordenadas y dimensiones
@@ -183,6 +201,7 @@ void initEnemy1(enemy_type1* enemy, unsigned int startX, unsigned int startY, un
     //Animación
     enemy->animationV = 0;
     enemy->animationDV = 5;
+    enemy->animationDie=12;
 
     //HITBOX DEBUG
 	enemy->e1Left = enemy->x - (enemy->width / 2);
@@ -214,39 +233,132 @@ void initEnemy1(enemy_type1* enemy, unsigned int startX, unsigned int startY, un
 
 }
 
-int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int futureX, int futureY){
+int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, int y){
 	// Verificar colisión con el enemigo basado en la dirección de movimiento
-	    switch (direction) {
-	        case 0: // Movimiento hacia abajo
-	        	if (futureY >= enemy->e1Up && futureY<=enemy->e1Down && ((player->playerRight >= enemy->e1Left && player->playerRight <= enemy->e1Right)||(player->playerLeft <= enemy->e1Right && player->playerLeft >= enemy->e1Left))){
-	        		player->y -= player->speed;
-	        		FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
-	        		return 0;  // Colisión con el enemigo
-	        		}
-	        	break;
-	        case 1: //Movimiento hacia derecha
-	        	if (futureX >= enemy->e1Left && futureX <= enemy->e1Right && ((player->playerUp<=enemy->e1Down && player->playerUp >= enemy->e1Up)||(player->playerDown<=enemy->e1Down && player->playerDown >= enemy->e1Up))){
-	        		player->x -=player->speed;
-	        		FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
-	        		return 0;
-	        		}
-	        	break;
-	        case 2: //Movimiento hacia arriba
-	        	if (futureY <= enemy->e1Down && futureY>=enemy->e1Up && ((player->playerRight >= enemy->e1Left && player->playerRight <= enemy->e1Right)||(player->playerLeft <= enemy->e1Right && player->playerLeft >= enemy->e1Left))){
-					player->y += player->speed;
-					FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
-					return 0;  // Colisión con el enemigo
+	// Dirección de movimiento (0: arriba, 1: derecha, 2: abajo, 3: izquierda)
+	if (enemy->isAlive==1){
+		switch (player->direction) {
+				case 0: // Movimiento hacia arriba
+					int y_u= y-12;
+					if (y_u<=enemy->e1Down && y_u>=enemy->e1Up){
+						if(player->playerLeft>=enemy->e1Left && player->playerLeft<=enemy->e1Right){
+							player->y=player->y+5;
+							player->IsDamage=1;
+							player->animationDamage=0;
+							player->life-=1;
+							if (player->life==0){
+								p1.isAlive=0;
+								p1.animationDie=0;
+							}
+							return 0;
+						}
+						if(player->playerRight>=enemy->e1Left && player->playerRight<=enemy->e1Right){
+							player->y=player->y+5;
+							player->IsDamage=1;
+							player->animationDamage=0;
+							player->life-=1;
+							if (player->life==0){
+								p1.isAlive=0;
+								p1.animationDie=0;
+							}
+							return 0;
+						}
+						if (player->x>=enemy->e1Left && player->x<=enemy->e1Right){
+							player->y=player->y+5;
+							player->IsDamage=1;
+							player->animationDamage=0;
+							player->life-=1;
+							if (player->life==0){
+								p1.isAlive=0;
+								p1.animationDie=0;
+							}
+							return 0;
+						}
 					}
-	        	break;
-	        case 3: //Movimiento hacia izquierda
-	        	if (futureX <= enemy->e1Right && futureX >= enemy->e1Left && ((player->playerUp<=enemy->e1Down && player->playerUp >= enemy->e1Up)||(player->playerDown<=enemy->e1Down && player->playerDown >= enemy->e1Up))){
-					player->x +=player->speed;
-					FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFF0000);  // Color rojo
-					return 0;
+					break;
+				case 1: //Movimiento hacia derecha
+					int x_r=x+12;
+					if (x_r>=enemy->e1Left && x_r<=enemy->e1Right){
+						if (player->playerUp>=enemy->e1Up && player->playerUp<=enemy->e1Down){
+							player->x=player->x-5;
+							player->IsDamage=1;
+							player->animationDamage=0;
+							player->life-=1;
+							return 0;
+						}
+						if (player->playerDown>=enemy->e1Up && player->playerUp<=enemy->e1Down){
+							player->x=player->x-5;
+							player->IsDamage=1;
+							player->animationDamage=0;
+							player->life-=1;
+							return 0;
+						}
+						if (player->y>=enemy->e1Left && player->y<=enemy->e1Right){
+							player->x=player->x-5;
+							player->IsDamage=1;
+							player->animationDamage=0;
+							player->life-=1;
+							return 0;
+						}
 					}
-	        	break;
-		return 1;
-	    }
+
+					break;
+				case 2: //Movimiento hacia abajo
+					int y_d= y+12;
+					if (y_d>=enemy->e1Up && y_d<=enemy->e1Down){
+						if(player->playerLeft>=enemy->e1Left && player->playerLeft<=enemy->e1Right){
+							player->y=player->y-5;
+							player->IsDamage=1;
+							player->animationDamage=0;
+							player->life-=1;
+							return 0;
+						}
+						if(player->playerRight>=enemy->e1Left && player->playerRight<=enemy->e1Right){
+							player->y=player->y-5;
+							player->IsDamage=1;
+							player->animationDamage=0;
+							player->life-=1;
+							return 0;
+						}
+						if (player->x>=enemy->e1Left && player->x<=enemy->e1Right){
+							player->y=player->y-5;
+							player->IsDamage=1;
+							player->animationDamage=0;
+							player->life-=1;
+							return 0;
+						}
+					 }
+					break;
+				case 3: //Movimiento hacia izquierda
+					int x_l=x-12;
+					if (x_l<=enemy->e1Right && x_l>=enemy->e1Left){
+						if (player->playerUp>=enemy->e1Up && player->playerUp<=enemy->e1Down){
+							player->x=player->x+5;
+							player->IsDamage=1;
+							player->animationDamage=0;
+							player->life-=1;
+							return 0;
+						}
+						if (player->playerDown>=enemy->e1Up && player->playerUp<=enemy->e1Down){
+							player->x=player->x+5;
+							player->IsDamage=1;
+							player->animationDamage=0;
+							player->life-=1;
+							return 0;
+						}
+						if (player->y>=enemy->e1Left && player->y<=enemy->e1Right){
+							player->x=player->x+5;
+							player->IsDamage=1;
+							player->animationDamage=0;
+							player->life-=1;
+							return 0;
+						}
+					}
+					break;
+			return 1;
+			}
+	}
+	return 1;
 }
 
 //Funciones Player
@@ -266,6 +378,10 @@ void initPlayer(player* player, unsigned int startX, unsigned int startY, unsign
     player->limitHeight = limitHeight;
     player->IsAttack = 0;
     player->animationAttack=7;
+	player-> IsDamage=0;
+	player-> animationDamage=3;
+	player-> animationDie=4;
+	player->  IsDie=0;
 
     // Dibujar el jugador en pantalla
     LCD_Sprite(player->x - (18 / 2)+1, player->y - (23 / 2), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
@@ -298,18 +414,21 @@ int playerCanMove(player* player, unsigned int direction) {
 		break;
 	case 1: //Colisiones HITBOX Derecha
 		int FutureplayerRight = ((player->x+ player->speed)+(player->width / 2));
+		//Borde
 		if (FutureplayerRight>=player->limitWidth){
 			return 0;
 		}
 		break;
 	case 2: //Colisiones HITBOX Abajo
 		int FutureplayerDown=((player->y+ player->speed)+(player->height / 2));
+		//Borde
 		if (FutureplayerDown>=player->limitHeight){
 			return 0;
 		}
 		break;
 	case 3: //Colisiones HITBOX Izquierda (Cambiar a Width_limite inferior)
 		int FutureplayerLeft = ((player->x-player->speed)-(player->width / 2));
+		//Borde
 		if (FutureplayerLeft<=0){
 			return 0;
 		}
@@ -319,6 +438,7 @@ int playerCanMove(player* player, unsigned int direction) {
     int futureX = player->x;
     int futureY = player->y;
 
+    //Colision con E1
     if (ColisionPlayer_e1(&e1_1, player, direction,futureX,futureY)==0){
     	return 0;
     }
@@ -362,69 +482,56 @@ void HitboxPlayer(player* player){
 void PlayerHit(player* player, enemy_type1* enemy){
 	if (enemy->isAlive == 1){
 		// Verificar si le pego a un enemigo del tipo 1
+		// Dirección de movimiento (0: arriba, 1: derecha, 2: abajo, 3: izquierda)
 		switch (player->direction){
 			case 0: { // Golpe hacia arriba
-				int rangoY = player->y - 35;
-				int rangoX_i = player->x - 5;
-				int rangoX_s = player->x + 5;
-
-				if (rangoY <= enemy->e1Down && rangoY >= enemy->e1Up &&
-				   ((rangoX_s >= enemy->e1Left && rangoX_s <= enemy->e1Right) ||
-				    (rangoX_i <= enemy->e1Right && rangoX_i >= enemy->e1Left))) {
-
-					enemy->health -= 1;
-
-					if (enemy->health == 0){
-						enemy->isAlive = 0;
-						FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFFFFF);
+				int rangoY = player->y - 15;
+				if (rangoY<=enemy->e1Down && rangoY>=enemy->e1Up){
+					if (player->x>=(enemy->e1Left-5) && player->x<=(enemy->e1Right+5)){
+						enemy->health -= 1;
+						if(enemy->health==0){
+							enemy->isAlive=0;
+							enemy->animationDie=0;
+						}
+					}
+				}
+			break;
+			}
+			case 2:{ //Golpe hacia abajo
+				int rangoY_d= player->y + 15;
+				if (rangoY_d<=enemy->e1Down && rangoY_d>=enemy->e1Up){
+					if (player->x>=(enemy->e1Left-5) && player->x<=(enemy->e1Right+5)){
+						enemy->health -= 1;
+						if(enemy->health==0){
+							enemy->isAlive=0;
+							enemy->animationDie=0;
+						}
 					}
 				}
 				break;
 			}
-			case 1: { // Golpe hacia la derecha
-				int rangoX = player->x + 35;
-				int rangoY_i = player->y - 5;
-				int rangoY_s = player->y + 5;
-
-				if (rangoX >= enemy->e1Left && rangoX <= enemy->e1Right) {
-
-					enemy->health -= 1;
-
-					if (enemy->health == 0){
-						enemy->isAlive = 0;
-						FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFFFFF);
+			case 1:{ //Golpe hacia derecha
+				int rangoX= player->x + 20;
+				if (rangoX<=enemy->e1Right && rangoX>=enemy->e1Left){
+					if (player->y>=(enemy->e1Down-15) && player->y<=(enemy->e1Up+20)){
+						enemy->health -= 1;
+						if(enemy->health==0){
+							enemy->isAlive=0;
+							enemy->animationDie=0;
+						}
 					}
 				}
 				break;
 			}
-			case 2: { // Golpe hacia abajo
-							int rangoY = player->y + 35;
-							int rangoX_i = player->x - 5;
-							int rangoX_s = player->x + 5;
-
-							if (rangoY <= enemy->e1Down && rangoY >= enemy->e1Up) {
-
-								enemy->health -= 1;
-
-								if (enemy->health == 0){
-									enemy->isAlive = 0;
-									FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFFFFF);
-								}
-							}
-							break;
-			}
-			case 3: { // Golpe hacia la izquierda
-							int rangoX = player->x - 35;
-							int rangoY_i = player->y - 5;
-							int rangoY_s = player->y + 5;
-
-							if (rangoX >= enemy->e1Left && rangoX <= enemy->e1Right) {
-
-								enemy->health -= 1;
-
-								if (enemy->health == 0){
-									enemy->isAlive = 0;
-									FillRect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0xFFFFF);
+			case 3:{ //Golpe hacia izquierda
+							int rangoX= player->x - 20;
+							if (rangoX<=enemy->e1Right && rangoX>=enemy->e1Left){
+								if (player->y>=(enemy->e1Down-15) && player->y<=(enemy->e1Up+20)){
+									enemy->health -= 1;
+									if(enemy->health==0){
+										enemy->isAlive=0;
+										enemy->animationDie=0;
+									}
 								}
 							}
 							break;
@@ -438,19 +545,19 @@ void PlayerAnimation(player* player){
 		//(0: arriba, 1: derecha, 2: abajo, 3: izquierda)
 		if (player->direction==0){
 			//FillRect(p1.x - (18 / 2), p1.y - (26 / 2), 18, 26,0xFFFFFF);
-			LCD_Sprite(p1.x - (18 / 2)+1, p1.y - (26 / 2), 18, 26, LinkUpWalk180x26_10, 10, player->animationWalkUp, 0, 0);
+			LCD_Sprite(player->x - (18 / 2)+1, player->y - (26 / 2), 18, 26, LinkUpWalk180x26_10, 10, player->animationWalkUp, 0, 0);
 		}
 		if (player->direction==1){
 			//FillRect(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23,0xFFFFFF);
-			LCD_Sprite(p1.x - (22 / 2)+1, p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, player->animationWalkRight, 1, 0);
+			LCD_Sprite(player->x - (22 / 2)+1, player->y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, player->animationWalkRight, 1, 0);
 		}
 		if (player->direction==2){
 			//FillRect(p1.x - (18 / 2), p1.y - (26 / 2), 18, 26,0xFFFFFF);
-			LCD_Sprite(p1.x - (18 / 2)+1, p1.y - (24 / 2)+1, 18, 24, LinkDownWalk180x24_10, 10, player->animationWalkDown, 0, 0);
+			LCD_Sprite(player->x - (18 / 2)+1, player->y - (24 / 2)+1, 18, 24, LinkDownWalk180x24_10, 10, player->animationWalkDown, 0, 0);
 			}
 		if (player->direction==3){
 			//FillRect(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23,0xFFFFFF);
-			LCD_Sprite(p1.x - (22 / 2)+1, p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, player->animationWalkLeft, 0, 0);
+			LCD_Sprite(player->x - (22 / 2)+1, player->y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, player->animationWalkLeft, 0, 0);
 			}
 	}
 }
@@ -462,19 +569,19 @@ void PlayerAttackAnimation(player* player){
 			//(0: arriba, 1: derecha, 2: abajo, 3: izquierda)
 			if (player->direction==0){
 
-				LCD_Sprite(p1.x - (18 / 2)+1, p1.y - (22 / 2), 18, 22, LinkAttackUp_18x22_6, 6, variableAnimationAttack, 0, 0);
+				LCD_Sprite(player->x - (18 / 2)+1, player->y - (22 / 2), 18, 22, LinkAttackUp_18x22_6, 6, variableAnimationAttack, 0, 0);
 			}
 			if (player->direction==1){
 
-				LCD_Sprite(p1.x - (20 / 2)+1, p1.y - (22 / 2), 20, 22, LinkAttackSide_20x22_6, 6, variableAnimationAttack, 1, 0);
+				LCD_Sprite(player->x - (20 / 2)+1, player->y - (22 / 2), 20, 22, LinkAttackSide_20x22_6, 6, variableAnimationAttack, 1, 0);
 			}
 			if (player->direction==2){
 
-				LCD_Sprite(p1.x - (18 / 2)+1, p1.y - (23 / 2), 18, 23, LinkAttackDown_18x23_6, 6, variableAnimationAttack, 0, 0);
+				LCD_Sprite(player->x - (18 / 2)+1,player->y - (23 / 2), 18, 23, LinkAttackDown_18x23_6, 6, variableAnimationAttack, 0, 0);
 					}
 			if (player->direction==3){
 
-				LCD_Sprite(p1.x - (20 / 2)+1, p1.y - (22 / 2), 20, 22, LinkAttackSide_20x22_6, 6, variableAnimationAttack, 0, 0);
+				LCD_Sprite(player->x - (20 / 2)+1, player->y - (22 / 2), 20, 22, LinkAttackSide_20x22_6, 6, variableAnimationAttack, 0, 0);
 					}
 			player->animationAttack+=0.2;
 			}else{
@@ -483,6 +590,43 @@ void PlayerAttackAnimation(player* player){
 		}
 }
 
+void PlayerDamageAnimation(player* player){
+	int variableAnimationDamage=player->animationDamage;
+	if (player->isAlive==1){
+		if (variableAnimationDamage<3){
+			//(0: arriba, 1: derecha, 2: abajo, 3: izquierda)
+			if (player->direction==0){
+
+				LCD_Sprite(player->x - (18 / 2)+1, player->y - (20 / 2), 18, 20, LinkDamageUp_18x20_3, 3, variableAnimationDamage, 0, 0);
+			}
+			if (player->direction==1){
+
+				LCD_Sprite(player->x - (20 / 2)+1, player->y - (21 / 2), 20, 21, LinkDamageSide_20x21_3, 3, variableAnimationDamage, 1, 0);
+			}
+			if (player->direction==2){
+
+				LCD_Sprite(player->x - (20 / 2)+1, player->y - (21 / 2), 20, 21, LinkDamageDown_20x21_3, 3, variableAnimationDamage, 0, 0);
+					}
+			if (player->direction==3){
+
+				LCD_Sprite(player->x - (20 / 2)+1, player->y - (21 / 2), 20, 21, LinkDamageSide_20x21_3, 3, variableAnimationDamage, 0, 0);
+					}
+			player->animationDamage+=0.2;
+			}else{
+				player->IsDamage=0;
+			}
+		}
+}
+
+void PlayerDieAnimation(player* player){
+	int variableAnimationDie=player->animationDie;
+	if (player->isAlive==0){
+		if (variableAnimationDie<4){
+			LCD_Sprite(player->x - (24 / 2)+1, player->y - (24 / 2), 24,24, LinkDie_24x24_4, 4, variableAnimationDie, 0, 0);
+			player->animationDie+=0.2;
+			}
+		}
+}
 /* USER CODE END 0 */
 
 /**
@@ -534,7 +678,6 @@ HAL_Init();
 	  if (modo==1){
 
 		fase_p1=1;
-
 	    //Inicializar Jugador 1
 		initPlayer(&p1, 160, 200, 22, 30, 5, 3, 320, 240,0);
 		//Inicializar enemigo 1
@@ -555,13 +698,27 @@ HAL_Init();
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
-		animation_e1(&e1_1);
-		animation_e1_control(&e1_1);
-		animation_e1(&e1_2);
-		animation_e1_control(&e1_2);
-		animation_e1(&e1_3);
-		animation_e1_control(&e1_3);
+		if (fase_p1==1){
+			if(e1_1.isAlive==1){
+					animation_e1(&e1_1);
+					animation_e1_control(&e1_1);}
+			if(e1_2.isAlive==1){
+				animation_e1(&e1_2);
+				animation_e1_control(&e1_2);}
+
+			if(e1_2.isAlive==1){
+				animation_e1(&e1_3);
+				animation_e1_control(&e1_3);}
+
+			animation_e1_die(&e1_1);
+			animation_e1_die(&e1_2);
+			animation_e1_die(&e1_3);
+		}
+
 		PlayerAttackAnimation(&p1);
+		PlayerDamageAnimation(&p1);
+		PlayerDieAnimation(&p1);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -785,9 +942,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	HitboxPlayer(&p1);
 	if(buffer[0] == 'd'){
-		if (p1.IsAttack==0){
+		if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
 			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
-		p1.direction=2;
+			p1.direction=2;
 		if (playerCanMove(&p1, 0)) {
 		    p1.y=p1.y+p1.speed;
 		    if (p1.animationWalkDown<10){
@@ -796,16 +953,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		    				p1.animationWalkDown=0;
 		    			}
 		    PlayerAnimation(&p1);
-		    FillRect(p1.x , p1.y, 1, 1, 0x000000);
 		} else {
 			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
 			LCD_Sprite(p1.x - (18 / 2)+1, p1.y - (26 / 2)+1, 18, 26, LinkDownWalk180x24_10, 10, 0, 0, 0);
-			FillRect(p1.x , p1.y, 1, 1, 0x000000);
 		}
 	}
 }
 	if(buffer[0] == 'u'){
-		if (p1.IsAttack==0){
+		if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
 			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
 			p1.direction=0;
 			if (playerCanMove(&p1, 2)) {
@@ -816,16 +971,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 						  p1.animationWalkUp=0;
 						  }
 			PlayerAnimation(&p1);
-			FillRect(p1.x , p1.y, 1, 1, 0x000000);
 			} else {
 				LCD_Sprite(p1.x - (18 / 2)+1, p1.y - (26 / 2), 18, 26, LinkUpWalk180x26_10, 10, 0, 0, 0);
-				FillRect(p1.x , p1.y, 1, 1, 0x000000);
 				//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 			}
 		}
 }
 	if(buffer[0] == 'r'){
-		if (p1.IsAttack==0){
+		if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
 			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
 			p1.direction=1;
 			if (playerCanMove(&p1, 1)) {
@@ -836,17 +989,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 						  p1.animationWalkRight=0;
 						  }
 			PlayerAnimation(&p1);
-			FillRect(p1.x , p1.y, 1, 1, 0x000000);
 						  //FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 			} else {
 				LCD_Sprite(p1.x - (22 / 2)+1, p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, 0, 1, 0);
-				FillRect(p1.x , p1.y, 1, 1, 0x000000);
 				//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 			}
 	}
 }
 	if(buffer[0] == 'l'){
-		if (p1.IsAttack==0){
+		if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
 			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
 			p1.direction=3;
 			if (playerCanMove(&p1, 3)) {
@@ -857,21 +1008,23 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 						  p1.animationWalkLeft=0;
 						  }
 			 PlayerAnimation(&p1);
-			 FillRect(p1.x , p1.y, 1, 1, 0x000000);
 						  //FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 
 			} else {
 				LCD_Sprite(p1.x - (22 / 2)+1, p1.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, 0, 0, 0);
-				FillRect(p1.x , p1.y, 1, 1, 0x000000);
 				//FillRect(p1.x - (p1.width / 2), p1.y - (p1.height / 2), p1.width, p1.height, 0xFFFB00);
 			}
 	}
 }
 	if (buffer[0]=='b'){
-		p1.IsAttack=1;
-		p1.animationAttack=0;
+		if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
+			p1.IsAttack=1;
+			p1.animationAttack=0;
+			PlayerHit(&p1, &e1_1);
+			PlayerHit(&p1, &e1_2);
+			PlayerHit(&p1, &e1_3);}
 		//if (fase_p1==1){
-		//PlayerHit(&p1, &e1_2);
+		//
 		//}
 	}
 	// Vuelve a activar la recepción por interrupción
