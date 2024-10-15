@@ -924,7 +924,7 @@ HAL_Init();
 
 	//Fondo
 	FillRect(0, 0, 319, 239, 0xFFFF);
-	//LCD_Bitmap(0, 0, 320, 240, fondo);
+	LCD_Bitmap(0, 0, 320, 240, fondo);
 
 	//LCD_Print("Hola Mundo", 20, 100, 1, 0x001F, 0xCAB9);
 
