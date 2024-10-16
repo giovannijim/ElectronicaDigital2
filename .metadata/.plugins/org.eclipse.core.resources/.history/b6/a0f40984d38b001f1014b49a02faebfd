@@ -70,15 +70,11 @@ typedef struct {
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-// Definir una región de memoria flash específica para almacenar la imagen
-#define IMAGE_FLASH_ADDRESS ((uint32_t)0x08080000) // Dirección base en la flash para la imagen (cambiar según tu mcu)
-// Tamaño de buffer para leer partes de la imagen
-#define BUFFER_SIZE 480
 #define MOVIMIENTO_DERECHA  0
 #define MOVIMIENTO_ABAJO    1
 #define MOVIMIENTO_IZQUIERDA 2
 #define MOVIMIENTO_ARRIBA   3
-//#define BUFFER_SIZE 128
+#define BUFFER_SIZE 128
 unsigned char buffer_sd[512];
 SPI_HandleTypeDef hspi1;
 FATFS fs;
@@ -298,80 +294,6 @@ void load_image_from_sd_ram(const char* filename) {
 }
 
 
-void load_image_from_sd_to_flash(const char* filename) {
-    FIL fil;
-    UINT bytes_read;
-    FRESULT fres;
-    uint8_t chunk_buffer[BUFFER_SIZE];
-
-    // Montar SD
-    fres = f_mount(&fs, "/", 0);
-    if (fres == FR_OK) {
-        transmit_uart("Micro SD is mounted successfully\n");
-    } else {
-        transmit_uart("Micro SD mount failed\n");
-        return;
-    }
-
-    // Abrir el archivo
-    fres = f_open(&fil, filename, FA_READ);
-    if (fres != FR_OK) {
-        transmit_uart("Error opening file on SD\n");
-        return;
-    }
-
-    // Desbloquear la memoria flash para permitir la escritura
-    HAL_FLASH_Unlock();
-
-    // Borrar la sección de flash donde se almacenará la imagen
-    FLASH_Erase_Sector(FLASH_SECTOR_5, VOLTAGE_RANGE_3);
-
-    // Leer el archivo en fragmentos y almacenarlo en la flash
-    uint32_t flash_address = IMAGE_FLASH_ADDRESS;
-    while (f_read(&fil, chunk_buffer, BUFFER_SIZE, &bytes_read) == FR_OK && bytes_read > 0) {
-        for (int i = 0; i < bytes_read; i += 2) {
-            // Escribir cada valor de 16 bits en la memoria flash
-            uint16_t pixel = (chunk_buffer[i] << 8) | chunk_buffer[i + 1];
-            HAL_FLASH_Program(TYPEPROGRAM_HALFWORD, flash_address, pixel);
-            flash_address += 2;
-        }
-    }
-
-    // Cerrar el archivo
-    f_close(&fil);
-
-    // Bloquear la memoria flash de nuevo
-    HAL_FLASH_Lock();
-
-    transmit_uart("Image loaded from SD to flash successfully\n");
-}
-
-// Función para mostrar la imagen desde la memoria flash
-void display_image_from_flash() {
-    SetWindows(0, 0, 239, 319); // Ajustar para tu resolución
-
-    // Dirección de inicio en la memoria flash
-    uint32_t flash_address = IMAGE_FLASH_ADDRESS;
-
-    HAL_GPIO_WritePin(LCD_RS_GPIO_Port, LCD_RS_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);
-
-    LCD_CMD(0x2C); // Comando de inicio de escritura de memoria
-
-    // Leer la memoria flash y enviar los datos a la pantalla
-    for (int row = 0; row < 320; row++) {
-        for (int col = 0; col < 240; col++) {
-            uint16_t pixel = *(volatile uint16_t*)flash_address;
-            LCD_DATA((pixel >> 8) & 0xFF);
-            LCD_DATA(pixel & 0xFF);
-            flash_address += 2;
-        }
-    }
-
-    HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
-}
-
-
 //Funciones Player
 void init_player(player *p, unsigned int x, unsigned int y, unsigned int w, unsigned int h, unsigned int vel, unsigned int color, unsigned int vista) {
     p->x = x;               // Posición inicial en X
@@ -510,7 +432,7 @@ int main(void)
 
 	LCD_Init();
 	LCD_Clear(0x00);
-	load_image_from_sd_to_flash("fondo2.bin");
+	load_image_from_sd_ram('fondo2.bin');
 	//Fondo
 	//FillRect(0, 0, 319, 239, 0xFFFF);
 	//Linea de en medio

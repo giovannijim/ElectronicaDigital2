@@ -324,7 +324,7 @@ void load_image_from_sd_to_flash(const char* filename) {
     HAL_FLASH_Unlock();
 
     // Borrar la sección de flash donde se almacenará la imagen
-    FLASH_Erase_Sector(FLASH_SECTOR_5, VOLTAGE_RANGE_3);
+    FLASH_Erase_Sector(FLASH_SECTOR_8, VOLTAGE_RANGE_3);
 
     // Leer el archivo en fragmentos y almacenarlo en la flash
     uint32_t flash_address = IMAGE_FLASH_ADDRESS;

@@ -324,7 +324,7 @@ void load_image_from_sd_to_flash(const char* filename) {
     HAL_FLASH_Unlock();
 
     // Borrar la sección de flash donde se almacenará la imagen
-    FLASH_Erase_Sector(FLASH_SECTOR_5, VOLTAGE_RANGE_3);
+    FLASH_Erase_Sector(FLASH_SECTOR_8, VOLTAGE_RANGE_3);
 
     // Leer el archivo en fragmentos y almacenarlo en la flash
     uint32_t flash_address = IMAGE_FLASH_ADDRESS;
@@ -510,7 +510,7 @@ int main(void)
 
 	LCD_Init();
 	LCD_Clear(0x00);
-	load_image_from_sd_to_flash("fondo2.bin");
+	load_image_from_sd_ram("fondo2.bin");
 	//Fondo
 	//FillRect(0, 0, 319, 239, 0xFFFF);
 	//Linea de en medio

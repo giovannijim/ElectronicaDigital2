@@ -1,17 +1,21 @@
-10:06:19 **** Incremental Build of configuration Debug for project ProbandoMenu ****
+09:35:56 **** Incremental Build of configuration Debug for project ProbandoMenu ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../FATFS/Target -I../FATFS/App -I../Middlewares/Third_Party/FatFs/src -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'load_image_from_sd_ram':
+../Core/Src/main.c:247:18: warning: unused variable 'row' [-Wunused-variable]
+  247 |     unsigned int row = 0;
+      |                  ^~~
 arm-none-eabi-gcc -o "ProbandoMenu.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ProbandoMenu\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ProbandoMenu.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: ProbandoMenu.elf
  
 arm-none-eabi-size  ProbandoMenu.elf 
 arm-none-eabi-objdump -h -S ProbandoMenu.elf  > "ProbandoMenu.list"
    text	   data	    bss	    dec	    hex	filename
-  18260	     40	   1800	  20100	   4e84	ProbandoMenu.elf
+  33672	     40	   6536	  40248	   9d38	ProbandoMenu.elf
 Finished building: default.size.stdout
  
 Finished building: ProbandoMenu.list
  
 
-10:06:20 Build Finished. 0 errors, 0 warnings. (took 1s.189ms)
+09:35:58 Build Finished. 0 errors, 1 warnings. (took 1s.509ms)
 
