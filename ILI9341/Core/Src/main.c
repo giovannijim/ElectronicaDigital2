@@ -58,6 +58,7 @@ typedef struct {
 	unsigned int IsDie;
 	float animationDie;
 	unsigned int playerLevel;
+	unsigned int PlayerNum;
 } player;
 
 //Estructura enemigo 2
@@ -120,7 +121,7 @@ extern uint8_t fondo[];
 uint8_t buffer[10];
 uint16_t contador=0;
 player p1,p2;
-enemy_type1 e1_1, e1_2, e1_3;
+enemy_type1 e1_1, e1_2, e1_3,e1_4,e1_5,e1_6;
 enemy_type2 e2_1,e2_2;
 int i;
 uint8_t modo, fase_p1, fase_p2;
@@ -133,7 +134,7 @@ uint8_t P1_WalkDown = 0;
  *  fase_p1 La fase en la que está el jugador 1
  *  fase_p2 La fase en la que está el jugador 2
 */
-uint8_t DrawHitbox=3;
+uint8_t DrawHitbox=0;
 
 
 /* USER CODE END PV */
@@ -269,8 +270,8 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							player->animationDamage=0;
 							player->life-=1;
 							if (player->life==0){
-								p1.isAlive=0;
-								p1.animationDie=0;
+								player->isAlive=0;
+								player->animationDie=0;
 							}
 							return 0;
 						}
@@ -280,8 +281,8 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							player->animationDamage=0;
 							player->life-=1;
 							if (player->life==0){
-								p1.isAlive=0;
-								p1.animationDie=0;
+								player->isAlive=0;
+								player->animationDie=0;
 							}
 							return 0;
 						}
@@ -291,8 +292,8 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							player->animationDamage=0;
 							player->life-=1;
 							if (player->life==0){
-								p1.isAlive=0;
-								p1.animationDie=0;
+								player->isAlive=0;
+								player->animationDie=0;
 							}
 							return 0;
 						}
@@ -306,6 +307,10 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							player->IsDamage=1;
 							player->animationDamage=0;
 							player->life-=1;
+							if (player->life==0){
+								player->isAlive=0;
+								player->animationDie=0;
+							}
 							return 0;
 						}
 						if (player->playerDown>=enemy->e1Up && player->playerUp<=enemy->e1Down){
@@ -313,6 +318,10 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							player->IsDamage=1;
 							player->animationDamage=0;
 							player->life-=1;
+							if (player->life==0){
+								player->isAlive=0;
+								player->animationDie=0;
+							}
 							return 0;
 						}
 						if (player->y>=enemy->e1Left && player->y<=enemy->e1Right){
@@ -320,6 +329,10 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							player->IsDamage=1;
 							player->animationDamage=0;
 							player->life-=1;
+							if (player->life==0){
+								player->isAlive=0;
+								player->animationDie=0;
+							}
 							return 0;
 						}
 					}
@@ -333,6 +346,10 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							player->IsDamage=1;
 							player->animationDamage=0;
 							player->life-=1;
+							if (player->life==0){
+								player->isAlive=0;
+								player->animationDie=0;
+							}
 							return 0;
 						}
 						if(player->playerRight>=enemy->e1Left && player->playerRight<=enemy->e1Right){
@@ -340,6 +357,10 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							player->IsDamage=1;
 							player->animationDamage=0;
 							player->life-=1;
+							if (player->life==0){
+								player->isAlive=0;
+								player->animationDie=0;
+							}
 							return 0;
 						}
 						if (player->x>=enemy->e1Left && player->x<=enemy->e1Right){
@@ -347,6 +368,10 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							player->IsDamage=1;
 							player->animationDamage=0;
 							player->life-=1;
+							if (player->life==0){
+								player->isAlive=0;
+								player->animationDie=0;
+							}
 							return 0;
 						}
 					 }
@@ -359,6 +384,10 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							player->IsDamage=1;
 							player->animationDamage=0;
 							player->life-=1;
+							if (player->life==0){
+								player->isAlive=0;
+								player->animationDie=0;
+							}
 							return 0;
 						}
 						if (player->playerDown>=enemy->e1Up && player->playerUp<=enemy->e1Down){
@@ -366,6 +395,10 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							player->IsDamage=1;
 							player->animationDamage=0;
 							player->life-=1;
+							if (player->life==0){
+								player->isAlive=0;
+								player->animationDie=0;
+							}
 							return 0;
 						}
 						if (player->y>=enemy->e1Left && player->y<=enemy->e1Right){
@@ -373,6 +406,10 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							player->IsDamage=1;
 							player->animationDamage=0;
 							player->life-=1;
+							if (player->life==0){
+								player->isAlive=0;
+								player->animationDie=0;
+							}
 							return 0;
 						}
 					}
@@ -448,7 +485,7 @@ void moveE2(enemy_type2* enemy, player* player){
 					enemy->move+=1;
 					moveE2(enemy,player);
 					}else{
-					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xF66A);
+					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xF66B);
 					enemy->x=futureX_D;
 					enemy->y=player->y;
 					enemy->animationV=0;
@@ -462,7 +499,7 @@ void moveE2(enemy_type2* enemy, player* player){
 					enemy->move+=1;
 					moveE2(enemy,player);
 				}else {
-					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xF66A);
+					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xF66B);
 					enemy->y=futureY_A;
 					enemy->x=player->x;
 					enemy->animationV=0;
@@ -476,7 +513,7 @@ void moveE2(enemy_type2* enemy, player* player){
 						enemy->move+=1;
 						moveE2(enemy,player);
 					}else{
-					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xF66A);
+					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xF66B);
 					enemy->x=futureX_I;
 					enemy->y=player->y;
 					enemy->animationV=0;
@@ -490,7 +527,7 @@ void moveE2(enemy_type2* enemy, player* player){
 					enemy->move+=1;
 					moveE2(enemy,player);
 				}else {
-					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xF66A);
+					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xF66B);
 					enemy->y=futureY_U;
 					enemy->x=player->x;
 					enemy->animationV=0;
@@ -538,7 +575,7 @@ void E2_Die(enemy_type2* enemy){
 					LCD_Sprite(enemy->x - (26 / 2)+1, enemy->y - (23 / 2), 26,23, E2_Die26x23, 6, variableAnimationDie, 0, 0);
 					enemy->animationDie+=0.2;
 					}else{
-						FillRect(enemy->x - (26 / 2)+1, enemy->y - (23 / 2), 26,23, 0xF66A);
+						FillRect(enemy->x - (26 / 2)+1, enemy->y - (23 / 2), 26,23, 0xF66B);
 						enemy->x=5000;
 						enemy->y=5000;
 					}
@@ -664,7 +701,7 @@ int playerCanMove(player* player, unsigned int direction) {
 	case 0: //Colisiones HITBOX Superior
 		int FutureplayerUp = (player->y - player->speed)-(player->height / 2);
 		//Borde
-		if (FutureplayerUp<=0){
+		if (FutureplayerUp<=18){
 			return 0;
 		}
 		break;
@@ -685,7 +722,7 @@ int playerCanMove(player* player, unsigned int direction) {
 	case 3: //Colisiones HITBOX Izquierda (Cambiar a Width_limite inferior)
 		int FutureplayerLeft = ((player->x-player->speed)-(player->width / 2));
 		//Borde
-		if (FutureplayerLeft<=0){
+		if (FutureplayerLeft<=player->limitWidth_i){
 			return 0;
 		}
 	}
@@ -694,6 +731,7 @@ int playerCanMove(player* player, unsigned int direction) {
     int futureX = player->x;
     int futureY = player->y;
 
+    if (player->PlayerNum==1){
     //Colision con E1
     if (ColisionPlayer_e1(&e1_1, player, direction,futureX,futureY)==0){
     	return 0;
@@ -704,6 +742,20 @@ int playerCanMove(player* player, unsigned int direction) {
     if (ColisionPlayer_e1(&e1_3, player, direction,futureX,futureY)==0){
         	return 0;
         }
+    }
+
+    if (player->PlayerNum==2){
+       //Colision con E1
+       if (ColisionPlayer_e1(&e1_4, player, direction,futureX,futureY)==0){
+       	return 0;
+       }
+       if (ColisionPlayer_e1(&e1_5, player, direction,futureX,futureY)==0){
+           	return 0;
+           }
+       if (ColisionPlayer_e1(&e1_6, player, direction,futureX,futureY)==0){
+           	return 0;
+           }
+       }
     // No hay colisiones, se puede mover
     return 1;
 }
@@ -929,12 +981,19 @@ HAL_Init();
 	//LCD_Print("Hola Mundo", 20, 100, 1, 0x001F, 0xCAB9);
 
 	  // Activar bandera interrupcion
-	  HAL_UART_Receive_IT(&huart2, buffer, 1);
-	  modo=1;
-	  fase_p1=2;
+	  HAL_UART_Receive_IT(&huart5, buffer, 1);
+	  modo=2;
+	  fase_p1=1;
+	  fase_p2=1;
+
+
 	  if (modo==1){
 		//Inicializar Jugador 1
-		initPlayer(&p1, 160, 200, 22, 30, 5, 3, 320, 240,0);
+		initPlayer(&p1, 160, 200, 22, 30, 5, 3, 300, 220,18);
+		initPlayer(&p2, 160, 200, 22, 30, 5, 3, 300, 220,18);
+		p1.PlayerNum=1;
+		p2.PlayerNum=2;
+		p2.isAlive=0;
 
 	    if (fase_p1==1){
 			//Inicializar enemigo 1
@@ -951,14 +1010,43 @@ HAL_Init();
 	  if (modo==2){
 		//Linea de en medio
 		V_line(160, 0, 240, 0x0000);
-	  }
+		initPlayer(&p1, 80, 200, 22, 30, 5, 3, 160, 220,18);
+		initPlayer(&p2, 240, 200, 22, 30, 5, 3, 300, 220,160);
+		p1.PlayerNum=1;
+		p2.PlayerNum=2;
+
+		if (fase_p1==1){
+			//Inicializar enemigo 1
+			initEnemy1(&e1_1, 30, 80, 16, 19, 3);
+			//Inicializar enemigo 2
+			initEnemy1(&e1_2,90, 100, 16, 19, 3);
+			//Inicializar enemigo 3
+			initEnemy1(&e1_3,150, 120, 16, 19, 3);}
+		  if (fase_p1==2){
+			  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
+			  }
+		  }
+
+	  if (fase_p2==1){
+	  			//Inicializar enemigo 1
+	  			initEnemy1(&e1_4, 170, 120, 16, 19, 3);
+	  			//Inicializar enemigo 2
+	  			initEnemy1(&e1_5,230, 100, 16, 19, 3);
+	  			//Inicializar enemigo 3
+	  			initEnemy1(&e1_6,290, 80, 16, 19, 3);}
+
+	  		  if (fase_p2==2){
+	  			  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
+	  			  }
 
 	  HitboxPlayer(&p1);
+	  HitboxPlayer(&p2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
+		if (modo==1){
 		if (fase_p1==1){
 			if(e1_1.isAlive==1){
 					animation_e1(&e1_1);
@@ -987,6 +1075,49 @@ HAL_Init();
 		PlayerAttackAnimation(&p1);
 		PlayerDamageAnimation(&p1);
 		PlayerDieAnimation(&p1);
+		}
+		if (modo==2){
+
+			if (fase_p1==1){
+				if(e1_1.isAlive==1){
+						animation_e1(&e1_1);
+						animation_e1_control(&e1_1);}
+				if(e1_2.isAlive==1){
+					animation_e1(&e1_2);
+					animation_e1_control(&e1_2);}
+
+				if(e1_2.isAlive==1){
+					animation_e1(&e1_3);
+					animation_e1_control(&e1_3);}
+				animation_e1_die(&e1_1);
+				animation_e1_die(&e1_2);
+				animation_e1_die(&e1_3);
+			}
+
+				if (fase_p2==1){
+					if(e1_4.isAlive==1){
+							animation_e1(&e1_4);
+							animation_e1_control(&e1_4);}
+					if(e1_5.isAlive==1){
+						animation_e1(&e1_5);
+						animation_e1_control(&e1_5);}
+
+					if(e1_6.isAlive==1){
+						animation_e1(&e1_6);
+						animation_e1_control(&e1_6);}
+					animation_e1_die(&e1_4);
+					animation_e1_die(&e1_5);
+					animation_e1_die(&e1_6);
+			}
+
+			PlayerAttackAnimation(&p1);
+			PlayerDamageAnimation(&p1);
+			PlayerDieAnimation(&p1);
+
+			PlayerAttackAnimation(&p2);
+			PlayerDamageAnimation(&p2);
+			PlayerDieAnimation(&p2);
+		}
 
     /* USER CODE END WHILE */
 
@@ -1209,7 +1340,13 @@ static void MX_GPIO_Init(void)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	HitboxPlayer(&p1);
+	if (modo==1){
+	HitboxPlayer(&p1);}
+	if (modo==2){
+		HitboxPlayer(&p1);
+		HitboxPlayer(&p2);
+	}
+
 	if(buffer[0] == 'd'){
 		if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
 			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
@@ -1293,12 +1430,102 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			PlayerHit(&p1, &e1_2);
 			PlayerHit(&p1, &e1_3);}
 			PlayerHit_E2(&p1, &e2_1);
-		//if (fase_p1==1){
-		//
-		//}
+
 	}
+
+	//Jugador 2
+	if(buffer[0] == '1'){ //Arriba
+			if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
+				FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFFFFFF);
+				p2.direction=0;
+				if (playerCanMove(&p2, 2)) {
+					p2.y=p2.y-p2.speed;
+					if (p2.animationWalkUp<10){
+							p2.animationWalkUp+=1;
+							} else{
+							  p2.animationWalkUp=0;
+							  }
+				PlayerAnimation(&p2);
+				} else {
+					LCD_Sprite(p2.x - (18 / 2)+1, p2.y - (26 / 2), 18, 26, LinkUpWalk180x26_10, 10, 0, 0, 0);
+					//FillRect(p2.x - (p2.width / 2), p2.y - (p2.height / 2), p2.width, p2.height, 0xFFFB00);
+				}
+			}
+	}
+
+	if(buffer[0] == '2'){ //Derecha
+		if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
+			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFFFFFF);
+			p2.direction=1;
+			if (playerCanMove(&p2, 1)) {
+				p2.x=p2.x+p2.speed;
+				if (p2.animationWalkRight<10){
+						p2.animationWalkRight+=1;
+						} else{
+						  p2.animationWalkRight=0;
+						  }
+			PlayerAnimation(&p2);
+						  //FillRect(p2.x - (p2.width / 2), p2.y - (p2.height / 2), p2.width, p2.height, 0xFFFB00);
+			} else {
+				LCD_Sprite(p2.x - (22 / 2)+1, p2.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, 0, 1, 0);
+				//FillRect(p2.x - (p2.width / 2), p2.y - (p2.height / 2), p2.width, p2.height, 0xFFFB00);
+			}
+	}
+}
+
+	if(buffer[0] == '3'){ //Abajo
+		if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
+			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFFFFFF);
+			p2.direction=2;
+		if (playerCanMove(&p2, 0)) {
+		    p2.y=p2.y+p2.speed;
+		    if (p2.animationWalkDown<10){
+		    		p2.animationWalkDown+=1;
+		    			} else{
+		    				p2.animationWalkDown=0;
+		    			}
+		    PlayerAnimation(&p2);
+		} else {
+			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFFFFFF);
+			LCD_Sprite(p2.x - (18 / 2)+1, p2.y - (26 / 2)+1, 18, 26, LinkDownWalk180x24_10, 10, 0, 0, 0);
+		}
+	}
+}
+
+	if(buffer[0] == '4'){ //Izquierda
+		if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
+			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFFFFFF);
+			p2.direction=3;
+			if (playerCanMove(&p2, 3)) {
+				p2.x=p2.x-p2.speed;
+				if (p2.animationWalkLeft<10){
+						p2.animationWalkLeft+=1;
+						} else{
+						  p2.animationWalkLeft=0;
+						  }
+			 PlayerAnimation(&p2);
+						  //FillRect(p2.x - (p2.width / 2), p2.y - (p2.height / 2), p2.width, p2.height, 0xFFFB00);
+
+			} else {
+				LCD_Sprite(p2.x - (22 / 2)+1, p2.y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, 0, 0, 0);
+				//FillRect(p2.x - (p2.width / 2), p2.y - (p2.height / 2), p2.width, p2.height, 0xFFFB00);
+			}
+	}
+}
+
+	if (buffer[0]=='5'){
+		if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
+			p2.IsAttack=1;
+			p2.animationAttack=0;
+			PlayerHit(&p2, &e1_1);
+			PlayerHit(&p2, &e1_2);
+			PlayerHit(&p2, &e1_3);}
+			PlayerHit_E2(&p2, &e2_1);
+	}
+
+
 	// Vuelve a activar la recepción por interrupción
-	HAL_UART_Receive_IT(&huart2, buffer, 1);
+	HAL_UART_Receive_IT(&huart5, buffer, 1);
 }
 
 /* USER CODE END 4 */
