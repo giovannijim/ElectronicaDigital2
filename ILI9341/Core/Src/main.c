@@ -99,6 +99,8 @@ typedef struct {
     float animationDie;
 } enemy_type1;
 
+typedef enum {
+	MENU, SOLO, DUO, PAUSA, FIN } EstadoJuego ;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -117,6 +119,7 @@ UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+
 extern uint8_t fondo[];
 uint8_t buffer[10];
 uint16_t contador=0;
@@ -980,134 +983,142 @@ HAL_Init();
 
 	//LCD_Print("Hola Mundo", 20, 100, 1, 0x001F, 0xCAB9);
 
-	  // Activar bandera interrupcion
-	  HAL_UART_Receive_IT(&huart5, buffer, 1);
-	  modo=2;
-	  fase_p1=1;
-	  fase_p2=1;
+	// Activar bandera interrupcion
+	HAL_UART_Receive_IT(&huart5, buffer, 1);
+
+	EstadoJuego estadoActual = DUO;
+    modo=2;
+    fase_p1=1;
+    fase_p2=1;
 
 
-	  if (modo==1){
-		//Inicializar Jugador 1
-		initPlayer(&p1, 160, 200, 22, 30, 5, 3, 300, 220,18);
-		initPlayer(&p2, 160, 200, 22, 30, 5, 3, 300, 220,18);
-		p1.PlayerNum=1;
-		p2.PlayerNum=2;
-		p2.isAlive=0;
+  	if (estadoActual == SOLO){
+	//Inicializar Jugador 1
+	initPlayer(&p1, 160, 200, 22, 30, 5, 3, 300, 220,18);
+	initPlayer(&p2, 160, 200, 22, 30, 5, 3, 300, 220,18);
+	p1.PlayerNum=1;
+	p2.PlayerNum=2;
+	p2.isAlive=0;
 
-	    if (fase_p1==1){
+	if (fase_p1==1){
+		//Inicializar enemigo 1
+		initEnemy1(&e1_1, 40, 80, 16, 19, 3);
+		//Inicializar enemigo 2
+		initEnemy1(&e1_2, 160, 80, 16, 19, 3);
+		//Inicializar enemigo 3
+		initEnemy1(&e1_3, 280, 80, 16, 19, 3);}
+
+	  if (fase_p1==2){
+		  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
+		  }
+	  }
+  if (estadoActual==DUO){
+	//Linea de en medio
+	V_line(160, 0, 240, 0x0000);
+	initPlayer(&p1, 80, 200, 22, 30, 5, 3, 160, 220,18);
+	initPlayer(&p2, 240, 200, 22, 30, 5, 3, 300, 220,160);
+	p1.PlayerNum=1;
+	p2.PlayerNum=2;
+
+	if (fase_p1==1){
+		//Inicializar enemigo 1
+		initEnemy1(&e1_1, 30, 80, 16, 19, 3);
+		//Inicializar enemigo 2
+		initEnemy1(&e1_2,90, 100, 16, 19, 3);
+		//Inicializar enemigo 3
+		initEnemy1(&e1_3,150, 120, 16, 19, 3);}
+	  if (fase_p1==2){
+		  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
+		  }
+	  }
+
+  if (fase_p2==1){
 			//Inicializar enemigo 1
-			initEnemy1(&e1_1, 40, 80, 16, 19, 3);
+			initEnemy1(&e1_4, 170, 120, 16, 19, 3);
 			//Inicializar enemigo 2
-			initEnemy1(&e1_2, 160, 80, 16, 19, 3);
+			initEnemy1(&e1_5,230, 100, 16, 19, 3);
 			//Inicializar enemigo 3
-			initEnemy1(&e1_3, 280, 80, 16, 19, 3);}
+			initEnemy1(&e1_6,290, 80, 16, 19, 3);}
 
-		  if (fase_p1==2){
+		  if (fase_p2==2){
 			  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
 			  }
-		  }
-	  if (modo==2){
-		//Linea de en medio
-		V_line(160, 0, 240, 0x0000);
-		initPlayer(&p1, 80, 200, 22, 30, 5, 3, 160, 220,18);
-		initPlayer(&p2, 240, 200, 22, 30, 5, 3, 300, 220,160);
-		p1.PlayerNum=1;
-		p2.PlayerNum=2;
 
-		if (fase_p1==1){
-			//Inicializar enemigo 1
-			initEnemy1(&e1_1, 30, 80, 16, 19, 3);
-			//Inicializar enemigo 2
-			initEnemy1(&e1_2,90, 100, 16, 19, 3);
-			//Inicializar enemigo 3
-			initEnemy1(&e1_3,150, 120, 16, 19, 3);}
-		  if (fase_p1==2){
-			  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
-			  }
-		  }
-
-	  if (fase_p2==1){
-	  			//Inicializar enemigo 1
-	  			initEnemy1(&e1_4, 170, 120, 16, 19, 3);
-	  			//Inicializar enemigo 2
-	  			initEnemy1(&e1_5,230, 100, 16, 19, 3);
-	  			//Inicializar enemigo 3
-	  			initEnemy1(&e1_6,290, 80, 16, 19, 3);}
-
-	  		  if (fase_p2==2){
-	  			  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
-	  			  }
-
-	  HitboxPlayer(&p1);
-	  HitboxPlayer(&p2);
+  HitboxPlayer(&p1);
+  HitboxPlayer(&p2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
-		if (modo==1){
-		if (fase_p1==1){
-			if(e1_1.isAlive==1){
-					animation_e1(&e1_1);
-					animation_e1_control(&e1_1);}
-			if(e1_2.isAlive==1){
-				animation_e1(&e1_2);
-				animation_e1_control(&e1_2);}
+		switch(estadoActual){
+		case MENU:
+			break;
+		case SOLO:
+			if (fase_p1==1){
+					if(e1_1.isAlive==1){
+							animation_e1(&e1_1);
+							animation_e1_control(&e1_1);}
+					if(e1_2.isAlive==1){
+						animation_e1(&e1_2);
+						animation_e1_control(&e1_2);}
 
-			if(e1_2.isAlive==1){
-				animation_e1(&e1_3);
-				animation_e1_control(&e1_3);}
+					if(e1_2.isAlive==1){
+						animation_e1(&e1_3);
+						animation_e1_control(&e1_3);}
 
-			animation_e1_die(&e1_1);
-			animation_e1_die(&e1_2);
-			animation_e1_die(&e1_3);
-		}
+					animation_e1_die(&e1_1);
+					animation_e1_die(&e1_2);
+					animation_e1_die(&e1_3);
+				}
 
-		if (fase_p1==2){
-			moveE2(&e2_1, &p1);
-			e2_1.delay+=0.5; //1
-			E2_Appear(&e2_1);
-			E2_Hurt(&e2_1);
-			E2_Die(&e2_1);
-		}
+			if (fase_p1==2){
+				moveE2(&e2_1, &p1);
+				e2_1.delay+=0.5; //1
+				E2_Appear(&e2_1);
+				E2_Hurt(&e2_1);
+				E2_Die(&e2_1);
+			}
 
-		PlayerAttackAnimation(&p1);
-		PlayerDamageAnimation(&p1);
-		PlayerDieAnimation(&p1);
-		}
-		if (modo==2){
-
+			PlayerAttackAnimation(&p1);
+			PlayerDamageAnimation(&p1);
+			PlayerDieAnimation(&p1);
+			break;
+		case DUO:
 			if (fase_p1==1){
 				if(e1_1.isAlive==1){
 						animation_e1(&e1_1);
-						animation_e1_control(&e1_1);}
+						animation_e1_control(&e1_1);
+				}
 				if(e1_2.isAlive==1){
 					animation_e1(&e1_2);
-					animation_e1_control(&e1_2);}
-
+					animation_e1_control(&e1_2);
+				}
 				if(e1_2.isAlive==1){
 					animation_e1(&e1_3);
-					animation_e1_control(&e1_3);}
+					animation_e1_control(&e1_3);
+				}
 				animation_e1_die(&e1_1);
 				animation_e1_die(&e1_2);
 				animation_e1_die(&e1_3);
 			}
 
-				if (fase_p2==1){
-					if(e1_4.isAlive==1){
-							animation_e1(&e1_4);
-							animation_e1_control(&e1_4);}
-					if(e1_5.isAlive==1){
-						animation_e1(&e1_5);
-						animation_e1_control(&e1_5);}
-
-					if(e1_6.isAlive==1){
-						animation_e1(&e1_6);
-						animation_e1_control(&e1_6);}
-					animation_e1_die(&e1_4);
-					animation_e1_die(&e1_5);
-					animation_e1_die(&e1_6);
+			if (fase_p2==1){
+				if(e1_4.isAlive==1){
+						animation_e1(&e1_4);
+						animation_e1_control(&e1_4);
+				}
+				if(e1_5.isAlive==1){
+					animation_e1(&e1_5);
+					animation_e1_control(&e1_5);
+				}
+				if(e1_6.isAlive==1){
+				animation_e1(&e1_6);
+				animation_e1_control(&e1_6);
+				}
+				animation_e1_die(&e1_4);
+				animation_e1_die(&e1_5);
+				animation_e1_die(&e1_6);
 			}
 
 			PlayerAttackAnimation(&p1);
@@ -1117,6 +1128,13 @@ HAL_Init();
 			PlayerAttackAnimation(&p2);
 			PlayerDamageAnimation(&p2);
 			PlayerDieAnimation(&p2);
+			break;
+		case PAUSA:
+			break;
+		case FIN:
+			break;
+		default:
+			break;
 		}
 
     /* USER CODE END WHILE */

@@ -1,95 +1,28 @@
-09:28:02 **** Build of configuration Debug for project ProbandoMenu ****
+10:46:34 **** Incremental Build of configuration Debug for project ILI9341 ****
 make -j8 all 
-arm-none-eabi-size  ProbandoMenu.elf 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ILI9341.elf
+ 
+arm-none-eabi-size  ILI9341.elf 
+arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
    text	   data	    bss	    dec	    hex	filename
-  18260	     40	   1800	  20100	   4e84	ProbandoMenu.elf
+ 179228	  86944	   2432	 268604	  4193c	ILI9341.elf
 Finished building: default.size.stdout
  
-09:29:21 **** Incremental Build of configuration Debug for project ProbandoMenu ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../FATFS/Target -I../FATFS/App -I../Middlewares/Third_Party/FatFs/src -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c: In function 'load_image_from_sd_ram':
-../Core/Src/main.c:243:18: warning: unused variable 'row' [-Wunused-variable]
-  243 |     unsigned int row = 0;
-      |                  ^~~
-../Core/Src/main.c: In function 'main':
-../Core/Src/main.c:435:32: warning: character constant too long for its type
-  435 |         load_image_from_sd_ram('fondo2.bin');
-      |                                ^~~~~~~~~~~~
-../Core/Src/main.c:435:32: warning: passing argument 1 of 'load_image_from_sd_ram' makes pointer from integer without a cast [-Wint-conversion]
-  435 |         load_image_from_sd_ram('fondo2.bin');
-      |                                ^~~~~~~~~~~~
-      |                                |
-      |                                int
-../Core/Src/main.c:237:41: note: expected 'const char *' but argument is of type 'int'
-  237 | void load_image_from_sd_ram(const char* filename) {
-      |                             ~~~~~~~~~~~~^~~~~~~~
-arm-none-eabi-gcc -o "ProbandoMenu.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ProbandoMenu\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ProbandoMenu.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: ProbandoMenu.elf
+Finished building: ILI9341.list
  
-arm-none-eabi-size  ProbandoMenu.elf 
-arm-none-eabi-objdump -h -S ProbandoMenu.elf  > "ProbandoMenu.list"
+10:48:06 **** Incremental Build of configuration Debug for project ILI9341 ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ILI9341.elf
+ 
+arm-none-eabi-size  ILI9341.elf 
+arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
    text	   data	    bss	    dec	    hex	filename
-  33336	    120	   6840	  40296	   9d68	ProbandoMenu.elf
+ 179228	  86944	   2432	 268604	  4193c	ILI9341.elf
 Finished building: default.size.stdout
  
-Finished building: ProbandoMenu.list
- 
-09:30:04 **** Incremental Build of configuration Debug for project ProbandoMenu ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../FATFS/Target -I../FATFS/App -I../Middlewares/Third_Party/FatFs/src -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c: In function 'load_image_from_sd_ram':
-../Core/Src/main.c:243:18: warning: unused variable 'row' [-Wunused-variable]
-  243 |     unsigned int row = 0;
-      |                  ^~~
-arm-none-eabi-gcc -o "ProbandoMenu.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ProbandoMenu\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ProbandoMenu.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: ProbandoMenu.elf
- 
-arm-none-eabi-size  ProbandoMenu.elf 
-arm-none-eabi-objdump -h -S ProbandoMenu.elf  > "ProbandoMenu.list"
-   text	   data	    bss	    dec	    hex	filename
-  33348	    120	   6840	  40308	   9d74	ProbandoMenu.elf
-Finished building: default.size.stdout
- 
-Finished building: ProbandoMenu.list
- 
-09:30:36 **** Incremental Build of configuration Debug for project ProbandoMenu ****
-make -j8 all 
-arm-none-eabi-size  ProbandoMenu.elf 
-   text	   data	    bss	    dec	    hex	filename
-  33348	    120	   6840	  40308	   9d74	ProbandoMenu.elf
-Finished building: default.size.stdout
- 
-09:33:53 **** Incremental Build of configuration Debug for project ProbandoMenu ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../FATFS/Target -I../FATFS/App -I../Middlewares/Third_Party/FatFs/src -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c: In function 'load_image_from_sd_ram':
-../Core/Src/main.c:247:18: warning: unused variable 'row' [-Wunused-variable]
-  247 |     unsigned int row = 0;
-      |                  ^~~
-../Core/Src/main.c: In function 'load_image_from_sd_to_flash':
-../Core/Src/main.c:327:24: error: 'FLASH_SECTOR_8' undeclared (first use in this function); did you mean 'FLASH_SECTOR_0'?
-  327 |     FLASH_Erase_Sector(FLASH_SECTOR_8, VOLTAGE_RANGE_3);
-      |                        ^~~~~~~~~~~~~~
-      |                        FLASH_SECTOR_0
-../Core/Src/main.c:327:24: note: each undeclared identifier is reported only once for each function it appears in
-make: *** [Core/Src/subdir.mk:46: Core/Src/main.o] Error 1
-"make -j8 all" terminated with exit code 2. Build might be incomplete.
-09:35:56 **** Incremental Build of configuration Debug for project ProbandoMenu ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../FATFS/Target -I../FATFS/App -I../Middlewares/Third_Party/FatFs/src -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c: In function 'load_image_from_sd_ram':
-../Core/Src/main.c:247:18: warning: unused variable 'row' [-Wunused-variable]
-  247 |     unsigned int row = 0;
-      |                  ^~~
-arm-none-eabi-gcc -o "ProbandoMenu.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ProbandoMenu\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ProbandoMenu.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: ProbandoMenu.elf
- 
-arm-none-eabi-size  ProbandoMenu.elf 
-arm-none-eabi-objdump -h -S ProbandoMenu.elf  > "ProbandoMenu.list"
-   text	   data	    bss	    dec	    hex	filename
-  33672	     40	   6536	  40248	   9d38	ProbandoMenu.elf
-Finished building: default.size.stdout
- 
-Finished building: ProbandoMenu.list
+Finished building: ILI9341.list
  
