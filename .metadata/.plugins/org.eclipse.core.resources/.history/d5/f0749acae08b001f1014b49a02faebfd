@@ -101,10 +101,6 @@ typedef struct {
 
 typedef enum {
 	MENU, SOLO, DUO, PAUSA, FIN } EstadoJuego ;
-
-typedef enum {
-	NIVEL1, NIVEL2
-} LevelPlaying;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -991,8 +987,6 @@ HAL_Init();
 	HAL_UART_Receive_IT(&huart5, buffer, 1);
 
 	EstadoJuego estadoActual = DUO;
-	LevelPlaying nivelActual1 = NIVEL1;
-	LevelPlaying nivelActual2 = NIVEL1;
     modo=2;
     fase_p1=1;
     fase_p2=1;
@@ -1006,7 +1000,7 @@ HAL_Init();
 	p2.PlayerNum=2;
 	p2.isAlive=0;
 
-	if (nivelActual1==NIVEL1){
+	if (fase_p1==1){
 		//Inicializar enemigo 1
 		initEnemy1(&e1_1, 40, 80, 16, 19, 3);
 		//Inicializar enemigo 2
@@ -1014,7 +1008,7 @@ HAL_Init();
 		//Inicializar enemigo 3
 		initEnemy1(&e1_3, 280, 80, 16, 19, 3);}
 
-	  if (nivelActual1==NIVEL2){
+	  if (fase_p1==2){
 		  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
 		  }
 	  }
@@ -1026,32 +1020,32 @@ HAL_Init();
 	p1.PlayerNum=1;
 	p2.PlayerNum=2;
 
-	if (nivelActual1==NIVEL1){
+	if (fase_p1==1){
 		//Inicializar enemigo 1
 		initEnemy1(&e1_1, 30, 80, 16, 19, 3);
 		//Inicializar enemigo 2
 		initEnemy1(&e1_2,90, 100, 16, 19, 3);
 		//Inicializar enemigo 3
 		initEnemy1(&e1_3,150, 120, 16, 19, 3);}
-	  if (nivelActual1==NIVEL2){
+	  if (fase_p1==2){
 		  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
 		  }
-	  if (nivelActual2==NIVEL1){
-	  			//Inicializar enemigo 1
-	  			initEnemy1(&e1_4, 170, 120, 16, 19, 3);
-	  			//Inicializar enemigo 2
-	  			initEnemy1(&e1_5,230, 100, 16, 19, 3);
-	  			//Inicializar enemigo 3
-	  			initEnemy1(&e1_6,290, 80, 16, 19, 3);
-	    }
-
-	  if (nivelActual2==NIVEL2){
-	  	  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
 	  }
-	  HitboxPlayer(&p1);
-	  HitboxPlayer(&p2);
-	}
 
+  if (fase_p2==1){
+			//Inicializar enemigo 1
+			initEnemy1(&e1_4, 170, 120, 16, 19, 3);
+			//Inicializar enemigo 2
+			initEnemy1(&e1_5,230, 100, 16, 19, 3);
+			//Inicializar enemigo 3
+			initEnemy1(&e1_6,290, 80, 16, 19, 3);}
+
+		  if (fase_p2==2){
+			  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
+			  }
+
+  HitboxPlayer(&p1);
+  HitboxPlayer(&p2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -1061,7 +1055,7 @@ HAL_Init();
 		case MENU:
 			break;
 		case SOLO:
-			if (nivelActual1==NIVEL1){
+			if (fase_p1==1){
 					if(e1_1.isAlive==1){
 							animation_e1(&e1_1);
 							animation_e1_control(&e1_1);}
@@ -1078,7 +1072,7 @@ HAL_Init();
 					animation_e1_die(&e1_3);
 				}
 
-			if (nivelActual1==NIVEL2){
+			if (fase_p1==2){
 				moveE2(&e2_1, &p1);
 				e2_1.delay+=0.5; //1
 				E2_Appear(&e2_1);
@@ -1091,7 +1085,7 @@ HAL_Init();
 			PlayerDieAnimation(&p1);
 			break;
 		case DUO:
-			if (nivelActual1==NIVEL1){
+			if (fase_p1==1){
 				if(e1_1.isAlive==1){
 						animation_e1(&e1_1);
 						animation_e1_control(&e1_1);
@@ -1109,7 +1103,7 @@ HAL_Init();
 				animation_e1_die(&e1_3);
 			}
 
-			if (nivelActual2==NIVEL1){
+			if (fase_p2==1){
 				if(e1_4.isAlive==1){
 						animation_e1(&e1_4);
 						animation_e1_control(&e1_4);
