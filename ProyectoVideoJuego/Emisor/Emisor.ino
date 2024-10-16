@@ -1,6 +1,7 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
+#define BUTTON_PIN 32 // Pin al que conectaste el botón
 // Dirección MAC del receptor
 uint8_t receptorMAC[] = {0x24, 0x0A, 0xC4, 0x5F, 0x8D, 0x3C};
 
@@ -25,7 +26,8 @@ void enviarCallback(const uint8_t *mac, esp_now_send_status_t status) {
 void setup() {
   Serial.begin(115200);
   WiFi.mode(WIFI_STA);
-  
+  pinMode(BUTTON_PIN, INPUT_PULLUP); // Configura el pin como entrada con pull-up interno
+
   // Inicialización de ESP-NOW
   if (esp_now_init() != ESP_OK) {
     //Serial.println("Error al inicializar ESP-NOW");
@@ -50,11 +52,11 @@ void loop() {
   // Leer valores del joystick
   int xVal = analogRead(34);
   int yVal = analogRead(35);
-
+  int buttonState = digitalRead(BUTTON_PIN); // Lee el estado del botón
   // Comprobar si hay movimiento significativo en X+
   if (xVal >= 4000) {
-    strcpy(mensaje, "r");
-    Serial.print('r');
+    strcpy(mensaje, "d");
+    //Serial.print('r');
     //datosEnvio.xVal1 = 1;
     // Enviar datos al receptor
     esp_now_send(receptorMAC, (uint8_t *) &mensaje, sizeof(mensaje));
@@ -62,25 +64,29 @@ void loop() {
    // Comprobar si hay movimiento significativo en X-
   if (xVal <= 100) {
     //datosEnvio.xVal2 = 2;
-    strcpy(mensaje, "l");
-    Serial.print('l');
+    strcpy(mensaje, "u");
+    //Serial.print('l');
     // Enviar datos al receptor
     esp_now_send(receptorMAC, (uint8_t *) &mensaje, sizeof(mensaje));
   }
   // Comprobar si hay movimiento significativo en Y+
   if (yVal >= 4000) {
     //datosEnvio.yVal1 = 3;
-    //strcpy(mensaje, "3");
+    strcpy(mensaje, "l");
     // Enviar datos al receptor
-    //esp_now_send(receptorMAC, (uint8_t *) &mensaje, sizeof(mensaje));
+    esp_now_send(receptorMAC, (uint8_t *) &mensaje, sizeof(mensaje));
   }
   // Comprobar si hay movimiento significativo en Y+
   if (yVal <= 100) {
     //datosEnvio.yVal2 = 4;
-    //strcpy(mensaje, "4");
+    strcpy(mensaje, "r");
     // Enviar datos al receptor
-    //esp_now_send(receptorMAC, (uint8_t *) &mensaje, sizeof(mensaje));
+    esp_now_send(receptorMAC, (uint8_t *) &mensaje, sizeof(mensaje));
   }
-
+  if (buttonState == LOW) { // Si el botón está presionado
+    strcpy(mensaje, "b");
+    // Enviar datos al receptor
+    esp_now_send(receptorMAC, (uint8_t *) &mensaje, sizeof(mensaje));
+  }
   delay(100); // Pequeño retraso para evitar envíos constantes
 }
