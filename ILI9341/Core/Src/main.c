@@ -61,6 +61,32 @@ typedef struct {
 	unsigned int PlayerNum;
 } player;
 
+//Estructura enemigo 3
+typedef struct {
+    unsigned int x;         // Coordenada X del enemigo
+    unsigned int y;         // Coordenada Y del enemigo
+    unsigned int y_eye;
+    unsigned int width;     // Ancho de la hitbox del enemigo
+    unsigned int height;    // Alto de la hitbox del enemigo
+    int isAlive;            // Estado del enemigo (1 = vivo, 0 = muerto)
+    unsigned int e1Left;
+    unsigned int e1Right;
+    unsigned int e1Up;
+    unsigned int e1Down;
+    float animationFire;
+    float animationEye;
+    unsigned int speed;
+    unsigned int limitwidth;
+    unsigned int limitwidth_i;
+    unsigned int limitheight;
+    unsigned int limitheight_i;
+    int health;
+    unsigned int isMove;
+    unsigned int Place;
+    unsigned int delay;
+    unsigned int delay_init;
+} enemy_type3;
+
 //Estructura enemigo 2
 typedef struct {
     unsigned int x;         // Coordenada X del enemigo
@@ -103,7 +129,7 @@ typedef enum {
 	MENU, SOLO, DUO, PAUSA, FIN } EstadoJuego ;
 
 typedef enum {
-	NIVEL1, NIVEL2
+	NIVEL1, NIVEL2, NIVEL3
 } LevelPlaying;
 /* USER CODE END PTD */
 
@@ -130,6 +156,7 @@ uint16_t contador=0;
 player p1,p2;
 enemy_type1 e1_1, e1_2, e1_3,e1_4,e1_5,e1_6;
 enemy_type2 e2_1,e2_2;
+enemy_type3 e3_1, e3_2, e3_3, e3_4;
 int i;
 uint8_t modo, fase_p1, fase_p2;
 uint8_t P1_WalkUp = 0;
@@ -258,9 +285,6 @@ void initEnemy1(enemy_type1* enemy, unsigned int startX, unsigned int startY, un
 		FillRect(enemy->x , enemy->e1Up, 1, 1, 0xd685); //Arriba
 		FillRect(enemy->x , enemy->e1Down, 1, 1, 0xd685); //Abajo
         }
-
-
-
 }
 
 int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, int y){
@@ -589,7 +613,6 @@ void E2_Die(enemy_type2* enemy){
 				}
 }
 
-
 void PlayerHit_E2(player* player, enemy_type2* enemy){
 	if (enemy->isAlive == 1){
 		// Verificar si le pego a un enemigo del tipo 1
@@ -659,9 +682,180 @@ void PlayerHit_E2(player* player, enemy_type2* enemy){
 	}
 }
 
+/* Funciones Enemigo 3 -------------------------------------------------*/
+void initEnemy3(enemy_type3* enemy, unsigned int startX, unsigned int startY, unsigned int width, unsigned int height, int health, player* player) {
+    // Inicializar las coordenadas y dimensiones
+    enemy->x = startX;
+    enemy->y_eye=startY;
+    enemy->y = startY+20;
+    enemy->width = width;
+    enemy->height = height;
+    enemy->speed=5;
+    enemy->Place=0;
+    enemy->delay=0;
+    enemy->delay_init=0;
+
+    // Inicializar la vida y el estado
+    enemy->health = health;
+    enemy->isAlive = 0;  // El enemigo comienza vivo
+
+    //Animación
+    enemy->animationFire=0;
+    enemy->animationEye=0;
+    enemy->isMove=0;
+
+    //Limites
+    enemy->limitwidth=player->limitWidth;
+    enemy->limitwidth_i=player->limitWidth_i;
+    enemy->limitheight_i=18;
+    enemy->limitheight=220;
+}
+
+void E3_Eye(enemy_type3* enemy){
+	if (enemy->health>0){
+		if (enemy->isMove==0){
+			enemy->y=enemy->y_eye+20;
+			int variableEye=enemy->animationEye;
+			if (variableEye<7){
+				LCD_Sprite(enemy->x - (16 / 2), enemy->y_eye - (17 / 2), 16, 17, E3_Eye16x17_7, 7, variableEye, 0, 0);
+				enemy->animationEye+=0.1;
+			}
+			else{
+				FillRect(enemy->x - (16 / 2), enemy->y_eye - (17 / 2), 16, 17, 0xF66B);
+				enemy->isMove=1;
+				enemy->animationFire=0;
+			}
+		}
+	} else{
+		FillRect(enemy->x - (16 / 2), enemy->y_eye - (17 / 2), 16, 17, 0xF66B);
+	}
+}
+
+void E3_FireMove(enemy_type3* enemy,player* player){
+	if (enemy->health>0){
+		if (enemy->isMove==1){
+			int FutureY=enemy->y+enemy->speed;
+			if (FutureY>=220){
+				enemy->isMove=0;
+				enemy->animationEye=0;
+				enemy->health-=1;
+				enemy->Place+=1;
+				enemy->delay=0;
+				FillRect(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, 0xF66B); //Se puede eliminar
+			} else{
+				FillRect(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, 0xF66B);
+				int animationFire=enemy->animationFire;
+				enemy->y=FutureY;
+				LCD_Sprite(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, E3_Fire16x16_4, 4, animationFire, 0, 0);
+				if (player->playerUp>=enemy->e1Up && player->playerUp<=enemy->e1Down){
+					if(player->playerLeft>=enemy->e1Left && player->playerLeft<=enemy->e1Right){
+						player->y=player->y-5;
+						player->IsDamage=1;
+						player->animationDamage=0;
+						player->life-=1;
+						if (player->life==0){
+							player->isAlive=0;
+							player->animationDie=0;
+						}
+
+						FillRect(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, 0xF66B); //Se puede eliminar
+						enemy->isMove=0;
+						enemy->animationEye=0;
+						enemy->Place+=1;
+						enemy->delay=0;
+			}
+				}
+			}
+		}
+
+	}
+}
+
+void E3_FireAnimation(enemy_type3* enemy){
+	if (enemy->health>0 && enemy->isMove){
+		enemy->animationFire+=0.2;
+		if (enemy->animationFire>=4){
+			enemy->animationFire=0;
+		}
+	}
+}
+
+void E3_Hitbox(enemy_type3* enemy){
+
+    //HITBOX DEBUG
+	enemy->e1Left = enemy->x - (enemy->width / 2);
+	enemy->e1Right = (enemy->x + enemy->width / 2); //+1
+	enemy->e1Up = enemy->y - (enemy->height / 2);
+	enemy->e1Down= (enemy->y + enemy->height / 2); //+1
+
+		if (DrawHitbox==1){
+	    	Rect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0x0000);
+	    }
+	    if (DrawHitbox==2){
+	    	FillRect(enemy->e1Left , enemy->y, 1, 1, 0xd685); //Izquierda
+	    	FillRect(enemy->e1Right , enemy->y, 1, 1, 0xd685); //Derecha
+	    	FillRect(enemy->x , enemy->e1Up, 1, 1, 0xd685); //Arriba
+	    	FillRect(enemy->x , enemy->e1Down, 1, 1, 0xd685); //Abajo
+	    }
+	    if (DrawHitbox==3){
+	    	Rect(enemy->x - (enemy->width / 2), enemy->y - (enemy->height / 2), enemy->width, enemy->height, 0x0000);
+			FillRect(enemy->e1Left , enemy->y, 1, 1, 0xd685); //Izquierda
+			FillRect(enemy->e1Right , enemy->y, 1, 1, 0xd685); //Derecha
+			FillRect(enemy->x , enemy->e1Up, 1, 1, 0xd685); //Arriba
+			FillRect(enemy->x , enemy->e1Down, 1, 1, 0xd685); //Abajo
+	        }
+}
+
+void E3_MoveX(enemy_type3* enemy){
+	if (enemy->delay==0){
+	int FutureX;
+	enemy->delay=1;
+	switch (enemy->Place){
+		case 0:
+			FutureX=enemy->x+40;
+			if (FutureX>=enemy->limitwidth){
+				enemy->x=enemy->limitwidth_i+35;
+
+			} else{
+				enemy->x=FutureX;
+			}
+			break;
+
+		case 1:
+			FutureX=enemy->x-20;
+			if (FutureX<=enemy->limitwidth_i){
+				enemy->x=enemy->limitwidth-35;
+
+			} else{
+				enemy->x=FutureX;
+			}
+			break;
+		case 2:
+			FutureX=enemy->x+50;
+			if (FutureX>=enemy->limitwidth){
+				enemy->x=enemy->limitwidth_i+50;
+
+			} else{
+				enemy->x=FutureX;
+			}
+			break;
+		case 3:
+					FutureX=enemy->x-50;
+					if (FutureX<=enemy->limitwidth_i){
+						enemy->x=enemy->limitwidth-35;
+
+					} else{
+						enemy->x=FutureX;
+					}
+					break;
+		case 4:
+			enemy->Place=0;
+		}
+	}
+}
 
 /* Funciones Jugador ---------------------------------------------------*/
-void initPlayer(player* player, unsigned int startX, unsigned int startY, unsigned int playerWidth, unsigned int playerHeight, unsigned int speed, unsigned int life, unsigned int limitWidth, unsigned int limitHeight,unsigned int limitWidth_i) {
+ void initPlayer(player* player, unsigned int startX, unsigned int startY, unsigned int playerWidth, unsigned int playerHeight, unsigned int speed, unsigned int life, unsigned int limitWidth, unsigned int limitHeight,unsigned int limitWidth_i) {
     // Inicializar las propiedades del jugador
     player->x = startX;
     player->y = startY;
@@ -988,11 +1182,11 @@ HAL_Init();
 	//LCD_Print("Hola Mundo", 20, 100, 1, 0x001F, 0xCAB9);
 
 	// Activar bandera interrupcion
-	HAL_UART_Receive_IT(&huart5, buffer, 1);
+	HAL_UART_Receive_IT(&huart2, buffer, 1);
 
-	EstadoJuego estadoActual = DUO;
-	LevelPlaying nivelActual1 = NIVEL1;
-	LevelPlaying nivelActual2 = NIVEL1;
+	EstadoJuego estadoActual = SOLO;
+	LevelPlaying nivelActual1 = NIVEL3;
+	LevelPlaying nivelActual2 = NIVEL2;
     modo=2;
     fase_p1=1;
     fase_p2=1;
@@ -1017,6 +1211,10 @@ HAL_Init();
 	  if (nivelActual1==NIVEL2){
 		  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
 		  }
+
+	  if (nivelActual1==NIVEL3){
+		  initEnemy3(&e3_1, 80, 30, 15, 15, 15, &p1);
+	  	  }
 	  }
   if (estadoActual==DUO){
 	//Linea de en medio
@@ -1034,7 +1232,7 @@ HAL_Init();
 		//Inicializar enemigo 3
 		initEnemy1(&e1_3,150, 120, 16, 19, 3);}
 	  if (nivelActual1==NIVEL2){
-		  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
+		  initEnemy2(&e2_1, 90, 80, 16, 20, 3);
 		  }
 	  if (nivelActual2==NIVEL1){
 	  			//Inicializar enemigo 1
@@ -1046,7 +1244,7 @@ HAL_Init();
 	    }
 
 	  if (nivelActual2==NIVEL2){
-	  	  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
+	  	  initEnemy2(&e2_2, 230, 80, 16, 20, 3);
 	  }
 	  HitboxPlayer(&p1);
 	  HitboxPlayer(&p2);
@@ -1086,6 +1284,16 @@ HAL_Init();
 				E2_Die(&e2_1);
 			}
 
+			if (nivelActual1==NIVEL3){
+				E3_MoveX(&e3_1);
+				E3_Eye(&e3_1);
+				E3_FireMove(&e3_1,&p1);
+				E3_Hitbox(&e3_1);
+				E3_FireAnimation(&e3_1);
+
+
+			}
+
 			PlayerAttackAnimation(&p1);
 			PlayerDamageAnimation(&p1);
 			PlayerDieAnimation(&p1);
@@ -1108,6 +1316,14 @@ HAL_Init();
 				animation_e1_die(&e1_2);
 				animation_e1_die(&e1_3);
 			}
+			if (nivelActual1==NIVEL2){
+							moveE2(&e2_1, &p1);
+							e2_1.delay+=0.5; //1
+							E2_Appear(&e2_1);
+							E2_Hurt(&e2_1);
+							E2_Die(&e2_1);
+						}
+
 
 			if (nivelActual2==NIVEL1){
 				if(e1_4.isAlive==1){
@@ -1126,6 +1342,15 @@ HAL_Init();
 				animation_e1_die(&e1_5);
 				animation_e1_die(&e1_6);
 			}
+
+			if (nivelActual2==NIVEL2){
+				moveE2(&e2_2, &p2);
+				e2_2.delay+=0.5; //1
+				E2_Appear(&e2_2);
+				E2_Hurt(&e2_2);
+				E2_Die(&e2_2);
+			}
+
 
 			PlayerAttackAnimation(&p1);
 			PlayerDamageAnimation(&p1);
@@ -1544,12 +1769,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			PlayerHit(&p2, &e1_1);
 			PlayerHit(&p2, &e1_2);
 			PlayerHit(&p2, &e1_3);}
-			PlayerHit_E2(&p2, &e2_1);
+			PlayerHit_E2(&p2, &e2_2);
 	}
 
 
 	// Vuelve a activar la recepción por interrupción
-	HAL_UART_Receive_IT(&huart5, buffer, 1);
+	HAL_UART_Receive_IT(&huart2, buffer, 1);
 }
 
 /* USER CODE END 4 */
