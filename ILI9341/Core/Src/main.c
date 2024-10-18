@@ -151,6 +151,7 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 
 extern uint8_t fondo[];
+extern uint8_t fondo_menu[];
 uint8_t buffer[10];
 uint16_t contador=0;
 player p1,p2;
@@ -518,7 +519,7 @@ void moveE2(enemy_type2* enemy, player* player){
 					enemy->move+=1;
 					moveE2(enemy,player);
 					}else{
-					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xF66B);
+					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xFE8B);
 					enemy->x=futureX_D;
 					enemy->y=player->y;
 					enemy->animationV=0;
@@ -532,7 +533,7 @@ void moveE2(enemy_type2* enemy, player* player){
 					enemy->move+=1;
 					moveE2(enemy,player);
 				}else {
-					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xF66B);
+					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xFE8B);
 					enemy->y=futureY_A;
 					enemy->x=player->x;
 					enemy->animationV=0;
@@ -546,7 +547,7 @@ void moveE2(enemy_type2* enemy, player* player){
 						enemy->move+=1;
 						moveE2(enemy,player);
 					}else{
-					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xF66B);
+					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xFE8B);
 					enemy->x=futureX_I;
 					enemy->y=player->y;
 					enemy->animationV=0;
@@ -560,7 +561,7 @@ void moveE2(enemy_type2* enemy, player* player){
 					enemy->move+=1;
 					moveE2(enemy,player);
 				}else {
-					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xF66B);
+					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xFE8B);
 					enemy->y=futureY_U;
 					enemy->x=player->x;
 					enemy->animationV=0;
@@ -608,7 +609,7 @@ void E2_Die(enemy_type2* enemy){
 					LCD_Sprite(enemy->x - (26 / 2)+1, enemy->y - (23 / 2), 26,23, E2_Die26x23, 6, variableAnimationDie, 0, 0);
 					enemy->animationDie+=0.2;
 					}else{
-						FillRect(enemy->x - (26 / 2)+1, enemy->y - (23 / 2), 26,23, 0xF66B);
+						FillRect(enemy->x - (26 / 2)+1, enemy->y - (23 / 2), 26,23, 0xFE8B);
 						enemy->x=5000;
 						enemy->y=5000;
 					}
@@ -723,13 +724,13 @@ void E3_Eye(enemy_type3* enemy){
 				enemy->animationEye+=0.1;
 			}
 			else{
-				FillRect(enemy->x - (16 / 2), enemy->y_eye - (17 / 2), 16, 17, 0xF66B);
+				FillRect(enemy->x - (16 / 2), enemy->y_eye - (17 / 2), 16, 17, 0xFE8B);
 				enemy->isMove=1;
 				enemy->animationFire=0;
 			}
 		}
 	} else{
-		FillRect(enemy->x - (16 / 2), enemy->y_eye - (17 / 2), 16, 17, 0xF66B);
+		FillRect(enemy->x - (16 / 2), enemy->y_eye - (17 / 2), 16, 17, 0xFE8B);
 	}
 }
 
@@ -743,24 +744,27 @@ void E3_FireMove(enemy_type3* enemy,player* player){
 				enemy->health-=1;
 				enemy->Place+=1;
 				enemy->delay=0;
-				FillRect(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, 0xF66B); //Se puede eliminar
+				FillRect(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, 0xFE8B); //Se puede eliminar
 			} else{
-				FillRect(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, 0xF66B);
+				FillRect(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, 0xFE8B);
 				int animationFire=enemy->animationFire;
 				enemy->y=FutureY;
 				LCD_Sprite(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, E3_Fire16x16_4, 4, animationFire, 0, 0);
 				if (player->playerUp>=enemy->e1Up && player->playerUp<=enemy->e1Down){
 					if(player->playerLeft>=enemy->e1Left && player->playerLeft<=enemy->e1Right){
 						player->y=player->y-5;
+						player->direction=0;
 						player->IsDamage=1;
 						player->animationDamage=0;
 						player->life-=1;
+						FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFE8B);
 						if (player->life==0){
 							player->isAlive=0;
 							player->animationDie=0;
+							FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFE8B);
 						}
 
-						FillRect(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, 0xF66B); //Se puede eliminar
+						FillRect(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, 0xFE8B); //Se puede eliminar
 						enemy->isMove=0;
 						enemy->animationEye=0;
 						enemy->Place+=1;
@@ -880,7 +884,7 @@ void E3_MoveX(enemy_type3* enemy){
 	player-> playerLevel=0;
 
     // Dibujar el jugador en pantalla
-    LCD_Sprite(player->x - (18 / 2)+1, player->y - (23 / 2), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
+    LCD_Sprite(player->x - (18 / 2)+2, player->y - (23 / 2+4), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
     FillRect(player->x , player->y, 1, 1, 0x000000);
 
     //HITBOX DEBUG
@@ -888,13 +892,6 @@ void E3_MoveX(enemy_type3* enemy){
     player->playerRight=(player->x+(player->width / 2)-1);
     player->playerUp=player->y-(player->height / 2);
     player->playerDown=(player->y+(player->height / 2)-1);
-
-    /*
-    FillRect(player->playerLeft , player->y, 1, 1, 0xFFFFFF); //Izquierda
-    FillRect(player->playerRight , player->y, 1, 1, 0x0420); //Derecha
-    FillRect(player->x , player->playerUp, 1, 1, 0xFFFFFF); //Arriba
-    FillRect(player->x , player->playerDown, 1, 1, 0x0420); //Abajo*/
-
 
 }
 
@@ -1055,19 +1052,16 @@ void PlayerAnimation(player* player){
 	if (player->isAlive==1){
 		//(0: arriba, 1: derecha, 2: abajo, 3: izquierda)
 		if (player->direction==0){
-			//FillRect(p1.x - (18 / 2), p1.y - (26 / 2), 18, 26,0xFFFFFF);
 			LCD_Sprite(player->x - (18 / 2)+1, player->y - (26 / 2), 18, 26, LinkUpWalk180x26_10, 10, player->animationWalkUp, 0, 0);
 		}
 		if (player->direction==1){
-			//FillRect(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23,0xFFFFFF);
 			LCD_Sprite(player->x - (22 / 2)+1, player->y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, player->animationWalkRight, 1, 0);
 		}
 		if (player->direction==2){
-			//FillRect(p1.x - (18 / 2), p1.y - (26 / 2), 18, 26,0xFFFFFF);
 			LCD_Sprite(player->x - (18 / 2)+1, player->y - (24 / 2)+1, 18, 24, LinkDownWalk180x24_10, 10, player->animationWalkDown, 0, 0);
 			}
 		if (player->direction==3){
-			//FillRect(p1.x - (22 / 2), p1.y - (23 / 2), 22, 23,0xFFFFFF);
+
 			LCD_Sprite(player->x - (22 / 2)+1, player->y - (23 / 2), 22, 23, LinkSideWalk220x23_10, 10, player->animationWalkLeft, 0, 0);
 			}
 	}
@@ -1133,6 +1127,7 @@ void PlayerDieAnimation(player* player){
 	int variableAnimationDie=player->animationDie;
 	if (player->isAlive==0){
 		if (variableAnimationDie<4){
+			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2), p2.width+1, p2.height+1, 0xFE8B);
 			LCD_Sprite(player->x - (24 / 2)+1, player->y - (24 / 2), 24,24, LinkDie_24x24_4, 4, variableAnimationDie, 0, 0);
 			player->animationDie+=0.2;
 			}
@@ -1178,7 +1173,6 @@ HAL_Init();
 	LCD_Clear(0x00);
 
 	//Fondo
-	//FillRect(0, 0, 319, 239, 0xFFFF);
 	LCD_Bitmap(0, 0, 320, 240, fondo);
 
 	//LCD_Print("Hola Mundo", 20, 100, 1, 0x001F, 0xCAB9);
@@ -1366,7 +1360,7 @@ HAL_Init();
 			PlayerDieAnimation(&p2);
 			break;
 		case PAUSA:
-			FillRect(0, 0, 319, 239, 0xFFFF);
+			LCD_Bitmap(0, 0, 320, 240, pausa_menu);
 			break;
 		case FIN:
 			break;
@@ -1604,7 +1598,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	if(buffer[0] == 'd'){
 		if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
-			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
+			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFE8B);
 			p1.direction=2;
 		if (playerCanMove(&p1, 0)) {
 		    p1.y=p1.y+p1.speed;
@@ -1615,14 +1609,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		    			}
 		    PlayerAnimation(&p1);
 		} else {
-			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
+			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1,0xFE8B);
 			LCD_Sprite(p1.x - (18 / 2)+1, p1.y - (26 / 2)+1, 18, 26, LinkDownWalk180x24_10, 10, 0, 0, 0);
 		}
 	}
 }
 	if(buffer[0] == 'u'){
 		if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
-			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
+			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFE8B);
 			p1.direction=0;
 			if (playerCanMove(&p1, 2)) {
 				p1.y=p1.y-p1.speed;
@@ -1640,7 +1634,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 }
 	if(buffer[0] == 'r'){
 		if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
-			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
+			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFE8B);
 			p1.direction=1;
 			if (playerCanMove(&p1, 1)) {
 				p1.x=p1.x+p1.speed;
@@ -1659,7 +1653,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 }
 	if(buffer[0] == 'l'){
 		if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
-			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFFFFFF);
+			FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFE8B);
 			p1.direction=3;
 			if (playerCanMove(&p1, 3)) {
 				p1.x=p1.x-p1.speed;
@@ -1691,7 +1685,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	//Jugador 2
 	if(buffer[0] == '1'){ //Arriba
 			if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
-				FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFFFFFF);
+				FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFE8B);
 				p2.direction=0;
 				if (playerCanMove(&p2, 2)) {
 					p2.y=p2.y-p2.speed;
@@ -1710,7 +1704,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	if(buffer[0] == '2'){ //Derecha
 		if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
-			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFFFFFF);
+			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFE8B);
 			p2.direction=1;
 			if (playerCanMove(&p2, 1)) {
 				p2.x=p2.x+p2.speed;
@@ -1730,7 +1724,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	if(buffer[0] == '3'){ //Abajo
 		if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
-			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFFFFFF);
+			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFE8B);
 			p2.direction=2;
 		if (playerCanMove(&p2, 0)) {
 		    p2.y=p2.y+p2.speed;
@@ -1741,7 +1735,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		    			}
 		    PlayerAnimation(&p2);
 		} else {
-			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFFFFFF);
+			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFE8B);
 			LCD_Sprite(p2.x - (18 / 2)+1, p2.y - (26 / 2)+1, 18, 26, LinkDownWalk180x24_10, 10, 0, 0, 0);
 		}
 	}
@@ -1749,7 +1743,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	if(buffer[0] == '4'){ //Izquierda
 		if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
-			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFFFFFF);
+			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFE8B);
 			p2.direction=3;
 			if (playerCanMove(&p2, 3)) {
 				p2.x=p2.x-p2.speed;
