@@ -151,7 +151,7 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 
 extern uint8_t fondo[];
-extern uint8_t fondo_menu[];
+extern uint8_t pausa_menu[];
 uint8_t buffer[10];
 uint16_t contador=0;
 player p1,p2;
@@ -172,6 +172,7 @@ uint8_t P1_WalkDown = 0;
 uint8_t DrawHitbox=0;
 volatile EstadoJuego estadoActual = SOLO;
 volatile EstadoJuego estadoAnterior = SOLO;
+volatile EstadoJuego estadoFuturo;
 volatile LevelPlaying nivelActual1;
 volatile LevelPlaying nivelActual2;
 /* USER CODE END PV */
@@ -885,7 +886,7 @@ void E3_MoveX(enemy_type3* enemy){
 
     // Dibujar el jugador en pantalla
     LCD_Sprite(player->x - (18 / 2)+2, player->y - (23 / 2+4), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
-    FillRect(player->x , player->y, 1, 1, 0x000000);
+    //FillRect(player->x , player->y, 1, 1, 0x000000);
 
     //HITBOX DEBUG
     player->playerLeft=player->x-(player->width / 2);
@@ -1183,8 +1184,9 @@ HAL_Init();
 	//EstadoJuego estadoActual = SOLO;
 	//LevelPlaying nivelActual1 = NIVEL3;
 	//LevelPlaying nivelActual2 = NIVEL2;
-	estadoActual = SOLO;
-	nivelActual1 = NIVEL3;
+	estadoActual = MENU;
+	nivelActual1 = NIVEL1;
+	nivelActual2 = NIVEL2;
 	modo = 0;
     fase_p1=1;
     fase_p2=1;
@@ -1672,14 +1674,26 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 }
 	if (buffer[0]=='b'){
-		if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
-			p1.IsAttack=1;
-			p1.animationAttack=0;
-			PlayerHit(&p1, &e1_1);
-			PlayerHit(&p1, &e1_2);
-			PlayerHit(&p1, &e1_3);}
-			PlayerHit_E2(&p1, &e2_1);
-
+		 if (estadoActual == MENU ) {
+			 // IMPRIMIR SPRITE DE UN JUGADOR
+			 estadoFuturo = SOLO;
+			 if (nivelActual1==NIVEL1){
+			 		//Inicializar enemigo 1
+			 		initEnemy1(&e1_1, 40, 80, 16, 19, 3);
+			 		//Inicializar enemigo 2
+			 		initEnemy1(&e1_2, 160, 80, 16, 19, 3);
+			 		//Inicializar enemigo 3
+			 		initEnemy1(&e1_3, 280, 80, 16, 19, 3);}
+		 	 }
+		 else {
+			 if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
+			 			p1.IsAttack=1;
+			 			p1.animationAttack=0;
+			 			PlayerHit(&p1, &e1_1);
+			 			PlayerHit(&p1, &e1_2);
+			 			PlayerHit(&p1, &e1_3);}
+			 			PlayerHit_E2(&p1, &e2_1);
+		 }
 	}
 
 	//Jugador 2
@@ -1763,28 +1777,45 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 }
 
 	if (buffer[0]=='5'){
-		if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
-			p2.IsAttack=1;
-			p2.animationAttack=0;
-			PlayerHit(&p2, &e1_1);
-			PlayerHit(&p2, &e1_2);
-			PlayerHit(&p2, &e1_3);}
-			PlayerHit_E2(&p2, &e2_2);
+		if (estadoActual == MENU ) {
+					 // IMPRIMIR SPRITE DE DOS JUGADORES
+			estadoFuturo = DUO;
+		}
+		else {
+			if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
+				p2.IsAttack=1;
+				p2.animationAttack=0;
+				PlayerHit(&p2, &e1_1);
+				PlayerHit(&p2, &e1_2);
+				PlayerHit(&p2, &e1_3);}
+				PlayerHit_E2(&p2, &e2_2);
+		}
 	}
 
 	if (buffer[0]=='6'){
+		if (estadoActual == MENU){
+			estadoActual = estadoFuturo;
+		}
 		// Solo cambia a PAUSA si estamos en SOLO o DUO
-		        if (estadoActual == SOLO || estadoActual == DUO) {
-		            // Solo cambia si no estamos ya en PAUSA
-		            if (estadoActual != PAUSA) {
-		                estadoAnterior = estadoActual;  // Guarda el estado actual antes de cambiar
-		                estadoActual = PAUSA;           // Cambia a PAUSA
-		            }
-		        } else if (estadoActual == PAUSA) {
-		            // Si estamos en PAUSA, regresa al estado anterior
-		        	LCD_Bitmap(0, 0, 320, 240, fondo);
-		            estadoActual = estadoAnterior; // Restaura el estado anterior
-		        }
+		if (estadoActual == SOLO || estadoActual == DUO) {
+			// Solo cambia si no estamos ya en PAUSA
+			if (estadoActual != PAUSA) {
+				estadoAnterior = estadoActual;  // Guarda el estado actual antes de cambiar
+				estadoActual = PAUSA;           // Cambia a PAUSA
+			}
+		} else if (estadoActual == PAUSA) {
+			// Si estamos en PAUSA, regresa al estado anterior
+			LCD_Bitmap(0, 0, 320, 240, fondo);
+			if (estadoAnterior == SOLO){
+				LCD_Sprite(p1.x - (18 / 2)+2, p1.y - (23 / 2+4), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
+			}
+			if (estadoAnterior == DUO){
+				LCD_Sprite(p1.x - (18 / 2)+2, p1.y - (23 / 2+4), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
+				LCD_Sprite(p2.x - (18 / 2)+2, p2.y - (23 / 2+4), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
+			}
+
+			estadoActual = estadoAnterior; // Restaura el estado anterior
+		}
 	}
 
 	// Vuelve a activar la recepción por interrupción
