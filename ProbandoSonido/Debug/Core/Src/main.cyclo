@@ -1,0 +1,10 @@
+../Core/Src/main.c:83:6:beep	1
+../Core/Src/main.c:101:6:PlayMelody	1
+../Core/Src/main.c:190:6:nonBlockingDelay	2
+../Core/Src/main.c:197:6:playMelody2	2
+../Core/Src/main.c:217:5:main	1
+../Core/Src/main.c:350:6:SystemClock_Config	3
+../Core/Src/main.c:398:13:MX_TIM2_Init	6
+../Core/Src/main.c:457:13:MX_USART2_UART_Init	2
+../Core/Src/main.c:490:13:MX_GPIO_Init	1
+../Core/Src/main.c:530:6:Error_Handler	1

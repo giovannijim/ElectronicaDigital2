@@ -169,8 +169,10 @@ uint8_t P1_WalkDown = 0;
  *  fase_p2 La fase en la que está el jugador 2
 */
 uint8_t DrawHitbox=0;
-
-
+volatile EstadoJuego estadoActual = SOLO;
+volatile EstadoJuego estadoAnterior = SOLO;
+volatile LevelPlaying nivelActual1;
+volatile LevelPlaying nivelActual2;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -1176,7 +1178,7 @@ HAL_Init();
 	LCD_Clear(0x00);
 
 	//Fondo
-	FillRect(0, 0, 319, 239, 0xFFFF);
+	//FillRect(0, 0, 319, 239, 0xFFFF);
 	LCD_Bitmap(0, 0, 320, 240, fondo);
 
 	//LCD_Print("Hola Mundo", 20, 100, 1, 0x001F, 0xCAB9);
@@ -1184,10 +1186,12 @@ HAL_Init();
 	// Activar bandera interrupcion
 	HAL_UART_Receive_IT(&huart2, buffer, 1);
 
-	EstadoJuego estadoActual = SOLO;
-	LevelPlaying nivelActual1 = NIVEL3;
-	LevelPlaying nivelActual2 = NIVEL2;
-    modo=2;
+	//EstadoJuego estadoActual = SOLO;
+	//LevelPlaying nivelActual1 = NIVEL3;
+	//LevelPlaying nivelActual2 = NIVEL2;
+	estadoActual = SOLO;
+	nivelActual1 = NIVEL3;
+	modo = 0;
     fase_p1=1;
     fase_p2=1;
 
@@ -1257,6 +1261,7 @@ HAL_Init();
 	while (1) {
 		switch(estadoActual){
 		case MENU:
+			FillRect(0, 0, 319, 239, 0xFF00);
 			break;
 		case SOLO:
 			if (nivelActual1==NIVEL1){
@@ -1361,6 +1366,7 @@ HAL_Init();
 			PlayerDieAnimation(&p2);
 			break;
 		case PAUSA:
+			FillRect(0, 0, 319, 239, 0xFFFF);
 			break;
 		case FIN:
 			break;
@@ -1772,6 +1778,20 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			PlayerHit_E2(&p2, &e2_2);
 	}
 
+	if (buffer[0]=='6'){
+		// Solo cambia a PAUSA si estamos en SOLO o DUO
+		        if (estadoActual == SOLO || estadoActual == DUO) {
+		            // Solo cambia si no estamos ya en PAUSA
+		            if (estadoActual != PAUSA) {
+		                estadoAnterior = estadoActual;  // Guarda el estado actual antes de cambiar
+		                estadoActual = PAUSA;           // Cambia a PAUSA
+		            }
+		        } else if (estadoActual == PAUSA) {
+		            // Si estamos en PAUSA, regresa al estado anterior
+		        	LCD_Bitmap(0, 0, 320, 240, fondo);
+		            estadoActual = estadoAnterior; // Restaura el estado anterior
+		        }
+	}
 
 	// Vuelve a activar la recepción por interrupción
 	HAL_UART_Receive_IT(&huart2, buffer, 1);
