@@ -147,7 +147,6 @@ FRESULT fres;
 DWORD fre_clust;
 uint32_t totalSpace, freeSpace;
 //char archivo[100];
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -157,16 +156,16 @@ uint32_t totalSpace, freeSpace;
 
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi1;
-
 UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-uint8_t image[19200];
+uint8_t fragmento_imagen[19200];
 //extern uint8_t fondo[];
-//extern uint8_t pausa_menu[];
+
 uint8_t buffer[10];
-uint16_t contador=0;
+
+// variables de TYPEDEF
 player p1,p2;
 enemy_type1 e1_1, e1_2, e1_3,e1_4,e1_5,e1_6;
 enemy_type2 e2_1,e2_2;
@@ -209,21 +208,17 @@ void transmit_uart(char *string){
   HAL_UART_Transmit(&huart2, (uint8_t*)string, len, 200);
 }
 
-// Función para leer una imagen desde la SD y almacenarla en la variable play
-int load_image_from_sd_to_play(const char* filename) {
+// Función para leer una imagen desde la SD
+int CargarBitmaps_SD(const char* filename) {
     FIL fil;
     UINT bytes_read;
     FRESULT fres;
-
+    // Montar SD
     fres = f_mount(&fs, "/", 0);
     if (fres == FR_OK){
     	transmit_uart("SD MONTADA\n");
     }
-	/*if (fres != FR_OK) {
-		transmit_uart("Error al montar la SD\n");
-		//free(image_buffer);
-		return;
-	}*/
+
     // Abrir el archivo desde la SD
     fres = f_open(&fil, filename, FA_READ);
     if (fres != FR_OK) {
@@ -232,7 +227,7 @@ int load_image_from_sd_to_play(const char* filename) {
     }
     transmit_uart("Se abrio el archivo\n");
     // Leer los datos del archivo y almacenarlos en la variable play
-    fres = f_read(&fil, image, 19200, &bytes_read);
+    fres = f_read(&fil, fragmento_imagen, 19200, &bytes_read);
     if (fres != FR_OK || bytes_read == 0) {
        transmit_uart("Error al leer la imagen desde la SD\n");
         f_close(&fil);
@@ -241,7 +236,7 @@ int load_image_from_sd_to_play(const char* filename) {
 
     // Cerrar el archivo
     f_close(&fil);
-    transmit_uart("corre\n");
+    transmit_uart("TERMINO DE CARGAR IMAGEN\n");
    // transmit_uart("Imagen cargada correctamente desde la SD a la variable play\n");
     return 1;  // Éxito
 }
@@ -1220,6 +1215,26 @@ void initLevelSolo(void){
 		  	  }
 		  }
 }
+
+void CargarMultiplesBitmaps(char *baseName) {
+    char fileName[20];
+    int y_offset = 0;
+
+    for (int i = 1; i <= 8; i++) {
+        // Formateamos el nombre del archivo, agregando el número y "_h.bin"
+        sprintf(fileName, "%s%d_h.bin", baseName, i);
+
+        // Intentamos cargar el bitmap desde la tarjeta SD
+        if (CargarBitmaps_SD(fileName)) {
+            // Mostramos el bitmap en la posición correspondiente
+            LCD_Bitmap(0, y_offset, 320, 30, fragmento_imagen);
+        }
+
+        // Aumentamos el desplazamiento vertical para el siguiente bitmap
+        y_offset += 30;
+    }
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -1260,34 +1275,34 @@ int main(void)
 	LCD_Init();
 	//LCD_Clear(0x00);
 
-	//Fondo
-
-
-	if (load_image_from_sd_to_play("fb1_h.bin")) {
-		LCD_Bitmap(0, 0, 320, 30, image);
+	//Cargar el fondo en 8 fragmentaciones
+	CargarMultiplesBitmaps("fb");
+/*
+	if (CargarBitmaps_SD("fb1_h.bin")) {
+		LCD_Bitmap(0, 0, 320, 30, fragmento_imagen);
 	}
-	if (load_image_from_sd_to_play("fb2_h.bin")) {
-		LCD_Bitmap(0, 30, 320, 30, image);
+	if (CargarBitmaps_SD("fb2_h.bin")) {
+		LCD_Bitmap(0, 30, 320, 30, fragmento_imagen);
 	}
-	if (load_image_from_sd_to_play("fb3_h.bin")) {
-		LCD_Bitmap(0, 60, 320, 30, image);
+	if (CargarBitmaps_SD("fb3_h.bin")) {
+		LCD_Bitmap(0, 60, 320, 30, fragmento_imagen);
 	}
-	if (load_image_from_sd_to_play("fb4_h.bin")) {
-		LCD_Bitmap(0, 90, 320, 30, image);
+	if (CargarBitmaps_SD("fb4_h.bin")) {
+		LCD_Bitmap(0, 90, 320, 30, fragmento_imagen);
 	}
-	if (load_image_from_sd_to_play("fb5_h.bin")) {
-		LCD_Bitmap(0, 120, 320, 30, image);
+	if (CargarBitmaps_SD("fb5_h.bin")) {
+		LCD_Bitmap(0, 120, 320, 30, fragmento_imagen);
 	}
-	if (load_image_from_sd_to_play("fb6_h.bin")) {
-		LCD_Bitmap(0, 150, 320, 30, image);
+	if (CargarBitmaps_SD("fb6_h.bin")) {
+		LCD_Bitmap(0, 150, 320, 30, fragmento_imagen);
 	}
-	if (load_image_from_sd_to_play("fb7_h.bin")) {
-		LCD_Bitmap(0, 180, 320, 30, image);
+	if (CargarBitmaps_SD("fb7_h.bin")) {
+		LCD_Bitmap(0, 180, 320, 30, fragmento_imagen);
 	}
-	if (load_image_from_sd_to_play("fb8_h.bin")) {
-		LCD_Bitmap(0, 210, 320, 30, image);
+	if (CargarBitmaps_SD("fb8_h.bin")) {
+		LCD_Bitmap(0, 210, 320, 30, fragmento_imagen);
 	}
-
+*/
 	//LCD_Bitmap(0, 0, 320, 240, fondo);
 
 	//LCD_Print("Hola Mundo", 20, 100, 1, 0x001F, 0xCAB9);
@@ -1487,6 +1502,7 @@ int main(void)
 			break;
 		case PAUSA:
 			//LCD_Bitmap(0, 0, 320, 240, pausa_menu);
+			CargarMultiplesBitmaps("pausa");
 			break;
 		case FIN:
 			break;
@@ -1940,6 +1956,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		} else if (estadoActual == PAUSA) {
 			// Si estamos en PAUSA, regresa al estado anterior
 			//LCD_Bitmap(0, 0, 320, 240, fondo);
+			//Cargar el fondo en 8 fragmentaciones
+
 			if (estadoAnterior == SOLO){
 				LCD_Sprite(p1.x - (18 / 2)+2, p1.y - (23 / 2+4), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
 			}
@@ -1947,8 +1965,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				LCD_Sprite(p1.x - (18 / 2)+2, p1.y - (23 / 2+4), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
 				LCD_Sprite(p2.x - (18 / 2)+2, p2.y - (23 / 2+4), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
 			}
-
 			estadoActual = estadoAnterior; // Restaura el estado anterior
+			//CargarMultiplesBitmaps("fb");
 		}
 	}
 
