@@ -175,6 +175,7 @@ volatile EstadoJuego estadoAnterior = SOLO;
 volatile EstadoJuego estadoFuturo;
 volatile LevelPlaying nivelActual1;
 volatile LevelPlaying nivelActual2;
+volatile int IniciarLevel=0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -1134,6 +1135,36 @@ void PlayerDieAnimation(player* player){
 			}
 		}
 }
+
+void initLevelSolo(void){
+	FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFE8B);
+	if (IniciarLevel==1){
+		//Inicializar Jugador 1
+		initPlayer(&p1, 160, 200, 22, 30, 5, 3, 300, 220,18);
+		initPlayer(&p2, 160, 200, 22, 30, 5, 3, 300, 220,18);
+		p1.PlayerNum=1;
+		p2.PlayerNum=2;
+		p2.isAlive=0;
+
+		if (nivelActual1==NIVEL1){
+			//Inicializar enemigo 1
+			initEnemy1(&e1_1, 40, 80, 16, 19, 3);
+			//Inicializar enemigo 2
+			initEnemy1(&e1_2, 160, 80, 16, 19, 3);
+			//Inicializar enemigo 3
+			initEnemy1(&e1_3, 280, 80, 16, 19, 3);}
+
+		  if (nivelActual1==NIVEL2){
+			  initEnemy2(&e2_1, 160, 80, 16, 20, 3);
+			  IniciarLevel=0;
+			  }
+
+		  if (nivelActual1==NIVEL3){
+			  initEnemy3(&e3_1, 80, 30, 15, 15, 15, &p1);
+			  IniciarLevel=0;
+		  	  }
+		  }
+}
 /* USER CODE END 0 */
 
 /**
@@ -1184,7 +1215,7 @@ HAL_Init();
 	//EstadoJuego estadoActual = SOLO;
 	//LevelPlaying nivelActual1 = NIVEL3;
 	//LevelPlaying nivelActual2 = NIVEL2;
-	estadoActual = MENU;
+	estadoActual = SOLO;
 	nivelActual1 = NIVEL1;
 	nivelActual2 = NIVEL2;
 	modo = 0;
@@ -1275,6 +1306,11 @@ HAL_Init();
 					animation_e1_die(&e1_1);
 					animation_e1_die(&e1_2);
 					animation_e1_die(&e1_3);
+					if (e1_1.isAlive==0&&e1_2.isAlive==0&&e1_3.isAlive==0 && e1_1.animationDie>=11 && e1_2.animationDie>=11 && e1_3.animationDie>=11){
+						nivelActual1=NIVEL2;
+						IniciarLevel=1;
+						initLevelSolo();
+					}
 				}
 
 			if (nivelActual1==NIVEL2){
@@ -1283,6 +1319,11 @@ HAL_Init();
 				E2_Appear(&e2_1);
 				E2_Hurt(&e2_1);
 				E2_Die(&e2_1);
+				if (e2_1.isAlive==0&&e2_1.animationDie>=6){
+					nivelActual1=NIVEL3;
+					IniciarLevel=1;
+					initLevelSolo();
+				}
 			}
 
 			if (nivelActual1==NIVEL3){
