@@ -18,11 +18,15 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "fatfs.h"
 
 /* Private includes ----------------------------------------------------------*/
-#include "sprites.h"
 /* USER CODE BEGIN Includes */
+#include "sprites.h"
 #include "ili9341.h"
+#include "fatfs_sd.h"
+#include "string.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -135,6 +139,15 @@ typedef enum {
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+SPI_HandleTypeDef hspi1;
+FATFS fs;
+FATFS *pfs;
+FIL fil;
+FRESULT fres;
+DWORD fre_clust;
+uint32_t totalSpace, freeSpace;
+//char archivo[100];
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -149,9 +162,9 @@ UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
-extern uint8_t fondo[];
-extern uint8_t pausa_menu[];
+uint8_t image[19200];
+//extern uint8_t fondo[];
+//extern uint8_t pausa_menu[];
 uint8_t buffer[10];
 uint16_t contador=0;
 player p1,p2;
@@ -190,6 +203,48 @@ static void MX_UART5_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+void transmit_uart(char *string){
+  uint8_t len=strlen(string);
+  HAL_UART_Transmit(&huart2, (uint8_t*)string, len, 200);
+}
+
+// Función para leer una imagen desde la SD y almacenarla en la variable play
+int load_image_from_sd_to_play(const char* filename) {
+    FIL fil;
+    UINT bytes_read;
+    FRESULT fres;
+
+    fres = f_mount(&fs, "/", 0);
+    if (fres == FR_OK){
+    	transmit_uart("SD MONTADA\n");
+    }
+	/*if (fres != FR_OK) {
+		transmit_uart("Error al montar la SD\n");
+		//free(image_buffer);
+		return;
+	}*/
+    // Abrir el archivo desde la SD
+    fres = f_open(&fil, filename, FA_READ);
+    if (fres != FR_OK) {
+       transmit_uart("Error al abrir el archivo en la SD\n");
+        return 0;  // Error al abrir el archivo
+    }
+    transmit_uart("Se abrio el archivo\n");
+    // Leer los datos del archivo y almacenarlos en la variable play
+    fres = f_read(&fil, image, 19200, &bytes_read);
+    if (fres != FR_OK || bytes_read == 0) {
+       transmit_uart("Error al leer la imagen desde la SD\n");
+        f_close(&fil);
+        return 0;  // Error al leer el archivo
+    }
+
+    // Cerrar el archivo
+    f_close(&fil);
+    transmit_uart("corre\n");
+   // transmit_uart("Imagen cargada correctamente desde la SD a la variable play\n");
+    return 1;  // Éxito
+}
 
 
 /* Funciones Enemigo tipo 1 ---------------------------------------------------*/
@@ -1181,7 +1236,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -1199,13 +1254,41 @@ HAL_Init();
   MX_SPI1_Init();
   MX_USART2_UART_Init();
   MX_UART5_Init();
+  MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
 
 	LCD_Init();
-	LCD_Clear(0x00);
+	//LCD_Clear(0x00);
 
 	//Fondo
-	LCD_Bitmap(0, 0, 320, 240, fondo);
+
+
+	if (load_image_from_sd_to_play("fb1_h.bin")) {
+		LCD_Bitmap(0, 0, 320, 30, image);
+	}
+	if (load_image_from_sd_to_play("fb2_h.bin")) {
+		LCD_Bitmap(0, 30, 320, 30, image);
+	}
+	if (load_image_from_sd_to_play("fb3_h.bin")) {
+		LCD_Bitmap(0, 60, 320, 30, image);
+	}
+	if (load_image_from_sd_to_play("fb4_h.bin")) {
+		LCD_Bitmap(0, 90, 320, 30, image);
+	}
+	if (load_image_from_sd_to_play("fb5_h.bin")) {
+		LCD_Bitmap(0, 120, 320, 30, image);
+	}
+	if (load_image_from_sd_to_play("fb6_h.bin")) {
+		LCD_Bitmap(0, 150, 320, 30, image);
+	}
+	if (load_image_from_sd_to_play("fb7_h.bin")) {
+		LCD_Bitmap(0, 180, 320, 30, image);
+	}
+	if (load_image_from_sd_to_play("fb8_h.bin")) {
+		LCD_Bitmap(0, 210, 320, 30, image);
+	}
+
+	//LCD_Bitmap(0, 0, 320, 240, fondo);
 
 	//LCD_Print("Hola Mundo", 20, 100, 1, 0x001F, 0xCAB9);
 
@@ -1403,7 +1486,7 @@ HAL_Init();
 			PlayerDieAnimation(&p2);
 			break;
 		case PAUSA:
-			LCD_Bitmap(0, 0, 320, 240, pausa_menu);
+			//LCD_Bitmap(0, 0, 320, 240, pausa_menu);
 			break;
 		case FIN:
 			break;
@@ -1489,7 +1572,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -1597,7 +1680,10 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, LCD_CS_Pin|LCD_D6_Pin|LCD_D3_Pin|LCD_D5_Pin
-                          |LCD_D4_Pin|SD_SS_Pin, GPIO_PIN_RESET);
+                          |LCD_D4_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(SD_SS_GPIO_Port, SD_SS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pins : LCD_RST_Pin LCD_D1_Pin */
   GPIO_InitStruct.Pin = LCD_RST_Pin|LCD_D1_Pin;
@@ -1616,13 +1702,20 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LCD_CS_Pin LCD_D6_Pin LCD_D3_Pin LCD_D5_Pin
-                           LCD_D4_Pin SD_SS_Pin */
+                           LCD_D4_Pin */
   GPIO_InitStruct.Pin = LCD_CS_Pin|LCD_D6_Pin|LCD_D3_Pin|LCD_D5_Pin
-                          |LCD_D4_Pin|SD_SS_Pin;
+                          |LCD_D4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : SD_SS_Pin */
+  GPIO_InitStruct.Pin = SD_SS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
+  HAL_GPIO_Init(SD_SS_GPIO_Port, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
@@ -1846,7 +1939,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			}
 		} else if (estadoActual == PAUSA) {
 			// Si estamos en PAUSA, regresa al estado anterior
-			LCD_Bitmap(0, 0, 320, 240, fondo);
+			//LCD_Bitmap(0, 0, 320, 240, fondo);
 			if (estadoAnterior == SOLO){
 				LCD_Sprite(p1.x - (18 / 2)+2, p1.y - (23 / 2+4), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
 			}

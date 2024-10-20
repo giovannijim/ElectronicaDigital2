@@ -71,15 +71,11 @@ typedef struct {
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 // Definir una región de memoria flash específica para almacenar la imagen
-#define IMAGE_FLASH_ADDRESS ((uint32_t)0x08080000) // Dirección base en la flash para la imagen (cambiar según tu mcu)
-// Tamaño de buffer para leer partes de la imagen
-#define BUFFER_SIZE 480
 #define MOVIMIENTO_DERECHA  0
 #define MOVIMIENTO_ABAJO    1
 #define MOVIMIENTO_IZQUIERDA 2
 #define MOVIMIENTO_ARRIBA   3
-//#define BUFFER_SIZE 128
-unsigned char buffer_sd[512];
+
 SPI_HandleTypeDef hspi1;
 FATFS fs;
 FATFS *pfs;
@@ -88,7 +84,6 @@ FRESULT fres;
 DWORD fre_clust;
 uint32_t totalSpace, freeSpace;
 char archivo[100];
-char buffer_2[BUFFER_SIZE];  // Buffer para almacenar los datos leídos
 UINT bytesRead;
 uint8_t respuesta[1];
 /* USER CODE END PD */
@@ -112,6 +107,7 @@ enemigo_c2 e4,e5,e6;
 player p1;
 
 char position_p1 [3] = {40,40,8};
+uint8_t image[30720];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -131,246 +127,39 @@ void transmit_uart(char *string){
   HAL_UART_Transmit(&huart2, (uint8_t*)string, len, 200);
 }
 
-void read_file_and_send_uart(const char *filename) {
-  FIL fil;          // Estructura para el archivo
-  FATFS fs;         // Estructura para el sistema de archivos
-  FRESULT fres;     // Resultado de las operaciones FatFS
-  UINT bytesRead;   // Número de bytes leídos
-  char buffer_2[BUFFER_SIZE];  // Buffer para almacenar los datos leídos
 
-  // 1. Montar la SD
-  fres = f_mount(&fs, "", 0);
-  if (fres == FR_OK) {
-	  transmit_uart("Micro SD card is mounted successfully!\n");
-  } else {
-	  transmit_uart("Micro SD card mount error!\n");
-	  return;  // Si no se puede montar la SD, salir de la función
-  }
-
-  // 2. Abrir el archivo pasado como parámetro
-  fres = f_open(&fil, filename, FA_READ);
-  if (fres == FR_OK) {
-	  transmit_uart("File opened for reading.\n");
-  } else {
-	  transmit_uart("File was not opened for reading!\n");
-	  f_mount(NULL, "", 0);  // Desmontar la SD antes de salir
-	  return;
-  }
-
-  // 3. Leer el archivo y enviar el contenido por UART
-  do {
-	  fres = f_read(&fil, buffer_2, sizeof(buffer_2) - 1, &bytesRead);
-	  if (fres == FR_OK) {
-		  buffer[bytesRead] = '\0';  // Terminar el buffer con null
-		  transmit_uart(buffer_2);     // Enviar el contenido por UART
-	  } else {
-		  transmit_uart("Error reading file.\n");
-		  break;
-	  }
-  } while (bytesRead > 0);  // Continuar leyendo hasta que no haya más datos
-
-  // 4. Cerrar el archivo
-  fres = f_close(&fil);
-  if (fres == FR_OK) {
-	  transmit_uart("The file is closed.\n");
-  } else {
-	  transmit_uart("The file was not closed.\n");
-  }
-
-  // 5. Desmontar la SD
-  fres = f_mount(NULL, "", 0);
-  if (fres == FR_OK) {
-	  transmit_uart("SD card unmounted successfully!\n");
-  } else {
-	  transmit_uart("SD card unmount error!\n");
-  }
-}
-
-void mostrar_imagen_sd(const char *filename, unsigned int x, unsigned int y, unsigned int width, unsigned int height) {
-    FIL fil;
-    FATFS fs;
-    FRESULT fres;
-    UINT bytesRead;
-    unsigned int k = 0; // Para rastrear la posición en el buffer
-
-    // Montar la SD
-    fres = f_mount(&fs, "", 0);
-    if (fres != FR_OK) {
-        transmit_uart("Error montando la SD.\n");
-        return;
-    }
-
-    // Abrir el archivo
-    fres = f_open(&fil, filename, FA_READ);
-    if (fres != FR_OK) {
-        transmit_uart("Error abriendo el archivo.\n");
-        f_mount(NULL, "", 0);
-        return;
-    }
-
-    // Leer el archivo en bloques y procesar los datos
-    while (f_read(&fil, buffer, sizeof(buffer), &bytesRead) == FR_OK && bytesRead > 0) {
-        // Recorrer el buffer y dibujar los píxeles en la pantalla
-        k = 0;
-        while (k < bytesRead) {
-            // Verifica si quedan suficientes bytes en el buffer para un píxel
-            if (k + 1 < bytesRead) {
-                unsigned char byte1 = buffer[k];
-                unsigned char byte2 = buffer[k + 1];
-                unsigned int pixelIndex = (k / 2) % width;
-                unsigned int lineIndex = (k / 2) / width;
-
-                // Dibuja el píxel en la posición correspondiente
-                if (lineIndex < height) {
-                    SetWindows(x + pixelIndex, y + lineIndex, x + pixelIndex, y + lineIndex);
-                    LCD_DATA(byte1);
-                    LCD_DATA(byte2);
-                }
-                k += 2;
-            } else {
-                break; // Si no hay suficientes bytes, espera a la siguiente lectura
-            }
-        }
-    }
-
-    // Cerrar el archivo y desmontar la SD
-    f_close(&fil);
-    f_mount(NULL, "", 0);
-}
-
-void load_image_from_sd_ram(const char* filename) {
+// Función para leer una imagen desde la SD y almacenarla en la variable play
+int load_image_from_sd_to_play(const char* filename) {
     FIL fil;
     UINT bytes_read;
     FRESULT fres;
-    uint8_t* image_buffer;
-    unsigned int buffer_size = 480 * 320 * 2; // Tamaño para pantalla de 240x320 a 16 bits
-    unsigned int row = 0;
 
-    // Asignar memoria para el buffer de la imagen
-    image_buffer = (uint8_t*)malloc(buffer_size);
-    if (image_buffer == NULL) {
-        transmit_uart("Error al asignar memoria\n");
-        return;
-    }
-
-    // Montar la SD
     fres = f_mount(&fs, "/", 0);
-    if (fres != FR_OK) {
-        transmit_uart("Error al montar la SD\n");
-        free(image_buffer);
-        return;
-    }
-
-    // Abrir el archivo
+	/*if (fres != FR_OK) {
+		transmit_uart("Error al montar la SD\n");
+		//free(image_buffer);
+		return;
+	}*/
+    // Abrir el archivo desde la SD
     fres = f_open(&fil, filename, FA_READ);
     if (fres != FR_OK) {
-        transmit_uart("Error al abrir el archivo en la SD\n");
-        free(image_buffer);
-        return;
+       transmit_uart("Error al abrir el archivo en la SD\n");
+        return 0;  // Error al abrir el archivo
     }
 
-    // Leer la imagen completa en el buffer
-    fres = f_read(&fil, image_buffer, buffer_size, &bytes_read);
-    if (fres != FR_OK || bytes_read < buffer_size) {
-        transmit_uart("Error al leer el archivo\n");
-        free(image_buffer);
+    // Leer los datos del archivo y almacenarlos en la variable play
+    fres = f_read(&fil, image, 30720, &bytes_read);
+    if (fres != FR_OK || bytes_read == 0) {
+       transmit_uart("Error al leer la imagen desde la SD\n");
         f_close(&fil);
-        return;
+        return 0;  // Error al leer el archivo
     }
 
     // Cerrar el archivo
     f_close(&fil);
-
-    // Dibujar la imagen en la pantalla desde el buffer
-    SetWindows(0, 0, 239, 319);  // Ajustar ventana para pantalla de 240x320
-    unsigned int k = 0;
-    for (int i = 0; i < 320; i++) {
-        for (int j = 0; j < 240; j++) {
-            LCD_DATA(image_buffer[k]);
-            LCD_DATA(image_buffer[k + 1]);
-            k += 2;
-        }
-    }
-
-    // Liberar la memoria después de usarla
-    free(image_buffer);
-    transmit_uart("Imagen cargada y liberada de la RAM\n");
+   // transmit_uart("Imagen cargada correctamente desde la SD a la variable play\n");
+    return 1;  // Éxito
 }
-
-
-void load_image_from_sd_to_flash(const char* filename) {
-    FIL fil;
-    UINT bytes_read;
-    FRESULT fres;
-    uint8_t chunk_buffer[BUFFER_SIZE];
-
-    // Montar SD
-    fres = f_mount(&fs, "/", 0);
-    if (fres == FR_OK) {
-        transmit_uart("Micro SD is mounted successfully\n");
-    } else {
-        transmit_uart("Micro SD mount failed\n");
-        return;
-    }
-
-    // Abrir el archivo
-    fres = f_open(&fil, filename, FA_READ);
-    if (fres != FR_OK) {
-        transmit_uart("Error opening file on SD\n");
-        return;
-    }
-
-    // Desbloquear la memoria flash para permitir la escritura
-    HAL_FLASH_Unlock();
-
-    // Borrar la sección de flash donde se almacenará la imagen
-    FLASH_Erase_Sector(FLASH_SECTOR_5, VOLTAGE_RANGE_3);
-
-    // Leer el archivo en fragmentos y almacenarlo en la flash
-    uint32_t flash_address = IMAGE_FLASH_ADDRESS;
-    while (f_read(&fil, chunk_buffer, BUFFER_SIZE, &bytes_read) == FR_OK && bytes_read > 0) {
-        for (int i = 0; i < bytes_read; i += 2) {
-            // Escribir cada valor de 16 bits en la memoria flash
-            uint16_t pixel = (chunk_buffer[i] << 8) | chunk_buffer[i + 1];
-            HAL_FLASH_Program(TYPEPROGRAM_HALFWORD, flash_address, pixel);
-            flash_address += 2;
-        }
-    }
-
-    // Cerrar el archivo
-    f_close(&fil);
-
-    // Bloquear la memoria flash de nuevo
-    HAL_FLASH_Lock();
-
-    transmit_uart("Image loaded from SD to flash successfully\n");
-}
-
-// Función para mostrar la imagen desde la memoria flash
-void display_image_from_flash() {
-    SetWindows(0, 0, 239, 319); // Ajustar para tu resolución
-
-    // Dirección de inicio en la memoria flash
-    uint32_t flash_address = IMAGE_FLASH_ADDRESS;
-
-    HAL_GPIO_WritePin(LCD_RS_GPIO_Port, LCD_RS_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);
-
-    LCD_CMD(0x2C); // Comando de inicio de escritura de memoria
-
-    // Leer la memoria flash y enviar los datos a la pantalla
-    for (int row = 0; row < 320; row++) {
-        for (int col = 0; col < 240; col++) {
-            uint16_t pixel = *(volatile uint16_t*)flash_address;
-            LCD_DATA((pixel >> 8) & 0xFF);
-            LCD_DATA(pixel & 0xFF);
-            flash_address += 2;
-        }
-    }
-
-    HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
-}
-
 
 //Funciones Player
 void init_player(player *p, unsigned int x, unsigned int y, unsigned int w, unsigned int h, unsigned int vel, unsigned int color, unsigned int vista) {
@@ -509,8 +298,24 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 	LCD_Init();
-	LCD_Clear(0x00);
-	load_image_from_sd_to_flash("fondo2.bin");
+	//Fondo
+	if (load_image_from_sd_to_play("fb1_h.bin")) {
+		LCD_Bitmap(0, 0, 320, 48, image);
+
+	}
+	if (load_image_from_sd_to_play("fb2_h.bin")) {
+		LCD_Bitmap(0, 48, 320, 48, image);
+	}
+	if (load_image_from_sd_to_play("fb3_h.bin")) {
+		LCD_Bitmap(0, 96, 320, 48, image);
+
+	}
+	if (load_image_from_sd_to_play("fb4_h.bin")) {
+		LCD_Bitmap(0, 144, 320, 48, image);
+	}
+	if (load_image_from_sd_to_play("fb5_h.bin")) {
+		LCD_Bitmap(0, 192, 320, 48, image);
+	}
 	//Fondo
 	//FillRect(0, 0, 319, 239, 0xFFFF);
 	//Linea de en medio

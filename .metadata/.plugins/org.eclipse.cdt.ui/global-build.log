@@ -1,143 +1,69 @@
-12:35:42 **** Incremental Build of configuration Debug for project ILI9341 ****
+14:32:48 **** Incremental Build of configuration Debug for project ILI9341 ****
 make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-size  ILI9341.elf 
+   text	   data	    bss	    dec	    hex	filename
+  46920	  92828	  38044	 177792	  2b680	ILI9341.elf
+Finished building: default.size.stdout
+ 
+14:33:03 **** Incremental Build of configuration Debug for project ILI9341 ****
+make -j8 all 
+arm-none-eabi-size  ILI9341.elf 
+   text	   data	    bss	    dec	    hex	filename
+  46920	  92828	  38044	 177792	  2b680	ILI9341.elf
+Finished building: default.size.stdout
+ 
+14:36:33 **** Incremental Build of configuration Debug for project ILI9341 ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../FATFS/Target -I../FATFS/App -I../Middlewares/Third_Party/FatFs/src -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: ILI9341.elf
  
 arm-none-eabi-size  ILI9341.elf 
 arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
    text	   data	    bss	    dec	    hex	filename
- 335092	  92804	   2588	 430484	  69194	ILI9341.elf
+  46920	  92828	  27324	 167072	  28ca0	ILI9341.elf
 Finished building: default.size.stdout
  
 Finished building: ILI9341.list
  
-12:38:30 **** Incremental Build of configuration Debug for project ILI9341 ****
+14:36:55 **** Incremental Build of configuration Debug for project ILI9341 ****
 make -j8 all 
-arm-none-eabi-size  ILI9341.elf 
-   text	   data	    bss	    dec	    hex	filename
- 335092	  92804	   2588	 430484	  69194	ILI9341.elf
-Finished building: default.size.stdout
- 
-12:39:08 **** Incremental Build of configuration Debug for project ILI9341 ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../FATFS/Target -I../FATFS/App -I../Middlewares/Third_Party/FatFs/src -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: ILI9341.elf
  
 arm-none-eabi-size  ILI9341.elf 
 arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
    text	   data	    bss	    dec	    hex	filename
- 335092	  92804	   2588	 430484	  69194	ILI9341.elf
+  46920	  92828	  27324	 167072	  28ca0	ILI9341.elf
 Finished building: default.size.stdout
  
 Finished building: ILI9341.list
  
-12:40:51 **** Incremental Build of configuration Debug for project ILI9341 ****
+14:39:10 **** Incremental Build of configuration Debug for project ILI9341 ****
 make -j8 all 
-arm-none-eabi-size  ILI9341.elf 
-   text	   data	    bss	    dec	    hex	filename
- 335092	  92804	   2588	 430484	  69194	ILI9341.elf
-Finished building: default.size.stdout
- 
-12:45:05 **** Incremental Build of configuration Debug for project ILI9341 ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c: In function 'main':
-../Core/Src/main.c:1187:24: error: 'DUOS' undeclared (first use in this function); did you mean 'DUO'?
- 1187 |         estadoActual = DUOS;
-      |                        ^~~~
-      |                        DUO
-../Core/Src/main.c:1187:24: note: each undeclared identifier is reported only once for each function it appears in
-make: *** [Core/Src/subdir.mk:43: Core/Src/main.o] Error 1
-"make -j8 all" terminated with exit code 2. Build might be incomplete.
-12:45:12 **** Incremental Build of configuration Debug for project ILI9341 ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../FATFS/Target -I../FATFS/App -I../Middlewares/Third_Party/FatFs/src -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: ILI9341.elf
  
 arm-none-eabi-size  ILI9341.elf 
 arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
    text	   data	    bss	    dec	    hex	filename
- 335100	  92804	   2588	 430492	  6919c	ILI9341.elf
+  46920	  92828	  32924	 172672	  2a280	ILI9341.elf
 Finished building: default.size.stdout
  
 Finished building: ILI9341.list
  
-12:45:57 **** Incremental Build of configuration Debug for project ILI9341 ****
+14:48:18 **** Incremental Build of configuration Debug for project ILI9341 ****
 make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../FATFS/Target -I../FATFS/App -I../Middlewares/Third_Party/FatFs/src -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: ILI9341.elf
  
 arm-none-eabi-size  ILI9341.elf 
 arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
    text	   data	    bss	    dec	    hex	filename
- 335100	  92804	   2588	 430492	  6919c	ILI9341.elf
-Finished building: default.size.stdout
- 
-Finished building: ILI9341.list
- 
-12:47:06 **** Incremental Build of configuration Debug for project ILI9341 ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: ILI9341.elf
- 
-arm-none-eabi-size  ILI9341.elf 
-arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
-   text	   data	    bss	    dec	    hex	filename
- 335100	  92804	   2588	 430492	  6919c	ILI9341.elf
-Finished building: default.size.stdout
- 
-Finished building: ILI9341.list
- 
-12:48:39 **** Incremental Build of configuration Debug for project ILI9341 ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: ILI9341.elf
- 
-arm-none-eabi-size  ILI9341.elf 
-arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
-   text	   data	    bss	    dec	    hex	filename
- 335100	  92804	   2588	 430492	  6919c	ILI9341.elf
-Finished building: default.size.stdout
- 
-Finished building: ILI9341.list
- 
-12:49:32 **** Incremental Build of configuration Debug for project ILI9341 ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: ILI9341.elf
- 
-arm-none-eabi-size  ILI9341.elf 
-arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
-   text	   data	    bss	    dec	    hex	filename
- 335100	  92804	   2588	 430492	  6919c	ILI9341.elf
-Finished building: default.size.stdout
- 
-Finished building: ILI9341.list
- 
-12:49:59 **** Incremental Build of configuration Debug for project ILI9341 ****
-make -j8 all 
-arm-none-eabi-size  ILI9341.elf 
-   text	   data	    bss	    dec	    hex	filename
- 335100	  92804	   2588	 430492	  6919c	ILI9341.elf
-Finished building: default.size.stdout
- 
-12:52:20 **** Incremental Build of configuration Debug for project ILI9341 ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc -o "ILI9341.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\ILI9341\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ILI9341.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: ILI9341.elf
- 
-arm-none-eabi-size  ILI9341.elf 
-arm-none-eabi-objdump -h -S ILI9341.elf  > "ILI9341.list"
-   text	   data	    bss	    dec	    hex	filename
- 335176	  92804	   2588	 430568	  691e8	ILI9341.elf
+  47280	  92828	  26524	 166632	  28ae8	ILI9341.elf
 Finished building: default.size.stdout
  
 Finished building: ILI9341.list

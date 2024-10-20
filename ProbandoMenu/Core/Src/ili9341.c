@@ -101,13 +101,15 @@ void LCD_Init(void) {
 	LCD_DATA(0x00);
 	LCD_DATA(0x00);
 	LCD_DATA(0x01);
-	LCD_DATA(0x3F);
+	//LCD_DATA(0x3F);
+	LCD_DATA(0xEF);
 	//****************************************
 	LCD_CMD(0x2B); // Set_page_address 480px (PASET)
 	LCD_DATA(0x00);
 	LCD_DATA(0x00);
 	LCD_DATA(0x01);
-	LCD_DATA(0xE0);
+	//LCD_DATA(0xE0);
+	LCD_DATA(0x3F);
 	//  LCD_DATA(0x8F);
 	LCD_CMD(0x29); //display on
 	LCD_CMD(0x2C); //display on
@@ -397,28 +399,26 @@ void LCD_Print(char *text, int x, int y, int fontSize, int color,
 //***************************************************************************************************************************************
 // Función para dibujar una imagen a partir de un arreglo de colores (Bitmap) Formato (Color 16bit R 5bits G 6bits B 5bits)
 //***************************************************************************************************************************************
-void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width,
-		unsigned int height, unsigned char bitmap[]) {
-	LCD_CMD(0x02c); // write_memory_start
+void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char bitmap[]) {
+	LCD_CMD(0x2C); // write_memory_start
 	HAL_GPIO_WritePin(LCD_RS_GPIO_Port, LCD_RS_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);
 
-	unsigned int x2, y2;
-	x2 = x + width;
-	y2 = y + height;
-	SetWindows(x, y, x2 - 1, y2 - 1);
 	unsigned int k = 0;
+	SetWindows(x, y, x + width - 1, y + height - 1);
 
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; j++) {
+	// Intercambiar el recorrido de 'i' y 'j' para ajustar la orientación horizontal
+	for (int i = 0; i < height; i++) {      // Recorrer las filas de la imagen (ahora las columnas en pantalla horizontal)
+		for (int j = 0; j < width; j++) {   // Recorrer las columnas de la imagen (ahora las filas en pantalla horizontal)
 			LCD_DATA(bitmap[k]);
 			LCD_DATA(bitmap[k + 1]);
-			//LCD_DATA(bitmap[k]);
-			k = k + 2;
+			k += 2;
 		}
 	}
+
 	HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
 }
+
 //***************************************************************************************************************************************
 // Función para dibujar una imagen sprite - los parámetros columns = número de imagenes en el sprite, index = cual desplegar, flip = darle vuelta
 //***************************************************************************************************************************************
