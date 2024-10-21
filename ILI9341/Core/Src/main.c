@@ -1545,7 +1545,7 @@ int main(void)
 	//EstadoJuego estadoActual = SOLO;
 	//LevelPlaying nivelActual1 = NIVEL3;
 	//LevelPlaying nivelActual2 = NIVEL2;
-	estadoActual = SOLO;
+	estadoActual = MENU;
 	nivelActual1 = NIVEL1;
 	nivelActual2 = NIVEL1;
 	modo = 0;
@@ -1643,7 +1643,6 @@ int main(void)
 		}
 		switch(estadoActual){
 		case MENU:
-			FillRect(0, 0, 319, 239, 0xFF00);
 			break;
 		case SOLO:{
 			if (nivelActual1==NIVEL1){
@@ -1792,7 +1791,6 @@ int main(void)
 			break;}
 		case PAUSA:
 			//LCD_Bitmap(0, 0, 320, 240, pausa_menu);
-			CargarMultiplesBitmaps("pausa");
 			break;
 		case WIN1:
 			CargarMultiplesBitmaps("p1w");
