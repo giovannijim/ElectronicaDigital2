@@ -189,6 +189,7 @@ volatile int IniciarLevel=0;
 volatile int IniciarLevel2=0;
 uint8_t repintarFondo = 0;
 uint8_t pintarFondoPausa = 0;
+uint8_t IniciarP1,IniciarP2;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -1621,12 +1622,15 @@ int main(void)
 					break;
 				case SOLO:
 					CargarMultiplesBitmaps("fb");
-					initLevelSolo();
+					if (IniciarP1==1){
+					initLevelSolo();}
 					break;
 				case DUO:
 					CargarMultiplesBitmaps("fb");
-					initLevelP1();
-					initLevelP2();
+					if (IniciarP1==1){
+						initLevelP1();}
+					if (IniciarP2==1){
+						initLevelP2();}
 					break;
 				case PAUSA:
 					CargarMultiplesBitmaps("pausa");
@@ -2181,9 +2185,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		 if (estadoActual == MENU ) {
 			 // IMPRIMIR SPRITE DE UN JUGADOR
 			 estadoFuturo = SOLO;
-			 IniciarLevel=1;}
+			 IniciarLevel=1;
+			 IniciarP1=1;}
 		 else {
-			 if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
+			 if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1 && (estadoActual==SOLO||estadoActual==DUO)){
 			 			p1.IsAttack=1;
 			 			p1.animationAttack=0;
 			 			PlayerHit(&p1, &e1_1);
@@ -2279,9 +2284,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			estadoFuturo = DUO;
 			IniciarLevel=1;
 			IniciarLevel2=1;
+			IniciarP1=1;
+			IniciarP2=1;
 		}
 		else {
-			if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
+			if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1 && estadoActual==DUO){
 				p2.IsAttack=1;
 				p2.animationAttack=0;
 				PlayerHit(&p2, &e1_4);
@@ -2301,7 +2308,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			if (estadoActual != PAUSA) {
 				estadoAnterior = estadoActual;  // Guarda el estado actual (SOLO o DUO)
 				pintarFondoPausa = 1;
-				estadoActual = PAUSA;           // Cambia a PAUSA
+				estadoActual = PAUSA;
+				IniciarP1=0;
+				IniciarP2=0;// Cambia a PAUSA
 			}
 		} else if (estadoActual == PAUSA) {
 			// Si estamos en PAUSA, volvemos al estado anterior
