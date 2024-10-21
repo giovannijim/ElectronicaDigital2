@@ -130,7 +130,7 @@ typedef struct {
 } enemy_type1;
 
 typedef enum {
-	MENU, SOLO, DUO, PAUSA, FIN } EstadoJuego ;
+	MENU, SOLO, DUO, PAUSA, WIN1, WIN2 } EstadoJuego ;
 
 typedef enum {
 	NIVEL1, NIVEL2, NIVEL3
@@ -187,6 +187,7 @@ volatile LevelPlaying nivelActual1;
 volatile LevelPlaying nivelActual2;
 volatile int IniciarLevel=0;
 volatile int IniciarLevel2=0;
+uint8_t repintarFondo = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -1459,7 +1460,7 @@ int main(void)
 	//LCD_Clear(0x00);
 
 	//Cargar el fondo en 8 fragmentaciones
-	CargarMultiplesBitmaps("fb");
+	CargarMultiplesBitmaps("mp");
 /*
 	if (CargarBitmaps_SD("fb1_h.bin")) {
 		LCD_Bitmap(0, 0, 320, 30, fragmento_imagen);
@@ -1496,9 +1497,9 @@ int main(void)
 	//EstadoJuego estadoActual = SOLO;
 	//LevelPlaying nivelActual1 = NIVEL3;
 	//LevelPlaying nivelActual2 = NIVEL2;
-	estadoActual = SOLO;
+	estadoActual = MENU;
 	nivelActual1 = NIVEL1;
-	nivelActual2 = NIVEL2;
+	nivelActual2 = NIVEL1;
 	modo = 0;
     fase_p1=1;
     fase_p2=1;
@@ -1563,7 +1564,28 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
-
+		if (repintarFondo) {
+			switch (estadoActual) {
+				case MENU:
+					CargarMultiplesBitmaps("mp");
+					break;
+				case SOLO:
+					CargarMultiplesBitmaps("fb");
+					break;
+				case DUO:
+					CargarMultiplesBitmaps("fb");
+					break;
+				case PAUSA:
+					CargarMultiplesBitmaps("pausa");
+					break;
+				case WIN1:
+					break;
+				case WIN2:
+					break;
+				// Agrega más casos según tus estados.
+			}
+			repintarFondo = 0; // Fondo pintado, no es necesario repintar.
+		}
 		switch(estadoActual){
 		case MENU:
 			FillRect(0, 0, 319, 239, 0xFF00);
@@ -1715,7 +1737,11 @@ int main(void)
 			//LCD_Bitmap(0, 0, 320, 240, pausa_menu);
 			CargarMultiplesBitmaps("pausa");
 			break;
-		case FIN:
+		case WIN1:
+			CargarMultiplesBitmaps("p1w");
+			break;
+		case WIN2:
+			CargarMultiplesBitmaps("p2w");
 			break;
 		default:
 			break;
@@ -2226,7 +2252,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				LCD_Sprite(p2.x - (18 / 2)+2, p2.y - (23 / 2+4), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
 			}
 			estadoActual = estadoAnterior; // Restaura el estado anterior
-			//CargarMultiplesBitmaps("fb");
+			repintarFondo = 1;
 		}
 	}
 
