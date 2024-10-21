@@ -171,10 +171,6 @@ enemy_type1 e1_1, e1_2, e1_3,e1_4,e1_5,e1_6;
 enemy_type2 e2_1,e2_2;
 enemy_type3 e3_1, e3_2;
 uint8_t modo, fase_p1, fase_p2;
-uint8_t P1_WalkUp = 0;
-uint8_t P1_WalkLeft = 0;
-uint8_t P1_WalkRight = 0;
-uint8_t P1_WalkDown = 0;
 /*  modo=1 1 jugadores
  *  modo=2 2 jugadores
  *  fase_p1 La fase en la que está el jugador 1
@@ -410,7 +406,7 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							}
 							return 0;
 						}
-						if (player->y>=enemy->e1Left && player->y<=enemy->e1Right){
+						if (player->y>=enemy->e1Up && player->y<=enemy->e1Down){
 							player->x=player->x-5;
 							player->IsDamage=1;
 							player->animationDamage=0;
@@ -487,7 +483,7 @@ int ColisionPlayer_e1(enemy_type1* enemy, player* player,int direction, int x, i
 							}
 							return 0;
 						}
-						if (player->y>=enemy->e1Left && player->y<=enemy->e1Right){
+						if (player->y>=enemy->e1Up && player->y<=enemy->e1Down){
 							player->x=player->x+5;
 							player->IsDamage=1;
 							player->animationDamage=0;
@@ -654,7 +650,7 @@ void moveE2_2(enemy_type2* enemy, player* player){
 				int futureY_A2=player->y+50;
 				if (futureY_A2>player->limitHeight-20){
 					enemy->move+=1;
-					moveE2(enemy,player);
+					moveE2_2(enemy,player);
 				}else {
 					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xFE8B);
 					enemy->y=futureY_A2;
@@ -668,7 +664,7 @@ void moveE2_2(enemy_type2* enemy, player* player){
 				int futureX_I2=player->x-50;
 				if (futureX_I2<player->limitWidth_i+20){
 						enemy->move+=1;
-						moveE2(enemy,player);
+						moveE2_2(enemy,player);
 					}else{
 					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xFE8B);
 					enemy->x=futureX_I2;
@@ -682,7 +678,7 @@ void moveE2_2(enemy_type2* enemy, player* player){
 				int futureY_U2=player->y-50;
 				if (futureY_U2>player->limitHeight+20){
 					enemy->move+=1;
-					moveE2(enemy,player);
+					moveE2_2(enemy,player);
 				}else {
 					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xFE8B);
 					enemy->y=futureY_U2;
@@ -873,18 +869,18 @@ void E3_FireMove(enemy_type3* enemy,player* player){
 				int animationFire=enemy->animationFire;
 				enemy->y=FutureY;
 				LCD_Sprite(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, E3_Fire16x16_4, 4, animationFire, 0, 0);
-				if (player->playerUp>=enemy->e1Up && player->playerUp<=enemy->e1Down){
-					if(player->playerLeft>=enemy->e1Left && player->playerLeft<=enemy->e1Right){
-						player->y=player->y-5;
+				if (player->playerUp<=enemy->e1Down){ //player->playerUp>=enemy->e1Up &&
+					if(enemy->e1Left >= player->playerLeft-8 && enemy->e1Right <= player->playerRight+8){
+						player->y=player->y+5;
 						player->direction=0;
 						player->IsDamage=1;
 						player->animationDamage=0;
 						player->life-=1;
-						FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFE8B);
+						FillRect(player->x - (player->width / 2)+1, player->y - (player->height / 2)+1, player->width+1, player->height+1, 0xFE8B);
 						if (player->life==0){
 							player->isAlive=0;
 							player->animationDie=0;
-							FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFE8B);
+						FillRect(player->x - (player->width / 2)+1, player->y - (player->height / 2)+1, player->width+1, player->height+1, 0xFE8B);
 						}
 
 						FillRect(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, 0xFE8B); //Se puede eliminar
@@ -1250,7 +1246,7 @@ void PlayerDieAnimation(player* player){
 	int variableAnimationDie=player->animationDie;
 	if (player->isAlive==0){
 		if (variableAnimationDie<4){
-			FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2), p2.width+1, p2.height+1, 0xFE8B);
+			FillRect(player->x - (player->width / 2)+1, player->y - (player->height / 2), player->width+1, player->height+1, 0xFE8B);
 			LCD_Sprite(player->x - (24 / 2)+1, player->y - (24 / 2), 24,24, LinkDie_24x24_4, 4, variableAnimationDie, 0, 0);
 			player->animationDie+=0.2;
 			}
@@ -1299,11 +1295,8 @@ void initLevelP1(void){
 		if (nivelActual1==NIVEL1){
 			//Inicializar enemigo 1
 			initEnemy1(&e1_1, 30, 80, 16, 19, 3);
-			//Inicializar enemigo 2
-			initEnemy1(&e1_2,90, 100, 16, 19, 3);
-			//Inicializar enemigo 3
-			initEnemy1(&e1_3,150, 120, 16, 19, 3);
 			IniciarLevel=0;}
+
 		  if (nivelActual1==NIVEL2){
 			  initEnemy2(&e2_1, 90, 80, 16, 20, 3);
 			  IniciarLevel=0;
@@ -1330,10 +1323,6 @@ void initLevelP2(void){
 		 if (nivelActual2==NIVEL1){
 			//Inicializar enemigo 1
 			initEnemy1(&e1_4, 170, 120, 16, 19, 3);
-			//Inicializar enemigo 2
-			initEnemy1(&e1_5,230, 100, 16, 19, 3);
-			//Inicializar enemigo 3
-			initEnemy1(&e1_6,290, 80, 16, 19, 3);
 			IniciarLevel2=0;
 			}
 
@@ -1449,7 +1438,7 @@ int main(void)
 	//LevelPlaying nivelActual2 = NIVEL2;
 	estadoActual = DUO;
 	nivelActual1 = NIVEL2;
-	nivelActual2 = NIVEL1;
+	nivelActual2 = NIVEL2;
 	modo = 0;
     fase_p1=1;
     fase_p2=1;
@@ -1478,37 +1467,32 @@ int main(void)
 	  if (nivelActual1==NIVEL3){
 		  initEnemy3(&e3_1, 80, 30, 15, 15, 15, &p1);
 	  	  }
-	  }
+}
   if (estadoActual==DUO){
 	//Linea de en medio
 	V_line(160, 0, 240, 0x0000);
-	initPlayer(&p1, 80, 200, 22, 30, 5, 3, 160, 220,18);
-	initPlayer(&p2, 240, 200, 22, 30, 5, 3, 300, 220,160);
+	initPlayer(&p1, 80, 200, 22, 30, 5, 3, 160, 220,18); //80
+	initPlayer(&p2, 240, 200, 22, 30, 5, 3, 300, 220,160); //240
 	p1.PlayerNum=1;
 	p2.PlayerNum=2;
 
 	if (nivelActual1==NIVEL1){
 		//Inicializar enemigo 1
-		initEnemy1(&e1_1, 30, 80, 16, 19, 3);
-		//Inicializar enemigo 2
-		initEnemy1(&e1_2,90, 100, 16, 19, 3);
-		//Inicializar enemigo 3
-		initEnemy1(&e1_3,150, 120, 16, 19, 3);}
-	  if (nivelActual1==NIVEL2){
+		initEnemy1(&e1_1, 80, 80, 16, 19, 3);}
+	 if (nivelActual1==NIVEL2){
 		  initEnemy2(&e2_1, 90, 80, 16, 20, 3);
 		  }
+	  if (nivelActual1==NIVEL3){
+		  initEnemy3(&e3_1, 80, 30, 15, 15, 15, &p1);}
 	  if (nivelActual2==NIVEL1){
-	  			//Inicializar enemigo 1
-	  			initEnemy1(&e1_4, 170, 120, 16, 19, 3);
-	  			//Inicializar enemigo 2
-	  			initEnemy1(&e1_5,230, 100, 16, 19, 3);
-	  			//Inicializar enemigo 3
-	  			initEnemy1(&e1_6,290, 80, 16, 19, 3);
+		//Inicializar enemigo 1
+		initEnemy1(&e1_4, 240, 120, 16, 19, 3);
 	    }
-
 	  if (nivelActual2==NIVEL2){
 	  	  initEnemy2(&e2_2, 230, 80, 16, 20, 3);
 	  }
+	  if (nivelActual2==NIVEL3){
+		  initEnemy3(&e3_2, 240, 30, 15, 15, 15, &p2);}
 	  HitboxPlayer(&p1);
 	  HitboxPlayer(&p2);
 	}
@@ -1522,11 +1506,12 @@ int main(void)
 		case MENU:
 			FillRect(0, 0, 319, 239, 0xFF00);
 			break;
-		case SOLO:
+		case SOLO:{
 			if (nivelActual1==NIVEL1){
 					if(e1_1.isAlive==1){
-							animation_e1(&e1_1);
-							animation_e1_control(&e1_1);}
+						animation_e1(&e1_1);
+						animation_e1_control(&e1_1);}
+
 					if(e1_2.isAlive==1){
 						animation_e1(&e1_2);
 						animation_e1_control(&e1_2);}
@@ -1546,10 +1531,13 @@ int main(void)
 				}
 
 			if (nivelActual1==NIVEL2){
-				moveE2(&e2_1, &p1);
-				e2_1.delay+=0.5; //1
-				E2_Appear(&e2_1);
-				E2_Hurt(&e2_1);
+				if (e2_1.isAlive==1){
+					moveE2(&e2_1, &p1);
+					e2_1.delay+=1; //1
+					E2_Appear(&e2_1);
+					E2_Hurt(&e2_1);
+
+				}
 				E2_Die(&e2_1);
 				if (e2_1.isAlive==0&&e2_1.animationDie>=6){
 					nivelActual1=NIVEL3;
@@ -1569,43 +1557,78 @@ int main(void)
 			PlayerAttackAnimation(&p1);
 			PlayerDamageAnimation(&p1);
 			PlayerDieAnimation(&p1);
-			break;
-		case DUO:
+			break;}
 
-			if (nivelActual2==NIVEL2){
-				moveE2_2(&e2_2, &p2);
-				e2_2.delay+=0.5;
-				E2_Appear(&e2_2);
-				E2_Hurt(&e2_2);
-				E2_Die(&e2_2);
 
-				if (e2_2.isAlive==0&&e2_2.animationDie>=6){
-					nivelActual2=NIVEL3;
-					IniciarLevel2=1;
-					initLevelP2();
+		case DUO:{
+			if (nivelActual1==NIVEL1){
+				if(e1_1.isAlive==1){
+					animation_e1(&e1_1);
+					animation_e1_control(&e1_1);}
+				animation_e1_die(&e1_1);
+
+				if ( e1_1.isAlive==0&& e1_1.animationDie>=11 ){
+					nivelActual1=NIVEL2;
+					IniciarLevel=1;
+					initLevelP1();
 				}
 			}
 
 			if (nivelActual1==NIVEL2){
-				moveE2(&e2_1, &p1);
-				e2_1.delay+=0.5;
-				E2_Appear(&e2_1);
-				E2_Hurt(&e2_1);
+				if (e2_1.isAlive==1){
+					moveE2(&e2_1, &p1);
+					if (nivelActual2!=NIVEL2){
+					e2_1.delay+=1000;}//0.5
+					else{
+						e2_1.delay+=1;
+					}
+					E2_Appear(&e2_1);
+					E2_Hurt(&e2_1);
+				}
 				E2_Die(&e2_1);
-
 				if (e2_1.isAlive==0&&e2_1.animationDie>=6){
 					nivelActual1=NIVEL3;
 					IniciarLevel=1;
 					initLevelP1();
 				}
 			}
-
 			if (nivelActual1==NIVEL3){
 				E3_MoveX(&e3_1);
 				E3_Eye(&e3_1);
 				E3_FireMove(&e3_1,&p1);
 				E3_Hitbox(&e3_1);
 				E3_FireAnimation(&e3_1);
+			}
+
+			if (nivelActual2==NIVEL1){
+				if(e1_4.isAlive==1){
+					animation_e1(&e1_4);
+					animation_e1_control(&e1_4);}
+				animation_e1_die(&e1_4);
+
+				if (e1_4.isAlive==0 && e1_4.animationDie>=11){
+					nivelActual2=NIVEL2;
+					IniciarLevel2=1;
+					initLevelP2();
+				}
+			}
+
+			if (nivelActual2==NIVEL2){
+				if (e2_2.isAlive==1){
+					moveE2(&e2_2, &p2);
+					if (nivelActual1!=NIVEL2){
+						e2_2.delay+=1000;
+					}else{
+					e2_2.delay+=1;}
+					E2_Appear(&e2_2);
+					E2_Hurt(&e2_2);
+				}
+				E2_Die(&e2_2);
+				if (e2_2.isAlive==0&&e2_2.animationDie>=6){
+					nivelActual2=NIVEL3;
+					IniciarLevel2=1;
+					initLevelP2();
+				}
 			}
 
 			if (nivelActual2==NIVEL3){
@@ -1617,58 +1640,6 @@ int main(void)
 			}
 
 
-
-			if (nivelActual1==NIVEL1){
-				if(e1_1.isAlive==1){
-						animation_e1(&e1_1);
-						animation_e1_control(&e1_1);
-				}
-				if(e1_2.isAlive==1){
-					animation_e1(&e1_2);
-					animation_e1_control(&e1_2);
-				}
-				if(e1_2.isAlive==1){
-					animation_e1(&e1_3);
-					animation_e1_control(&e1_3);
-				}
-				animation_e1_die(&e1_1);
-				animation_e1_die(&e1_2);
-				animation_e1_die(&e1_3);
-				if (e1_1.isAlive==0&&e1_2.isAlive==0&&e1_3.isAlive==0 && e1_1.animationDie>=11 && e1_2.animationDie>=11 && e1_3.animationDie>=11){
-					nivelActual1=NIVEL2;
-					IniciarLevel=1;
-					initLevelP1();
-				}
-			}
-
-			if (nivelActual2==NIVEL1){
-				if(e1_4.isAlive==1){
-					animation_e1(&e1_4);
-					animation_e1_control(&e1_4);
-				}
-				if(e1_5.isAlive==1){
-					animation_e1(&e1_5);
-					animation_e1_control(&e1_5);
-				}
-				if(e1_6.isAlive==1){
-					animation_e1(&e1_6);
-					animation_e1_control(&e1_6);
-				}
-				animation_e1_die(&e1_4);
-				animation_e1_die(&e1_5);
-				animation_e1_die(&e1_6);
-
-				if (e1_4.isAlive==0&&e1_5.isAlive==0&&e1_6.isAlive==0 && e1_4.animationDie>=11 && e1_5.animationDie>=11 && e1_6.animationDie>=11){
-					nivelActual2=NIVEL2;
-					IniciarLevel2=1;
-					initLevelP2();
-				}
-
-
-
-			}
-
-
 			PlayerAttackAnimation(&p1);
 			PlayerDamageAnimation(&p1);
 			PlayerDieAnimation(&p1);
@@ -1676,7 +1647,7 @@ int main(void)
 			PlayerAttackAnimation(&p2);
 			PlayerDamageAnimation(&p2);
 			PlayerDieAnimation(&p2);
-			break;
+			break;}
 		case PAUSA:
 			//LCD_Bitmap(0, 0, 320, 240, pausa_menu);
 			CargarMultiplesBitmaps("pausa");
