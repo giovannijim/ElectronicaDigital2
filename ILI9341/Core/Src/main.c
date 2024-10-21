@@ -242,6 +242,26 @@ int CargarBitmaps_SD(const char* filename) {
     return 1;  // Éxito
 }
 
+/*---------Sonido---------------------*/
+
+// Función para cambiar la frecuencia del PWM (ajusta el periodo)
+void setPWM_Frequency(uint32_t frequency) {
+    uint32_t timer_clock = 1000000; // 1 MHz (depende de tu configuración)
+    uint32_t period = (timer_clock / frequency) - 1;
+
+    // Cambiar el periodo (Auto-Reload Register)
+    __HAL_TIM_SET_AUTORELOAD(&htim2, period);
+
+    // Reiniciar el timer para aplicar el cambio de frecuencia
+    __HAL_TIM_SET_COUNTER(&htim2, 0);
+}
+
+// Función para cambiar el duty cycle
+void setPWM_DutyCycle(uint16_t dutyCycle) {
+    __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_4, dutyCycle);
+}
+
+
 
 /* Funciones Enemigo tipo 1 ---------------------------------------------------*/
 void animation_e1_control(enemy_type1* enemy){
@@ -1202,21 +1222,54 @@ void PlayerAttackAnimation(player* player){
 			}
 			if (player->direction==1){
 
-				LCD_Sprite(player->x - (20 / 2)+1, player->y - (22 / 2), 20, 22, LinkAttackSide_20x22_6, 6, variableAnimationAttack, 1, 0);
-			}
+				LCD_Sprite(player->x - (20 / 2)+1, player->y - (22 / 2), 20, 22, LinkAttackSide_20x22_6, 6, variableAnimationAttack, 1, 0);			}
 			if (player->direction==2){
-
 				LCD_Sprite(player->x - (18 / 2)+1,player->y - (23 / 2), 18, 23, LinkAttackDown_18x23_6, 6, variableAnimationAttack, 0, 0);
-					}
+			}
 			if (player->direction==3){
 
 				LCD_Sprite(player->x - (20 / 2)+1, player->y - (22 / 2), 20, 22, LinkAttackSide_20x22_6, 6, variableAnimationAttack, 0, 0);
-					}
+				}
 			player->animationAttack+=0.2;
 			}else{
 				player->IsAttack=0;
 			}
 		}
+}
+
+void PlayerAttackSound(player* player){
+	int variableAnimationAttackS=player->animationAttack;
+	if (player->isAlive==1){
+		if (variableAnimationAttackS<6){
+			switch (variableAnimationAttackS){
+			case 0:
+		        setPWM_Frequency(1000); // Frecuencia de 1 kHz
+		        setPWM_DutyCycle(50);   // Duty cycle al 50%
+				break;
+			case 1:
+		        setPWM_Frequency(2000); // Frecuencia de 1 kHz
+		        setPWM_DutyCycle(50);   // Duty cycle al 50%
+				break;
+			case 2:
+		        setPWM_Frequency(3000); // Frecuencia de 1 kHz
+		        setPWM_DutyCycle(50);   // Duty cycle al 50%
+				break;
+			case 3:
+		        setPWM_Frequency(4000); // Frecuencia de 1 kHz
+		        setPWM_DutyCycle(50);   // Duty cycle al 50%
+				break;
+			case 4:
+		        setPWM_Frequency(5000); // Frecuencia de 1 kHz
+		        setPWM_DutyCycle(50);   // Duty cycle al 50%
+				break;
+			case 5:
+		        setPWM_Frequency(6000); // Frecuencia de 1 kHz
+		        setPWM_DutyCycle(0);   // Duty cycle al 50%
+				break;
+			}
+
+			}
+	}
 }
 
 void PlayerDamageAnimation(player* player){
@@ -1247,6 +1300,28 @@ void PlayerDamageAnimation(player* player){
 		}
 }
 
+void PlayerDamageSound(player* player){
+	int variableAnimationDamageS=player->animationDamage;
+	if (player->isAlive==1){
+		if (variableAnimationDamageS<3){
+			switch (variableAnimationDamageS){
+			case 0:
+				setPWM_Frequency(5000); // Frecuencia de 1 kHz
+				setPWM_DutyCycle(50);   // Duty cycle al 50%
+				break;
+			case 1:
+				setPWM_Frequency(8000); // Frecuencia de 1 kHz
+				setPWM_DutyCycle(50);   // Duty cycle al 50%
+				break;
+			case 2:
+				setPWM_Frequency(1000); // Frecuencia de 1 kHz
+				setPWM_DutyCycle(0);   // Duty cycle al 50%
+				break;
+			}
+			}
+		}
+}
+
 void PlayerDieAnimation(player* player){
 	int variableAnimationDie=player->animationDie;
 	if (player->isAlive==0){
@@ -1254,6 +1329,33 @@ void PlayerDieAnimation(player* player){
 			FillRect(player->x - (player->width / 2)+1, player->y - (player->height / 2), player->width+1, player->height+1, 0xFE8B);
 			LCD_Sprite(player->x - (24 / 2)+1, player->y - (24 / 2), 24,24, LinkDie_24x24_4, 4, variableAnimationDie, 0, 0);
 			player->animationDie+=0.2;
+			}
+		}
+}
+
+void PlayerDieSound(player* player){
+	int variableAnimationDieS=player->animationDie;
+	if (player->isAlive==0){
+		if (variableAnimationDieS<4){
+			switch (variableAnimationDieS){
+			case 0:
+				setPWM_Frequency(10000); // Frecuencia de 1 kHz
+				setPWM_DutyCycle(50);   // Duty cycle al 50%
+				break;
+			case 1:
+				setPWM_Frequency(5000); // Frecuencia de 1 kHz
+				setPWM_DutyCycle(50);   // Duty cycle al 50%
+				break;
+			case 2:
+				setPWM_Frequency(10000); // Frecuencia de 1 kHz
+				setPWM_DutyCycle(50);   // Duty cycle al 50%
+				break;
+			case 3:
+				setPWM_Frequency(1000); // Frecuencia de 1 kHz
+				setPWM_DutyCycle(0);   // Duty cycle al 50%
+				break;
+
+			}
 			}
 		}
 }
@@ -1363,61 +1465,6 @@ void CargarMultiplesBitmaps(char *baseName) {
     }
 }
 
-/*---------Sonido---------------------*/
-
-// Función para ajustar la frecuencia del PWM
-void set_PWM_frequency(TIM_HandleTypeDef *htim, uint32_t channel, uint32_t frequency) {
-    // Obtener el reloj del timer (ejemplo: 80 MHz)
-    uint32_t clock_freq = HAL_RCC_GetPCLK1Freq();
-    uint32_t period = 0;
-
-    // Calcular el periodo para la frecuencia deseada
-    period = (clock_freq / frequency) - 1;
-
-    // Ajustar el periodo del PWM
-    __HAL_TIM_SET_AUTORELOAD(htim,period);
-
-}
-
-void set_PWM_duty_cycle(TIM_HandleTypeDef *htim, uint32_t channel, uint32_t dutyCycle) {
-    __HAL_TIM_SET_COMPARE(htim, channel, dutyCycle);
-}
-
-void SonidoPlayerAttack(TIM_HandleTypeDef *htim, uint32_t channel, player* player) {
-	 HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
-    int variableAnimationAttackS = player->animationAttack;
-    if (player->isAlive == 1) {
-        if (variableAnimationAttackS < 6) {
-            switch (variableAnimationAttackS) {
-                case 0:
-                    set_PWM_frequency(htim, channel, 262);  // Do
-                    set_PWM_duty_cycle(htim, channel, 50);  // 50% de duty cycle
-                    break;
-                case 1:
-                    set_PWM_frequency(htim, channel, 294);  // Re
-                    set_PWM_duty_cycle(htim, channel, 50);  // 50%
-                    break;
-                case 2:
-                    set_PWM_frequency(htim, channel, 330);  // Mi
-                    set_PWM_duty_cycle(htim, channel, 50);  // 50%
-                    break;
-                case 3:
-                    set_PWM_frequency(htim, channel, 349);  // Fa
-                    set_PWM_duty_cycle(htim, channel, 50);  // 50%
-                    break;
-                case 4:
-                    set_PWM_frequency(htim, channel, 392);  // Sol
-                    set_PWM_duty_cycle(htim, channel, 50);  // 50%
-                    break;
-                case 5:
-                    set_PWM_duty_cycle(htim, channel, 0);  // Silenciar (0% duty cycle)
-                    break;
-            }
-        }
-    }
-}
-
-
 /* USER CODE END 0 */
 
 /**
@@ -1497,7 +1544,7 @@ int main(void)
 	//EstadoJuego estadoActual = SOLO;
 	//LevelPlaying nivelActual1 = NIVEL3;
 	//LevelPlaying nivelActual2 = NIVEL2;
-	estadoActual = MENU;
+	estadoActual = SOLO;
 	nivelActual1 = NIVEL1;
 	nivelActual2 = NIVEL1;
 	modo = 0;
@@ -1558,7 +1605,9 @@ int main(void)
 	  HitboxPlayer(&p2);
 	}
 
+  // Iniciar PWM
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -1639,9 +1688,11 @@ int main(void)
 			}
 
 			PlayerAttackAnimation(&p1);
-			SonidoPlayerAttack(&htim2, TIM_CHANNEL_4,&p1);
+			PlayerAttackSound(&p1);
 			PlayerDamageAnimation(&p1);
+			PlayerDamageSound(&p1);
 			PlayerDieAnimation(&p1);
+			PlayerDieSound(&p1);
 			break;}
 
 
@@ -1852,6 +1903,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 0 */
 
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
 
@@ -1859,11 +1911,20 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 127;
+  htim2.Init.Prescaler = 80-1;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 20;
+  htim2.Init.Period = 1000000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
   {
     Error_Handler();
