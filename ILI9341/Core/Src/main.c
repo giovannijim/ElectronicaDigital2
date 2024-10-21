@@ -1621,9 +1621,12 @@ int main(void)
 					break;
 				case SOLO:
 					CargarMultiplesBitmaps("fb");
+					initLevelSolo();
 					break;
 				case DUO:
 					CargarMultiplesBitmaps("fb");
+					initLevelP1();
+					initLevelP2();
 					break;
 				case PAUSA:
 					CargarMultiplesBitmaps("pausa");
@@ -2178,14 +2181,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		 if (estadoActual == MENU ) {
 			 // IMPRIMIR SPRITE DE UN JUGADOR
 			 estadoFuturo = SOLO;
-			 if (nivelActual1==NIVEL1){
-			 		//Inicializar enemigo 1
-			 		initEnemy1(&e1_1, 40, 80, 16, 19, 3);
-			 		//Inicializar enemigo 2
-			 		initEnemy1(&e1_2, 160, 80, 16, 19, 3);
-			 		//Inicializar enemigo 3
-			 		initEnemy1(&e1_3, 280, 80, 16, 19, 3);}
-		 	 }
+			 IniciarLevel=1;}
 		 else {
 			 if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1){
 			 			p1.IsAttack=1;
@@ -2281,6 +2277,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		if (estadoActual == MENU ) {
 					 // IMPRIMIR SPRITE DE DOS JUGADORES
 			estadoFuturo = DUO;
+			IniciarLevel=1;
+			IniciarLevel2=1;
 		}
 		else {
 			if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
