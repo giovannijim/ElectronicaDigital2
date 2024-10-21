@@ -188,6 +188,7 @@ volatile EstadoJuego estadoFuturo;
 volatile LevelPlaying nivelActual1;
 volatile LevelPlaying nivelActual2;
 volatile int IniciarLevel=0;
+volatile int IniciarLevel2=0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -563,7 +564,8 @@ void initEnemy2(enemy_type2* enemy, unsigned int startX, unsigned int startY, un
 
 void moveE2(enemy_type2* enemy, player* player){
 	if (enemy->isHurt==0){
-		if (enemy->delay==100000){
+		int delay_s=enemy->delay;
+		if (delay_s==100000){ //
 			switch(enemy->move){
 			case 0: //Derecha
 				int futureX_D=player->x+50;
@@ -623,7 +625,77 @@ void moveE2(enemy_type2* enemy, player* player){
 				break;
 			}
 		}else{
-			if (enemy->delay==200000){
+			if (delay_s==200000){ //
+				enemy->delay=0;
+			}
+		}
+	}
+}
+
+void moveE2_2(enemy_type2* enemy, player* player){
+	if (enemy->isHurt==0){
+		int delay_s2=enemy->delay;
+		if (delay_s2==100000){
+			switch(enemy->move){
+			case 0: //Derecha
+				int futureX_D2=player->x+50;
+				if (futureX_D2>player->limitWidth-20){
+					enemy->move+=1;
+					moveE2_2(enemy,player);
+					}else{
+					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xFE8B);
+					enemy->x=futureX_D2;
+					enemy->y=player->y;
+					enemy->animationV=0;
+					enemy->move+=1;
+					Hitbox_e2(enemy);
+				}
+				break;
+			case 1: //Abajo
+				int futureY_A2=player->y+50;
+				if (futureY_A2>player->limitHeight-20){
+					enemy->move+=1;
+					moveE2(enemy,player);
+				}else {
+					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xFE8B);
+					enemy->y=futureY_A2;
+					enemy->x=player->x;
+					enemy->animationV=0;
+					enemy->move+=1;
+					Hitbox_e2(enemy);
+				}
+				break;
+			case 2: //Izquierda
+				int futureX_I2=player->x-50;
+				if (futureX_I2<player->limitWidth_i+20){
+						enemy->move+=1;
+						moveE2(enemy,player);
+					}else{
+					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xFE8B);
+					enemy->x=futureX_I2;
+					enemy->y=player->y;
+					enemy->animationV=0;
+					enemy->move+=1;
+					Hitbox_e2(enemy);
+				}
+				break;
+			case 3: //Arriba
+				int futureY_U2=player->y-50;
+				if (futureY_U2>player->limitHeight+20){
+					enemy->move+=1;
+					moveE2(enemy,player);
+				}else {
+					FillRect(enemy->x - (16 / 2), enemy->y - (20/ 2), 16, 20,0xFE8B);
+					enemy->y=futureY_U2;
+					enemy->x=player->x;
+					enemy->animationV=0;
+					enemy->move=0;
+					Hitbox_e2(enemy);
+				}
+				break;
+			}
+		}else{
+			if (delay_s2==200000){
 				enemy->delay=0;
 			}
 		}
@@ -1187,7 +1259,7 @@ void PlayerDieAnimation(player* player){
 }
 
 void initLevelSolo(void){
-	FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFE8B);
+	FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFE8B);
 	if (IniciarLevel==1){
 		//Inicializar Jugador 1
 		initPlayer(&p1, 160, 200, 22, 30, 5, 3, 300, 220,18);
@@ -1213,6 +1285,63 @@ void initLevelSolo(void){
 			  initEnemy3(&e3_1, 80, 30, 15, 15, 15, &p1);
 			  IniciarLevel=0;
 		  	  }
+		  }
+}
+
+void initLevelP1(void){
+	FillRect(p1.x - (p1.width / 2)+1, p1.y - (p1.height / 2)+1, p1.width+1, p1.height+1, 0xFE8B);
+	if (IniciarLevel==1){
+		//Linea de en medio
+		V_line(160, 0, 240, 0x0000);
+		initPlayer(&p1, 80, 200, 22, 30, 5, 3, 160, 220,18);
+		p1.PlayerNum=1;
+		p2.PlayerNum=2;
+
+		if (nivelActual1==NIVEL1){
+			//Inicializar enemigo 1
+			initEnemy1(&e1_1, 30, 80, 16, 19, 3);
+			//Inicializar enemigo 2
+			initEnemy1(&e1_2,90, 100, 16, 19, 3);
+			//Inicializar enemigo 3
+			initEnemy1(&e1_3,150, 120, 16, 19, 3);
+			IniciarLevel=0;}
+		  if (nivelActual1==NIVEL2){
+			  initEnemy2(&e2_1, 90, 80, 16, 20, 3);
+			  IniciarLevel=0;
+			  }
+
+		  if (nivelActual1==NIVEL3){
+			  initEnemy3(&e3_1, 80, 30, 15, 15, 15, &p1);
+			  IniciarLevel=0;
+		  	  }
+		  }
+}
+
+void initLevelP2(void){
+	FillRect(p2.x - (p2.width / 2)+1, p2.y - (p2.height / 2)+1, p2.width+1, p2.height+1, 0xFE8B);
+	if (IniciarLevel2==1){
+		//Inicializar Jugador 1
+		//Linea de en medio
+		V_line(160, 0, 240, 0x0000);
+		initPlayer(&p2, 240, 200, 22, 30, 5, 3, 300, 220,160);
+		p1.PlayerNum=1;
+		p2.PlayerNum=2;
+
+		 if (nivelActual2==NIVEL1){
+			//Inicializar enemigo 1
+			initEnemy1(&e1_4, 170, 120, 16, 19, 3);
+			//Inicializar enemigo 2
+			initEnemy1(&e1_5,230, 100, 16, 19, 3);
+			//Inicializar enemigo 3
+			initEnemy1(&e1_6,290, 80, 16, 19, 3);
+			IniciarLevel2=0;
+			}
+
+	     if (nivelActual2==NIVEL2){
+			  initEnemy2(&e2_2, 230, 80, 16, 20, 3);
+			IniciarLevel2=0;
+		  }
+
 		  }
 }
 
@@ -1313,7 +1442,7 @@ int main(void)
 	//EstadoJuego estadoActual = SOLO;
 	//LevelPlaying nivelActual1 = NIVEL3;
 	//LevelPlaying nivelActual2 = NIVEL2;
-	estadoActual = SOLO;
+	estadoActual = DUO;
 	nivelActual1 = NIVEL1;
 	nivelActual2 = NIVEL2;
 	modo = 0;
@@ -1397,7 +1526,7 @@ int main(void)
 						animation_e1(&e1_2);
 						animation_e1_control(&e1_2);}
 
-					if(e1_2.isAlive==1){
+					if(e1_3.isAlive==1){
 						animation_e1(&e1_3);
 						animation_e1_control(&e1_3);}
 
@@ -1455,40 +1584,64 @@ int main(void)
 				animation_e1_die(&e1_1);
 				animation_e1_die(&e1_2);
 				animation_e1_die(&e1_3);
+				if (e1_1.isAlive==0&&e1_2.isAlive==0&&e1_3.isAlive==0 && e1_1.animationDie>=11 && e1_2.animationDie>=11 && e1_3.animationDie>=11){
+					nivelActual1=NIVEL2;
+					IniciarLevel=1;
+					initLevelP1();
+				}
 			}
 			if (nivelActual1==NIVEL2){
-							moveE2(&e2_1, &p1);
-							e2_1.delay+=0.5; //1
-							E2_Appear(&e2_1);
-							E2_Hurt(&e2_1);
-							E2_Die(&e2_1);
-						}
+				moveE2(&e2_1, &p1);
+				e2_1.delay+=0.5;
+				E2_Appear(&e2_1);
+				E2_Hurt(&e2_1);
+				E2_Die(&e2_1);
+
+				if (e2_1.isAlive==0&&e2_1.animationDie>=6){
+					nivelActual1=NIVEL3;
+					IniciarLevel=1;
+					initLevelP1();
+				}
+			}
 
 
 			if (nivelActual2==NIVEL1){
 				if(e1_4.isAlive==1){
-						animation_e1(&e1_4);
-						animation_e1_control(&e1_4);
+					animation_e1(&e1_4);
+					animation_e1_control(&e1_4);
 				}
 				if(e1_5.isAlive==1){
 					animation_e1(&e1_5);
 					animation_e1_control(&e1_5);
 				}
 				if(e1_6.isAlive==1){
-				animation_e1(&e1_6);
-				animation_e1_control(&e1_6);
+					animation_e1(&e1_6);
+					animation_e1_control(&e1_6);
 				}
 				animation_e1_die(&e1_4);
 				animation_e1_die(&e1_5);
 				animation_e1_die(&e1_6);
+
+				if (e1_4.isAlive==0&&e1_5.isAlive==0&&e1_6.isAlive==0 && e1_4.animationDie>=11 && e1_5.animationDie>=11 && e1_6.animationDie>=11){
+					nivelActual2=NIVEL2;
+					IniciarLevel2=1;
+					initLevelP2();
+				}
+
 			}
 
 			if (nivelActual2==NIVEL2){
-				moveE2(&e2_2, &p2);
-				e2_2.delay+=0.5; //1
+				moveE2_2(&e2_2, &p2);
+				e2_2.delay+=0.5;
 				E2_Appear(&e2_2);
 				E2_Hurt(&e2_2);
 				E2_Die(&e2_2);
+
+				if (e2_2.isAlive==0&&e2_2.animationDie>=6){
+					nivelActual2=NIVEL3;
+					IniciarLevel2=1;
+					initLevelP2();
+				}
 			}
 
 
@@ -1935,9 +2088,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1){
 				p2.IsAttack=1;
 				p2.animationAttack=0;
-				PlayerHit(&p2, &e1_1);
-				PlayerHit(&p2, &e1_2);
-				PlayerHit(&p2, &e1_3);}
+				PlayerHit(&p2, &e1_4);
+				PlayerHit(&p2, &e1_5);
+				PlayerHit(&p2, &e1_6);}
 				PlayerHit_E2(&p2, &e2_2);
 		}
 	}
