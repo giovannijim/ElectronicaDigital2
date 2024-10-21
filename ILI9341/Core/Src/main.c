@@ -1362,6 +1362,61 @@ void CargarMultiplesBitmaps(char *baseName) {
     }
 }
 
+/*---------Sonido---------------------*/
+
+// Función para ajustar la frecuencia del PWM
+void set_PWM_frequency(TIM_HandleTypeDef *htim, uint32_t channel, uint32_t frequency) {
+    // Obtener el reloj del timer (ejemplo: 80 MHz)
+    uint32_t clock_freq = HAL_RCC_GetPCLK1Freq();
+    uint32_t period = 0;
+
+    // Calcular el periodo para la frecuencia deseada
+    period = (clock_freq / frequency) - 1;
+
+    // Ajustar el periodo del PWM
+    __HAL_TIM_SET_AUTORELOAD(htim,period);
+
+}
+
+void set_PWM_duty_cycle(TIM_HandleTypeDef *htim, uint32_t channel, uint32_t dutyCycle) {
+    __HAL_TIM_SET_COMPARE(htim, channel, dutyCycle);
+}
+
+void SonidoPlayerAttack(TIM_HandleTypeDef *htim, uint32_t channel, player* player) {
+	 HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
+    int variableAnimationAttackS = player->animationAttack;
+    if (player->isAlive == 1) {
+        if (variableAnimationAttackS < 6) {
+            switch (variableAnimationAttackS) {
+                case 0:
+                    set_PWM_frequency(htim, channel, 262);  // Do
+                    set_PWM_duty_cycle(htim, channel, 50);  // 50% de duty cycle
+                    break;
+                case 1:
+                    set_PWM_frequency(htim, channel, 294);  // Re
+                    set_PWM_duty_cycle(htim, channel, 50);  // 50%
+                    break;
+                case 2:
+                    set_PWM_frequency(htim, channel, 330);  // Mi
+                    set_PWM_duty_cycle(htim, channel, 50);  // 50%
+                    break;
+                case 3:
+                    set_PWM_frequency(htim, channel, 349);  // Fa
+                    set_PWM_duty_cycle(htim, channel, 50);  // 50%
+                    break;
+                case 4:
+                    set_PWM_frequency(htim, channel, 392);  // Sol
+                    set_PWM_duty_cycle(htim, channel, 50);  // 50%
+                    break;
+                case 5:
+                    set_PWM_duty_cycle(htim, channel, 0);  // Silenciar (0% duty cycle)
+                    break;
+            }
+        }
+    }
+}
+
+
 /* USER CODE END 0 */
 
 /**
@@ -1441,8 +1496,8 @@ int main(void)
 	//EstadoJuego estadoActual = SOLO;
 	//LevelPlaying nivelActual1 = NIVEL3;
 	//LevelPlaying nivelActual2 = NIVEL2;
-	estadoActual = DUO;
-	nivelActual1 = NIVEL2;
+	estadoActual = SOLO;
+	nivelActual1 = NIVEL1;
 	nivelActual2 = NIVEL2;
 	modo = 0;
     fase_p1=1;
@@ -1502,11 +1557,13 @@ int main(void)
 	  HitboxPlayer(&p2);
 	}
 
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
+
 		switch(estadoActual){
 		case MENU:
 			FillRect(0, 0, 319, 239, 0xFF00);
@@ -1560,6 +1617,7 @@ int main(void)
 			}
 
 			PlayerAttackAnimation(&p1);
+			SonidoPlayerAttack(&htim2, TIM_CHANNEL_4,&p1);
 			PlayerDamageAnimation(&p1);
 			PlayerDieAnimation(&p1);
 			break;}
