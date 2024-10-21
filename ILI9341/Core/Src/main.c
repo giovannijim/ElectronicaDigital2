@@ -169,8 +169,7 @@ uint8_t buffer[10];
 player p1,p2;
 enemy_type1 e1_1, e1_2, e1_3,e1_4,e1_5,e1_6;
 enemy_type2 e2_1,e2_2;
-enemy_type3 e3_1, e3_2, e3_3, e3_4;
-int i;
+enemy_type3 e3_1, e3_2;
 uint8_t modo, fase_p1, fase_p2;
 uint8_t P1_WalkUp = 0;
 uint8_t P1_WalkLeft = 0;
@@ -1315,6 +1314,7 @@ void initLevelP1(void){
 			  IniciarLevel=0;
 		  	  }
 		  }
+
 }
 
 void initLevelP2(void){
@@ -1342,7 +1342,12 @@ void initLevelP2(void){
 			IniciarLevel2=0;
 		  }
 
+	     if (nivelActual2==NIVEL3){
+		  initEnemy3(&e3_2, 240, 30, 15, 15, 15, &p2);
+		  IniciarLevel=0;
 		  }
+	  }
+
 }
 
 void CargarMultiplesBitmaps(char *baseName) {
@@ -1443,8 +1448,8 @@ int main(void)
 	//LevelPlaying nivelActual1 = NIVEL3;
 	//LevelPlaying nivelActual2 = NIVEL2;
 	estadoActual = DUO;
-	nivelActual1 = NIVEL1;
-	nivelActual2 = NIVEL2;
+	nivelActual1 = NIVEL2;
+	nivelActual2 = NIVEL1;
 	modo = 0;
     fase_p1=1;
     fase_p2=1;
@@ -1559,8 +1564,6 @@ int main(void)
 				E3_FireMove(&e3_1,&p1);
 				E3_Hitbox(&e3_1);
 				E3_FireAnimation(&e3_1);
-
-
 			}
 
 			PlayerAttackAnimation(&p1);
@@ -1568,6 +1571,53 @@ int main(void)
 			PlayerDieAnimation(&p1);
 			break;
 		case DUO:
+
+			if (nivelActual2==NIVEL2){
+				moveE2_2(&e2_2, &p2);
+				e2_2.delay+=0.5;
+				E2_Appear(&e2_2);
+				E2_Hurt(&e2_2);
+				E2_Die(&e2_2);
+
+				if (e2_2.isAlive==0&&e2_2.animationDie>=6){
+					nivelActual2=NIVEL3;
+					IniciarLevel2=1;
+					initLevelP2();
+				}
+			}
+
+			if (nivelActual1==NIVEL2){
+				moveE2(&e2_1, &p1);
+				e2_1.delay+=0.5;
+				E2_Appear(&e2_1);
+				E2_Hurt(&e2_1);
+				E2_Die(&e2_1);
+
+				if (e2_1.isAlive==0&&e2_1.animationDie>=6){
+					nivelActual1=NIVEL3;
+					IniciarLevel=1;
+					initLevelP1();
+				}
+			}
+
+			if (nivelActual1==NIVEL3){
+				E3_MoveX(&e3_1);
+				E3_Eye(&e3_1);
+				E3_FireMove(&e3_1,&p1);
+				E3_Hitbox(&e3_1);
+				E3_FireAnimation(&e3_1);
+			}
+
+			if (nivelActual2==NIVEL3){
+				E3_MoveX(&e3_2);
+				E3_Eye(&e3_2);
+				E3_FireMove(&e3_2,&p2);
+				E3_Hitbox(&e3_2);
+				E3_FireAnimation(&e3_2);
+			}
+
+
+
 			if (nivelActual1==NIVEL1){
 				if(e1_1.isAlive==1){
 						animation_e1(&e1_1);
@@ -1590,20 +1640,6 @@ int main(void)
 					initLevelP1();
 				}
 			}
-			if (nivelActual1==NIVEL2){
-				moveE2(&e2_1, &p1);
-				e2_1.delay+=0.5;
-				E2_Appear(&e2_1);
-				E2_Hurt(&e2_1);
-				E2_Die(&e2_1);
-
-				if (e2_1.isAlive==0&&e2_1.animationDie>=6){
-					nivelActual1=NIVEL3;
-					IniciarLevel=1;
-					initLevelP1();
-				}
-			}
-
 
 			if (nivelActual2==NIVEL1){
 				if(e1_4.isAlive==1){
@@ -1628,20 +1664,8 @@ int main(void)
 					initLevelP2();
 				}
 
-			}
 
-			if (nivelActual2==NIVEL2){
-				moveE2_2(&e2_2, &p2);
-				e2_2.delay+=0.5;
-				E2_Appear(&e2_2);
-				E2_Hurt(&e2_2);
-				E2_Die(&e2_2);
 
-				if (e2_2.isAlive==0&&e2_2.animationDie>=6){
-					nivelActual2=NIVEL3;
-					IniciarLevel2=1;
-					initLevelP2();
-				}
 			}
 
 
