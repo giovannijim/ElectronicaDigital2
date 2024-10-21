@@ -188,7 +188,6 @@ volatile LevelPlaying nivelActual2;
 volatile int IniciarLevel=0;
 volatile int IniciarLevel2=0;
 uint8_t repintarFondo = 0;
-uint8_t pintarFondoPausa = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -1636,11 +1635,6 @@ int main(void)
 			}
 			repintarFondo = 0; // Fondo pintado, no es necesario repintar.
 		}
-		if (pintarFondoPausa == 1) {
-			// Pinta el fondo de PAUSA solo una vez
-			CargarMultiplesBitmaps("pausa");  // Función que pinta el fondo de PAUSA
-			pintarFondoPausa = 0;  // Desactiva la bandera
-		}
 		switch(estadoActual){
 		case MENU:
 			FillRect(0, 0, 319, 239, 0xFF00);
@@ -2295,22 +2289,31 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		}
 	}
 
-	if (buffer[0] == '6') {
-		if (estadoActual == MENU) {
-			// Al presionar 6 desde el menú, confirma el cambio al estado seleccionado (SOLO o DUO)
+	if (buffer[0]=='6'){
+		if (estadoActual == MENU){
 			estadoActual = estadoFuturo;
-			repintarFondo = 1;
-		} else if (estadoActual == SOLO || estadoActual == DUO) {
-			// Si ya estamos en SOLO o DUO, cambiamos a PAUSA
+		}
+		// Solo cambia a PAUSA si estamos en SOLO o DUO
+		if (estadoActual == SOLO || estadoActual == DUO) {
+			// Solo cambia si no estamos ya en PAUSA
 			if (estadoActual != PAUSA) {
-				estadoAnterior = estadoActual;  // Guarda el estado actual (SOLO o DUO)
-				pintarFondoPausa = 1;
+				estadoAnterior = estadoActual;  // Guarda el estado actual antes de cambiar
 				estadoActual = PAUSA;           // Cambia a PAUSA
 			}
 		} else if (estadoActual == PAUSA) {
-			// Si estamos en PAUSA, volvemos al estado anterior
-			estadoActual = estadoAnterior;     // Restauramos el estado SOLO o DUO
-			repintarFondo = 1;                 // Indicamos que el fondo necesita repintarse
+			// Si estamos en PAUSA, regresa al estado anterior
+			//LCD_Bitmap(0, 0, 320, 240, fondo);
+			//Cargar el fondo en 8 fragmentaciones
+
+			if (estadoAnterior == SOLO){
+				LCD_Sprite(p1.x - (18 / 2)+2, p1.y - (23 / 2+4), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
+			}
+			if (estadoAnterior == DUO){
+				LCD_Sprite(p1.x - (18 / 2)+2, p1.y - (23 / 2+4), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
+				LCD_Sprite(p2.x - (18 / 2)+2, p2.y - (23 / 2+4), 18, 23, LinkAttackDown_18x23_6, 6, 5, 0, 0);
+			}
+			estadoActual = estadoAnterior; // Restaura el estado anterior
+			repintarFondo = 1;
 		}
 	}
 
