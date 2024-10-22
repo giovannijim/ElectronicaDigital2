@@ -1851,6 +1851,7 @@ int main(void)
 					animation_e1(&e1_1);
 					animation_e1_control(&e1_1);}
 				animation_e1_die(&e1_1);
+				animation_e1_dieS(&e1_1);
 
 				if ( e1_1.isAlive==0&& e1_1.animationDie>=11 ){
 					nivelActual1=NIVEL2;
@@ -1869,8 +1870,10 @@ int main(void)
 					}
 					E2_Appear(&e2_1);
 					E2_Hurt(&e2_1);
+					E2_HurtS(&e2_1);
 				}
 				E2_Die(&e2_1);
+				E2_DieS(&e2_1);
 				if (e2_1.isAlive==0&&e2_1.animationDie>=6){
 					nivelActual1=NIVEL3;
 					IniciarLevel=1;
@@ -1881,6 +1884,7 @@ int main(void)
 				V_line(160, 0, 240, 0x0000);
 				E3_MoveX(&e3_1);
 				E3_Eye(&e3_1);
+				E3_EyeS(&e3_1);
 				E3_FireMove(&e3_1,&p1);
 				E3_Hitbox(&e3_1);
 				E3_FireAnimation(&e3_1);
@@ -1891,6 +1895,7 @@ int main(void)
 					animation_e1(&e1_4);
 					animation_e1_control(&e1_4);}
 				animation_e1_die(&e1_4);
+				animation_e1_dieS(&e1_4);
 
 				if (e1_4.isAlive==0 && e1_4.animationDie>=11){
 					nivelActual2=NIVEL2;
@@ -1908,8 +1913,10 @@ int main(void)
 					e2_2.delay+=1;}
 					E2_Appear(&e2_2);
 					E2_Hurt(&e2_2);
+					E2_HurtS(&e2_2);
 				}
 				E2_Die(&e2_2);
+				E2_DieS(&e2_2);
 				if (e2_2.isAlive==0&&e2_2.animationDie>=6){
 					nivelActual2=NIVEL3;
 					IniciarLevel2=1;
@@ -1921,6 +1928,7 @@ int main(void)
 				V_line(160, 0, 240, 0x0000);
 				E3_MoveX(&e3_2);
 				E3_Eye(&e3_2);
+				E3_EyeS(&e3_2);
 				E3_FireMove(&e3_2,&p2);
 				E3_Hitbox(&e3_2);
 				E3_FireAnimation(&e3_2);
