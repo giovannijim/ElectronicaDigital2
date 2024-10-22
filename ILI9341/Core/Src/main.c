@@ -165,7 +165,10 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint8_t fragmento_imagen[19200];
-//extern uint8_t fondo[];
+extern uint8_t play_duo_selected[];
+extern uint8_t play_duo[];
+extern uint8_t play_solo_selected[];
+extern uint8_t play_solo[];
 
 uint8_t buffer[10];
 
@@ -1636,46 +1639,15 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 	LCD_Init();
-	//LCD_Clear(0x00);
 
 	//Cargar el fondo en 8 fragmentaciones
 	CargarMultiplesBitmaps("mp");
-/*
-	if (CargarBitmaps_SD("fb1_h.bin")) {
-		LCD_Bitmap(0, 0, 320, 30, fragmento_imagen);
-	}
-	if (CargarBitmaps_SD("fb2_h.bin")) {
-		LCD_Bitmap(0, 30, 320, 30, fragmento_imagen);
-	}
-	if (CargarBitmaps_SD("fb3_h.bin")) {
-		LCD_Bitmap(0, 60, 320, 30, fragmento_imagen);
-	}
-	if (CargarBitmaps_SD("fb4_h.bin")) {
-		LCD_Bitmap(0, 90, 320, 30, fragmento_imagen);
-	}
-	if (CargarBitmaps_SD("fb5_h.bin")) {
-		LCD_Bitmap(0, 120, 320, 30, fragmento_imagen);
-	}
-	if (CargarBitmaps_SD("fb6_h.bin")) {
-		LCD_Bitmap(0, 150, 320, 30, fragmento_imagen);
-	}
-	if (CargarBitmaps_SD("fb7_h.bin")) {
-		LCD_Bitmap(0, 180, 320, 30, fragmento_imagen);
-	}
-	if (CargarBitmaps_SD("fb8_h.bin")) {
-		LCD_Bitmap(0, 210, 320, 30, fragmento_imagen);
-	}
-*/
-	//LCD_Bitmap(0, 0, 320, 240, fondo);
 
-	//LCD_Print("Hola Mundo", 20, 100, 1, 0x001F, 0xCAB9);
 
 	// Activar bandera interrupcion
 	HAL_UART_Receive_IT(&huart2, buffer, 1);
 
-	//EstadoJuego estadoActual = SOLO;
-	//LevelPlaying nivelActual1 = NIVEL3;
-	//LevelPlaying nivelActual2 = NIVEL2;
+	// ESTADO DE INICIO DEL JUEGO
 	estadoActual = MENU;
 	nivelActual1 = NIVEL1;
 	nivelActual2 = NIVEL1;
@@ -1746,229 +1718,241 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	while (1) {
 		if (repintarFondo) {
-			switch (estadoActual) {
-				case MENU:
-					CargarMultiplesBitmaps("mp");
-					break;
-				case SOLO:
-					CargarMultiplesBitmaps("fb");
-					LCD_Sprite(p1.x - (20 / 2)+1, p1.y - (21 / 2), 20, 21, LinkDamageSide_20x21_3, 3, 0, 0, 0);
-					if (IniciarP1==1){
-					initLevelSolo();}
-					break;
-				case DUO:
-					CargarMultiplesBitmaps("fb");
-					if (IniciarP1==1){
-						initLevelP1();}
-					if (IniciarP2==1){
-						initLevelP2();}
-					break;
-				case PAUSA:
-					CargarMultiplesBitmaps("pausa");
-					break;
-				case WIN1:
-					break;
-				case WIN2:
-					break;
-				// Agrega más casos según tus estados.
-			}
-			repintarFondo = 0; // Fondo pintado, no es necesario repintar.
+		switch (estadoActual) {
+			case MENU:
+				CargarMultiplesBitmaps("mp");
+				break;
+			case SOLO:
+				CargarMultiplesBitmaps("fb");
+				LCD_Sprite(p1.x - (20 / 2)+1, p1.y - (21 / 2), 20, 21, LinkDamageSide_20x21_3, 3, 0, 0, 0);
+				if (IniciarP1==1){
+				initLevelSolo();}
+				break;
+			case DUO:
+				CargarMultiplesBitmaps("fb");
+				V_line(160, 0, 240, 0x0000);
+				LCD_Sprite(p1.x - (20 / 2)+1, p1.y - (21 / 2), 20, 21, LinkDamageSide_20x21_3, 3, 0, 0, 0);
+				LCD_Sprite(p2.x - (20 / 2)+1, p2.y - (21 / 2), 20, 21, LinkDamageSide_20x21_3, 3, 0, 0, 0);
+				if (IniciarP1==1){
+					initLevelP1();}
+				if (IniciarP2==1){
+					initLevelP2();}
+				break;
+			case PAUSA:
+				CargarMultiplesBitmaps("pausa");
+				break;
+			case WIN1:
+				break;
+			case WIN2:
+				break;
+			// Agrega más casos según tus estados.
 		}
-		if (pintarFondoPausa == 1) {
-			// Pinta el fondo de PAUSA solo una vez
-			CargarMultiplesBitmaps("pausa");  // Función que pinta el fondo de PAUSA
-			pintarFondoPausa = 0;  // Desactiva la bandera
-		}
-		switch(estadoActual){
-		case MENU:
+		repintarFondo = 0; // Fondo pintado, no es necesario repintar.
+	}
+	if (pintarFondoPausa == 1) {
+		// Pinta el fondo de PAUSA solo una vez
+		CargarMultiplesBitmaps("pausa");  // Función que pinta el fondo de PAUSA
+		pintarFondoPausa = 0;  // Desactiva la bandera
+	}
+	switch(estadoActual){
+	case MENU:
+		// En funcion del estadoFuturo, se seleccionara que mostrar en la pantlla
+		// (Para mostrar que opcion selecciono en le menuPrincipal)
+		switch(estadoFuturo){
+		case SOLO:
+			LCD_Bitmap(20, 180, 110, 30, play_solo_selected);
+			LCD_Bitmap(190, 180, 110, 30, play_duo);
 			break;
-		case SOLO:{
-			if (nivelActual1==NIVEL1){
-					if(e1_1.isAlive==1){
-						animation_e1(&e1_1);
-						animation_e1_control(&e1_1);}
+		case DUO:
+			LCD_Bitmap(190, 180, 110, 30, play_duo_selected);
+			LCD_Bitmap(20, 180, 110, 30, play_solo);
+			break;
+		default:
+			LCD_Bitmap(20, 180, 110, 30, play_solo);
+			LCD_Bitmap(190, 180, 110, 30, play_duo);
+			break;
+		}
+		break;
+	case SOLO:{
+		if (nivelActual1==NIVEL1){
+				if(e1_1.isAlive==1){
+					animation_e1(&e1_1);
+					animation_e1_control(&e1_1);}
 
-					if(e1_2.isAlive==1){
-						animation_e1(&e1_2);
-						animation_e1_control(&e1_2);}
+				if(e1_2.isAlive==1){
+					animation_e1(&e1_2);
+					animation_e1_control(&e1_2);}
 
-					if(e1_3.isAlive==1){
-						animation_e1(&e1_3);
-						animation_e1_control(&e1_3);}
+				if(e1_3.isAlive==1){
+					animation_e1(&e1_3);
+					animation_e1_control(&e1_3);}
 
-					animation_e1_die(&e1_1);
-					animation_e1_dieS(&e1_1);
-					animation_e1_die(&e1_2);
-					animation_e1_dieS(&e1_2);
-					animation_e1_die(&e1_3);
-					animation_e1_dieS(&e1_3);
-					if (e1_1.isAlive==0&&e1_2.isAlive==0&&e1_3.isAlive==0 && e1_1.animationDie>=11 && e1_2.animationDie>=11 && e1_3.animationDie>=11){
-						nivelActual1=NIVEL2;
-						IniciarLevel=1;
-						initLevelSolo();
-					}
-				}
-
-			if (nivelActual1==NIVEL2){
-				if (e2_1.isAlive==1){
-					moveE2(&e2_1, &p1);
-					e2_1.delay+=1; //1
-					E2_Appear(&e2_1);
-					E2_Hurt(&e2_1);
-					E2_HurtS(&e2_1);
-
-				}
-				E2_Die(&e2_1);
-				E2_DieS(&e2_1);
-				if (e2_1.isAlive==0&&e2_1.animationDie>=6){
-					nivelActual1=NIVEL3;
+				animation_e1_die(&e1_1);
+				animation_e1_die(&e1_2);
+				animation_e1_die(&e1_3);
+				if (e1_1.isAlive==0&&e1_2.isAlive==0&&e1_3.isAlive==0 && e1_1.animationDie>=11 && e1_2.animationDie>=11 && e1_3.animationDie>=11){
+					nivelActual1=NIVEL2;
 					IniciarLevel=1;
 					initLevelSolo();
 				}
 			}
 
-			if (nivelActual1==NIVEL3){
-				E3_MoveX(&e3_1);
-				E3_Eye(&e3_1);
-				E3_EyeS(&e3_1);
-				E3_FireMove(&e3_1,&p1);
-				E3_Hitbox(&e3_1);
-				E3_FireAnimation(&e3_1);
+		if (nivelActual1==NIVEL2){
+			if (e2_1.isAlive==1){
+				moveE2(&e2_1, &p1);
+				e2_1.delay+=1; //1
+				E2_Appear(&e2_1);
+				E2_Hurt(&e2_1);
+
 			}
+			E2_Die(&e2_1);
+			if (e2_1.isAlive==0&&e2_1.animationDie>=6){
+				nivelActual1=NIVEL3;
+				IniciarLevel=1;
+				initLevelSolo();
+			}
+		}
 
-			PlayerAttackAnimation(&p1);
-			PlayerAttackSound(&p1);
-			PlayerDamageAnimation(&p1);
-			PlayerDamageSound(&p1);
-			PlayerDieAnimation(&p1);
-			PlayerDieSound(&p1);
-			break;}
+		if (nivelActual1==NIVEL3){
+			if (e3_1.isAlive==1){
+			E3_MoveX(&e3_1);
+			E3_Eye(&e3_1);
+			E3_FireMove(&e3_1,&p1);
+			E3_Hitbox(&e3_1);
+			E3_FireAnimation(&e3_1);
+			}
+			if (e3_1.isAlive==0){
+				estadoActual = WIN1;
+			}
+		}
 
+		PlayerAttackAnimation(&p1);
+		PlayerAttackSound(&p1);
+		PlayerDamageAnimation(&p1);
+		PlayerDamageSound(&p1);
+		PlayerDieAnimation(&p1);
+		PlayerDieSound(&p1);
+		break;}
 
-		case DUO:{
-			if (nivelActual1==NIVEL1){
-				if(e1_1.isAlive==1){
-					animation_e1(&e1_1);
-					animation_e1_control(&e1_1);}
+	case DUO:{
+		if (nivelActual1==NIVEL1){
+			if(e1_1.isAlive==1){
+				animation_e1(&e1_1);
+				animation_e1_control(&e1_1);}
 				animation_e1_die(&e1_1);
-				animation_e1_dieS(&e1_1);
 
-				if ( e1_1.isAlive==0&& e1_1.animationDie>=11 ){
-					nivelActual1=NIVEL2;
-					IniciarLevel=1;
-					initLevelP1();
-				}
+			if ( e1_1.isAlive==0&& e1_1.animationDie>=11 ){
+				nivelActual1=NIVEL2;
+				IniciarLevel=1;
+				initLevelP1();
 			}
+		}
 
-			if (nivelActual1==NIVEL2){
-				if (e2_1.isAlive==1){
-					moveE2(&e2_1, &p1);
-					if (nivelActual2!=NIVEL2){
-					e2_1.delay+=1000;}//0.5
-					else{
-						e2_1.delay+=1;
-					}
-					E2_Appear(&e2_1);
-					E2_Hurt(&e2_1);
-					E2_HurtS(&e2_1);
+		if (nivelActual1==NIVEL2){
+			if (e2_1.isAlive==1){
+				moveE2(&e2_1, &p1);
+				if (nivelActual2!=NIVEL2){
+				e2_1.delay+=1000;}//0.5
+				else{
+					e2_1.delay+=1;
 				}
-				E2_Die(&e2_1);
-				E2_DieS(&e2_1);
-				if (e2_1.isAlive==0&&e2_1.animationDie>=6){
-					nivelActual1=NIVEL3;
-					IniciarLevel=1;
-					initLevelP1();
-				}
+				E2_Appear(&e2_1);
+				E2_Hurt(&e2_1);
 			}
-			if (nivelActual1==NIVEL3){
-				V_line(160, 0, 240, 0x0000);
+			E2_Die(&e2_1);
+			if (e2_1.isAlive==0&&e2_1.animationDie>=6){
+				e3_1.isAlive=1;
+				nivelActual1=NIVEL3;
+				IniciarLevel=1;
+				initLevelP1();
+			}
+		}
+		if (nivelActual1==NIVEL3){
+			if (e3_1.isAlive==1){
 				E3_MoveX(&e3_1);
 				E3_Eye(&e3_1);
-				E3_EyeS(&e3_1);
 				E3_FireMove(&e3_1,&p1);
 				E3_Hitbox(&e3_1);
 				E3_FireAnimation(&e3_1);
 			}
+			if (e3_1.isAlive==0){
+				estadoActual = WIN1;
+			}
+		}
 
-			if (nivelActual2==NIVEL1){
-				if(e1_4.isAlive==1){
-					animation_e1(&e1_4);
-					animation_e1_control(&e1_4);}
+		if (nivelActual2==NIVEL1){
+			if(e1_4.isAlive==1){
+				animation_e1(&e1_4);
+				animation_e1_control(&e1_4);}
 				animation_e1_die(&e1_4);
-				animation_e1_dieS(&e1_4);
 
-				if (e1_4.isAlive==0 && e1_4.animationDie>=11){
-					nivelActual2=NIVEL2;
-					IniciarLevel2=1;
-					initLevelP2();
-				}
+			if (e1_4.isAlive==0 && e1_4.animationDie>=11){
+				nivelActual2=NIVEL2;
+				IniciarLevel2=1;
+				initLevelP2();
 			}
+		}
 
-			if (nivelActual2==NIVEL2){
-				if (e2_2.isAlive==1){
-					moveE2(&e2_2, &p2);
-					if (nivelActual1!=NIVEL2){
-						e2_2.delay+=1000;
-					}else{
-					e2_2.delay+=1;}
-					E2_Appear(&e2_2);
-					E2_Hurt(&e2_2);
-					E2_HurtS(&e2_2);
-				}
-				E2_Die(&e2_2);
-				E2_DieS(&e2_2);
-				if (e2_2.isAlive==0&&e2_2.animationDie>=6){
-					nivelActual2=NIVEL3;
-					IniciarLevel2=1;
-					initLevelP2();
-				}
+		if (nivelActual2==NIVEL2){
+			if (e2_2.isAlive==1){
+				moveE2(&e2_2, &p2);
+				if (nivelActual1!=NIVEL2){
+					e2_2.delay+=1000;
+				}else{
+				e2_2.delay+=1;}
+				E2_Appear(&e2_2);
+				E2_Hurt(&e2_2);
 			}
+			E2_Die(&e2_2);
+			if (e2_2.isAlive==0&&e2_2.animationDie>=6){
+				e3_2.isAlive=1;
+				nivelActual2=NIVEL3;
+				IniciarLevel2=1;
+				initLevelP2();
+			}
+		}
 
-			if (nivelActual2==NIVEL3){
-				V_line(160, 0, 240, 0x0000);
+		if (nivelActual2==NIVEL3){
+			if (e3_2.isAlive==1){
 				E3_MoveX(&e3_2);
 				E3_Eye(&e3_2);
-				E3_EyeS(&e3_2);
 				E3_FireMove(&e3_2,&p2);
 				E3_Hitbox(&e3_2);
 				E3_FireAnimation(&e3_2);
 			}
-
-
-			PlayerAttackAnimation(&p1);
-			PlayerAttackSound(&p1);
-			PlayerDamageAnimation(&p1);
-			PlayerDamageSound(&p1);
-			PlayerDieAnimation(&p1);
-			PlayerDieSound(&p1);
-
-
-			PlayerAttackAnimation(&p2);
-			PlayerAttackSound(&p2);
-			PlayerDamageAnimation(&p2);
-			PlayerDamageSound(&p2);
-			PlayerDieAnimation(&p2);
-			PlayerDieSound(&p2);
-			break;}
-		case PAUSA:
-			//LCD_Bitmap(0, 0, 320, 240, pausa_menu);
-			break;
-		case WIN1:
-			CargarMultiplesBitmaps("p1w");
-			break;
-		case WIN2:
-			CargarMultiplesBitmaps("p2w");
-			break;
-		default:
-			break;
+			if (e3_2.isAlive==0){
+				estadoActual = WIN2;
+			}
 		}
 
-    /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+		PlayerAttackAnimation(&p1);
+		PlayerDamageAnimation(&p1);
+		PlayerDieAnimation(&p1);
+
+		PlayerAttackAnimation(&p2);
+		PlayerDamageAnimation(&p2);
+		PlayerDieAnimation(&p2);
+		break;}
+	case PAUSA:
+		//LCD_Bitmap(0, 0, 320, 240, pausa_menu);
+		break;
+	case WIN1:
+		CargarMultiplesBitmaps("p1w");
+		break;
+	case WIN2:
+		CargarMultiplesBitmaps("p2w");
+		break;
+	default:
+		break;
+	}
+
+/* USER CODE END WHILE */
+
+/* USER CODE BEGIN 3 */
 
 	}
-  /* USER CODE END 3 */
+/* USER CODE END 3 */
 }
 
 /**
@@ -2414,16 +2398,17 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			 // IMPRIMIR SPRITE DE UN JUGADOR
 			 estadoFuturo = SOLO;
 			 IniciarLevel=1;
-			 IniciarP1=1;}
-		 else {
-			 if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1 && (estadoActual==SOLO||estadoActual==DUO)){
-			 			p1.IsAttack=1;
-			 			p1.animationAttack=0;
-			 			PlayerHit(&p1, &e1_1);
-			 			PlayerHit(&p1, &e1_2);
-			 			PlayerHit(&p1, &e1_3);}
-			 			PlayerHit_E2(&p1, &e2_1);
+			 IniciarP1=1;
+			IniciarLevel2=1;
+			IniciarP2=1;
 		 }
+		 if (p1.IsAttack==0 && p1.IsDamage==0 &&p1.isAlive==1 && (estadoActual==SOLO||estadoActual==DUO)){
+					p1.IsAttack=1;
+					p1.animationAttack=0;
+					PlayerHit(&p1, &e1_1);
+					PlayerHit(&p1, &e1_2);
+					PlayerHit(&p1, &e1_3);
+					PlayerHit_E2(&p1, &e2_1);}
 	}
 
 	//Jugador 2
@@ -2515,15 +2500,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			IniciarP1=1;
 			IniciarP2=1;
 		}
-		else {
-			if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1 && estadoActual==DUO){
-				p2.IsAttack=1;
-				p2.animationAttack=0;
-				PlayerHit(&p2, &e1_4);
-				PlayerHit(&p2, &e1_5);
-				PlayerHit(&p2, &e1_6);}
-				PlayerHit_E2(&p2, &e2_2);
-		}
+
+		if (p2.IsAttack==0 && p2.IsDamage==0 &&p2.isAlive==1 && estadoActual==DUO){
+			p2.IsAttack=1;
+			p2.animationAttack=0;
+			PlayerHit(&p2, &e1_4);
+			PlayerHit(&p2, &e1_5);
+			PlayerHit(&p2, &e1_6);
+			PlayerHit_E2(&p2, &e2_2);}
+
 	}
 
 	if (buffer[0] == '6') {
