@@ -157,6 +157,7 @@ uint32_t totalSpace, freeSpace;
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi1;
 
+TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 
 UART_HandleTypeDef huart5;
@@ -199,6 +200,7 @@ static void MX_SPI1_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_UART5_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -248,22 +250,24 @@ int CargarBitmaps_SD(const char* filename) {
 
 // Función para cambiar la frecuencia del PWM (ajusta el periodo)
 void setPWM_Frequency(uint32_t frequency) {
-    uint32_t timer_clock = 1000000; // 1 MHz (depende de tu configuración)
-    uint32_t period = (timer_clock / frequency) - 1;
+	if (estadoActual==DUO || estadoActual==SOLO){
+		uint32_t timer_clock = 1000000; // 1 MHz (depende de tu configuración)
+		uint32_t period = (timer_clock / frequency) - 1;
 
-    // Cambiar el periodo (Auto-Reload Register)
-    __HAL_TIM_SET_AUTORELOAD(&htim2, period);
+		// Cambiar el periodo (Auto-Reload Register)
+		__HAL_TIM_SET_AUTORELOAD(&htim2, period);
 
-    // Reiniciar el timer para aplicar el cambio de frecuencia
-    __HAL_TIM_SET_COUNTER(&htim2, 0);
+		// Reiniciar el timer para aplicar el cambio de frecuencia
+		__HAL_TIM_SET_COUNTER(&htim2, 0);
+	}
 }
 
 // Función para cambiar el duty cycle
 void setPWM_DutyCycle(uint16_t dutyCycle) {
+	if (estadoActual==DUO || estadoActual==SOLO){
     __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_4, dutyCycle);
+	}
 }
-
-
 
 /* Funciones Enemigo tipo 1 ---------------------------------------------------*/
 void animation_e1_control(enemy_type1* enemy){
@@ -281,6 +285,7 @@ void animation_e1_control(enemy_type1* enemy){
 		}
 	}
 }
+
 
 void animation_e1(enemy_type1* enemy){
 	int variableAnimationV=enemy->animationV;
@@ -320,6 +325,36 @@ void animation_e1_die(enemy_type1* enemy){
 					enemy->y=5000;
 				}
 			}
+}
+
+void animation_e1_dieS(enemy_type1* enemy){
+	int variableAnimationDieS=enemy->animationDie;
+		if (enemy->isAlive==0){
+			if (variableAnimationDieS<11){
+				switch (variableAnimationDieS){
+				case 0:
+					setPWM_Frequency(8500); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(50);
+					break;
+				case 1:
+					setPWM_Frequency(6500); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(50);
+					break;
+				case 2:
+					setPWM_Frequency(8500); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(50);
+					break;
+				case 3:
+					setPWM_Frequency(6500); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(50);
+					break;
+				case 4:
+					setPWM_Frequency(6500); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(0);
+					break;
+				}
+			}
+		}
 }
 
 void initEnemy1(enemy_type1* enemy, unsigned int startX, unsigned int startY, unsigned int width, unsigned int height, int health) {
@@ -748,6 +783,30 @@ void E2_Hurt(enemy_type2* enemy){
 	}
 }
 
+void E2_HurtS(enemy_type2* enemy){
+	if (enemy->isHurt==1){
+		int variableAnimationHurtS=enemy->animationDV;
+		if (enemy->isAlive==1){
+			if (variableAnimationHurtS<3){
+				switch (variableAnimationHurtS){
+				case 0:
+					setPWM_Frequency(6500); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(50);
+					break;
+				case 1:
+					setPWM_Frequency(4500); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(50);
+					break;
+				case 2:
+					setPWM_Frequency(2500); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(50);
+					break;
+				}
+			}
+		}
+	}
+}
+
 void E2_Die(enemy_type2* enemy){
 	int variableAnimationDie=enemy->animationDie;
 			if (enemy->isAlive==0){
@@ -760,6 +819,40 @@ void E2_Die(enemy_type2* enemy){
 						enemy->y=5000;
 					}
 				}
+}
+
+void E2_DieS(enemy_type2* enemy){
+	int variableAnimationDieS=enemy->animationDie;
+			if (enemy->isAlive==0){
+				if (variableAnimationDieS<6){
+					switch (variableAnimationDieS){
+					case 0:
+						setPWM_Frequency(15000); // Frecuencia de 1 kHz
+						setPWM_DutyCycle(50);
+						break;
+					case 1:
+						setPWM_Frequency(6000); // Frecuencia de 1 kHz
+						setPWM_DutyCycle(50);
+						break;
+					case 2:
+						setPWM_Frequency(10000); // Frecuencia de 1 kHz
+						setPWM_DutyCycle(50);
+						break;
+					case 3:
+						setPWM_Frequency(4500); // Frecuencia de 1 kHz
+						setPWM_DutyCycle(50);
+						break;
+					case 4:
+						setPWM_Frequency(4500); // Frecuencia de 1 kHz
+						setPWM_DutyCycle(50);
+						break;
+					case 5:
+						setPWM_Frequency(4500); // Frecuencia de 1 kHz
+						setPWM_DutyCycle(0);
+						break;
+					}
+				}
+			}
 }
 
 void PlayerHit_E2(player* player, enemy_type2* enemy){
@@ -877,6 +970,42 @@ void E3_Eye(enemy_type3* enemy){
 		}
 	} else{
 		FillRect(enemy->x - (16 / 2), enemy->y_eye - (17 / 2), 16, 17, 0xFE8B);
+	}
+}
+
+void E3_EyeS(enemy_type3* enemy){
+	if (enemy->health>0){
+		if (enemy->isMove==0){
+			int variableEyeS=enemy->animationEye;
+			if (variableEyeS<7){
+				switch (variableEyeS){
+				case 1:
+					setPWM_Frequency(6500); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(50);   // Duty cycle al 50%
+					break;
+				case 2:
+					setPWM_Frequency(45000); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(50);   // Duty cycle al 50%
+					break;
+				case 3:
+					setPWM_Frequency(3000); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(50);   // Duty cycle al 50%
+					break;
+				case 4:
+					setPWM_Frequency(2000); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(50);   // Duty cycle al 50%
+					break;
+				case 5:
+					setPWM_Frequency(1000); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(50);   // Duty cycle al 50%
+					break;
+				case 6:
+					setPWM_Frequency(10000); // Frecuencia de 1 kHz
+					setPWM_DutyCycle(0);   // Duty cycle al 50%
+					break;
+				}
+			}
+		}
 	}
 }
 
@@ -1503,6 +1632,7 @@ int main(void)
   MX_UART5_Init();
   MX_FATFS_Init();
   MX_TIM2_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 
 	LCD_Init();
@@ -1667,8 +1797,11 @@ int main(void)
 						animation_e1_control(&e1_3);}
 
 					animation_e1_die(&e1_1);
+					animation_e1_dieS(&e1_1);
 					animation_e1_die(&e1_2);
+					animation_e1_dieS(&e1_2);
 					animation_e1_die(&e1_3);
+					animation_e1_dieS(&e1_3);
 					if (e1_1.isAlive==0&&e1_2.isAlive==0&&e1_3.isAlive==0 && e1_1.animationDie>=11 && e1_2.animationDie>=11 && e1_3.animationDie>=11){
 						nivelActual1=NIVEL2;
 						IniciarLevel=1;
@@ -1682,9 +1815,11 @@ int main(void)
 					e2_1.delay+=1; //1
 					E2_Appear(&e2_1);
 					E2_Hurt(&e2_1);
+					E2_HurtS(&e2_1);
 
 				}
 				E2_Die(&e2_1);
+				E2_DieS(&e2_1);
 				if (e2_1.isAlive==0&&e2_1.animationDie>=6){
 					nivelActual1=NIVEL3;
 					IniciarLevel=1;
@@ -1695,6 +1830,7 @@ int main(void)
 			if (nivelActual1==NIVEL3){
 				E3_MoveX(&e3_1);
 				E3_Eye(&e3_1);
+				E3_EyeS(&e3_1);
 				E3_FireMove(&e3_1,&p1);
 				E3_Hitbox(&e3_1);
 				E3_FireAnimation(&e3_1);
@@ -1742,6 +1878,7 @@ int main(void)
 				}
 			}
 			if (nivelActual1==NIVEL3){
+				V_line(160, 0, 240, 0x0000);
 				E3_MoveX(&e3_1);
 				E3_Eye(&e3_1);
 				E3_FireMove(&e3_1,&p1);
@@ -1781,6 +1918,7 @@ int main(void)
 			}
 
 			if (nivelActual2==NIVEL3){
+				V_line(160, 0, 240, 0x0000);
 				E3_MoveX(&e3_2);
 				E3_Eye(&e3_2);
 				E3_FireMove(&e3_2,&p2);
@@ -1790,12 +1928,19 @@ int main(void)
 
 
 			PlayerAttackAnimation(&p1);
+			PlayerAttackSound(&p1);
 			PlayerDamageAnimation(&p1);
+			PlayerDamageSound(&p1);
 			PlayerDieAnimation(&p1);
+			PlayerDieSound(&p1);
+
 
 			PlayerAttackAnimation(&p2);
+			PlayerAttackSound(&p2);
 			PlayerDamageAnimation(&p2);
+			PlayerDamageSound(&p2);
 			PlayerDieAnimation(&p2);
+			PlayerDieSound(&p2);
 			break;}
 		case PAUSA:
 			//LCD_Bitmap(0, 0, 320, 240, pausa_menu);
@@ -1900,6 +2045,80 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
+  * @brief TIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 80-1;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 65535;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
+  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
+  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
+  sBreakDeadTimeConfig.DeadTime = 0;
+  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
+  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
+  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
+  if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &sBreakDeadTimeConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+
+  /* USER CODE END TIM1_Init 2 */
+  HAL_TIM_MspPostInit(&htim1);
 
 }
 
