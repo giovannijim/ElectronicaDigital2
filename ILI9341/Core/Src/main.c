@@ -897,7 +897,7 @@ void E3_FireMove(enemy_type3* enemy,player* player){
 				enemy->y=FutureY;
 				LCD_Sprite(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, E3_Fire16x16_4, 4, animationFire, 0, 0);
 				if (player->playerUp<=enemy->e1Down){ //player->playerUp>=enemy->e1Up &&
-					if(enemy->e1Left >= player->playerLeft-8 && enemy->e1Right <= player->playerRight+8){
+					if((enemy->e1Left >= player->playerLeft-4 && enemy->e1Left <= player->playerRight+4)||(enemy->e1Right >= player->playerLeft-4 && enemy->e1Right <= player->playerRight+4)||(enemy->x >= player->playerLeft-4 && enemy->x <= player->playerRight+4)){
 						player->y=player->y+5;
 						player->direction=0;
 						player->IsDamage=1;
@@ -1403,11 +1403,11 @@ void initLevelP1(void){
 
 		if (nivelActual1==NIVEL1){
 			//Inicializar enemigo 1
-			initEnemy1(&e1_1, 30, 80, 16, 19, 3);
+			initEnemy1(&e1_1, 80, 80, 16, 19, 3);
 			IniciarLevel=0;}
 
 		  if (nivelActual1==NIVEL2){
-			  initEnemy2(&e2_1, 90, 80, 16, 20, 3);
+			  initEnemy2(&e2_1, 80, 80, 16, 20, 3);
 			  IniciarLevel=0;
 			  }
 
@@ -1431,12 +1431,12 @@ void initLevelP2(void){
 
 		 if (nivelActual2==NIVEL1){
 			//Inicializar enemigo 1
-			initEnemy1(&e1_4, 170, 120, 16, 19, 3);
+			initEnemy1(&e1_4, 240, 120, 16, 19, 3);
 			IniciarLevel2=0;
 			}
 
 	     if (nivelActual2==NIVEL2){
-			  initEnemy2(&e2_2, 230, 80, 16, 20, 3);
+			  initEnemy2(&e2_2, 240, 80, 16, 20, 3);
 			IniciarLevel2=0;
 		  }
 

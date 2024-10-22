@@ -17,7 +17,7 @@
 ../Core/Src/main.c:765:6:PlayerHit_E2	26
 ../Core/Src/main.c:835:6:initEnemy3	1
 ../Core/Src/main.c:863:6:E3_Eye	4
-../Core/Src/main.c:883:6:E3_FireMove	8
+../Core/Src/main.c:883:6:E3_FireMove	12
 ../Core/Src/main.c:926:6:E3_FireAnimation	4
 ../Core/Src/main.c:935:6:E3_Hitbox	4
 ../Core/Src/main.c:961:6:E3_MoveX	11
