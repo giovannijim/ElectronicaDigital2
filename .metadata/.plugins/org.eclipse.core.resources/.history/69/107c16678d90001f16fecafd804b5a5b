@@ -1641,7 +1641,7 @@ int main(void)
 	LCD_Init();
 
 	//Cargar el fondo en 8 fragmentaciones
-	CargarMultiplesBitmaps("mp");
+	CargarMultiplesBitmaps("ES");
 
 
 	// Activar bandera interrupcion
@@ -1775,9 +1775,6 @@ int main(void)
 		}
 		break;
 	case SOLO:{
-		if(p1.isAlive == 0){
-			estadoActual = GAMEOVER;
-		}
 		if (nivelActual1==NIVEL1){
 				if(e1_1.isAlive==1){
 					animation_e1(&e1_1);
@@ -1839,9 +1836,6 @@ int main(void)
 		break;}
 
 	case DUO:{
-		if(p1.isAlive == 0 && p2.isAlive == 0){
-			estadoActual = GAMEOVER;
-		}
 		if (nivelActual1==NIVEL1){
 			if(e1_1.isAlive==1){
 				animation_e1(&e1_1);

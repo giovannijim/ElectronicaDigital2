@@ -1747,6 +1747,7 @@ int main(void)
 				break;
 			case GAMEOVER:
 				break;
+			// Agrega más casos según tus estados.
 		}
 		repintarFondo = 0; // Fondo pintado, no es necesario repintar.
 	}
@@ -1775,9 +1776,6 @@ int main(void)
 		}
 		break;
 	case SOLO:{
-		if(p1.isAlive == 0){
-			estadoActual = GAMEOVER;
-		}
 		if (nivelActual1==NIVEL1){
 				if(e1_1.isAlive==1){
 					animation_e1(&e1_1);
@@ -1839,9 +1837,6 @@ int main(void)
 		break;}
 
 	case DUO:{
-		if(p1.isAlive == 0 && p2.isAlive == 0){
-			estadoActual = GAMEOVER;
-		}
 		if (nivelActual1==NIVEL1){
 			if(e1_1.isAlive==1){
 				animation_e1(&e1_1);
@@ -1950,11 +1945,8 @@ int main(void)
 	case WIN2:
 		CargarMultiplesBitmaps("p2w");
 		break;
-	case GAMEOVER:
-		CargarMultiplesBitmaps("ES");
-		break;
 	default:
-		CargarMultiplesBitmaps("mp");
+		CargarMultiplesBitmaps("ES");
 		break;
 	}
 

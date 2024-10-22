@@ -1745,8 +1745,7 @@ int main(void)
 				break;
 			case WIN2:
 				break;
-			case GAMEOVER:
-				break;
+			// Agrega más casos según tus estados.
 		}
 		repintarFondo = 0; // Fondo pintado, no es necesario repintar.
 	}
@@ -1775,9 +1774,6 @@ int main(void)
 		}
 		break;
 	case SOLO:{
-		if(p1.isAlive == 0){
-			estadoActual = GAMEOVER;
-		}
 		if (nivelActual1==NIVEL1){
 				if(e1_1.isAlive==1){
 					animation_e1(&e1_1);
@@ -1839,9 +1835,6 @@ int main(void)
 		break;}
 
 	case DUO:{
-		if(p1.isAlive == 0 && p2.isAlive == 0){
-			estadoActual = GAMEOVER;
-		}
 		if (nivelActual1==NIVEL1){
 			if(e1_1.isAlive==1){
 				animation_e1(&e1_1);
@@ -1950,11 +1943,7 @@ int main(void)
 	case WIN2:
 		CargarMultiplesBitmaps("p2w");
 		break;
-	case GAMEOVER:
-		CargarMultiplesBitmaps("ES");
-		break;
 	default:
-		CargarMultiplesBitmaps("mp");
 		break;
 	}
 
@@ -2540,10 +2529,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			// Si estamos en PAUSA, volvemos al estado anterior
 			estadoActual = estadoAnterior;     // Restauramos el estado SOLO o DUO
 			repintarFondo = 1;                 // Indicamos que el fondo necesita repintarse
-		}
-		else if (estadoActual == GAMEOVER){
-			estadoActual = MENU;
-			repintarFondo = 1;
 		}
 	}
 

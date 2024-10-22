@@ -1839,9 +1839,6 @@ int main(void)
 		break;}
 
 	case DUO:{
-		if(p1.isAlive == 0 && p2.isAlive == 0){
-			estadoActual = GAMEOVER;
-		}
 		if (nivelActual1==NIVEL1){
 			if(e1_1.isAlive==1){
 				animation_e1(&e1_1);
