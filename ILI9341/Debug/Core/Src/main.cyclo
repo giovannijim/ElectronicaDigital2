@@ -48,5 +48,5 @@
 ../Core/Src/main.c:2192:13:MX_UART5_Init	2
 ../Core/Src/main.c:2225:13:MX_USART2_UART_Init	2
 ../Core/Src/main.c:2258:13:MX_GPIO_Init	1
-../Core/Src/main.c:2323:6:HAL_UART_RxCpltCallback	71
-../Core/Src/main.c:2560:6:Error_Handler	1
+../Core/Src/main.c:2323:6:HAL_UART_RxCpltCallback	73
+../Core/Src/main.c:2564:6:Error_Handler	1
