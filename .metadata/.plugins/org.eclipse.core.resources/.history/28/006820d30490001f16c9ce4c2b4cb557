@@ -1622,7 +1622,7 @@ int main(void)
 					break;
 				case SOLO:
 					CargarMultiplesBitmaps("fb");
-					LCD_Sprite(p1.x - (20 / 2)+1, p1.y - (21 / 2), 20, 21, LinkDamageSide_20x21_3, 3, 0, 0, 0);
+					LCD_Sprite(player->x - (20 / 2)+1, player->y - (21 / 2), 20, 21, LinkDamageSide_20x21_3, 3, variableAnimationDamage, 0, 0);
 					if (IniciarP1==1){
 					initLevelSolo();}
 					break;
