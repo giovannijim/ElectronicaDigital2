@@ -2565,10 +2565,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			estadoActual = estadoAnterior;     // Restauramos el estado SOLO o DUO
 			repintarFondo = 1;                 // Indicamos que el fondo necesita repintarse
 		}
+		// Si alguno de los dos jugadores gano, y se presiona este boton
+		// Regresar al menu
 		else if (estadoActual == WIN1 || estadoActual ==WIN2){
 			estadoActual = MENU;
 			repintarFondo = 1;
 		}
+		// Si se encuentra en la GAMEOVER, y se presiona este boton
+		// Regresar al menu
 		else if (estadoActual == GAMEOVER){
 			estadoActual = MENU;
 			repintarFondo = 1;

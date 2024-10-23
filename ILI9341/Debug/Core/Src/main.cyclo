@@ -49,4 +49,4 @@
 ../Core/Src/main.c:2249:13:MX_USART2_UART_Init	2
 ../Core/Src/main.c:2282:13:MX_GPIO_Init	1
 ../Core/Src/main.c:2347:6:HAL_UART_RxCpltCallback	73
-../Core/Src/main.c:2588:6:Error_Handler	1
+../Core/Src/main.c:2592:6:Error_Handler	1
