@@ -194,6 +194,8 @@ volatile int IniciarLevel2=0;
 uint8_t repintarFondo = 0;
 uint8_t pintarFondoPausa = 0;
 uint8_t IniciarP1,IniciarP2;
+unsigned int bandera1=0;
+unsigned int bandera2=0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -942,7 +944,7 @@ void initEnemy3(enemy_type3* enemy, unsigned int startX, unsigned int startY, un
 
     // Inicializar la vida y el estado
     enemy->health = health;
-    enemy->isAlive = 0;  // El enemigo comienza vivo
+    enemy->isAlive = 1;  // El enemigo comienza vivo
 
     //Animación
     enemy->animationFire=0;
@@ -1013,6 +1015,7 @@ void E3_EyeS(enemy_type3* enemy){
 }
 
 void E3_FireMove(enemy_type3* enemy,player* player){
+	HitboxPlayer(player);
 	if (enemy->health>0){
 		if (enemy->isMove==1){
 			int FutureY=enemy->y+enemy->speed;
@@ -1029,7 +1032,7 @@ void E3_FireMove(enemy_type3* enemy,player* player){
 				enemy->y=FutureY;
 				LCD_Sprite(enemy->x - (16 / 2), enemy->y - (16 / 2), 16, 16, E3_Fire16x16_4, 4, animationFire, 0, 0);
 				if (player->playerUp<=enemy->e1Down){ //player->playerUp>=enemy->e1Up &&
-					if((enemy->e1Left >= player->playerLeft-4 && enemy->e1Left <= player->playerRight+4)||(enemy->e1Right >= player->playerLeft-4 && enemy->e1Right <= player->playerRight+4)||(enemy->x >= player->playerLeft-4 && enemy->x <= player->playerRight+4)){
+					if((enemy->x >= player->playerLeft) && (enemy->x <= player->playerRight)){
 						player->y=player->y+5;
 						player->direction=0;
 						player->IsDamage=1;
@@ -1051,7 +1054,6 @@ void E3_FireMove(enemy_type3* enemy,player* player){
 				}
 			}
 		}
-
 	}
 }
 
@@ -1544,7 +1546,7 @@ void initLevelP1(void){
 			  }
 
 		  if (nivelActual1==NIVEL3){
-			  initEnemy3(&e3_1, 80, 30, 15, 15, 15, &p1);
+			  initEnemy3(&e3_1, 80, 30, 15, 15, 3, &p1);
 			  IniciarLevel=0;
 		  	  }
 		  }
@@ -1573,7 +1575,7 @@ void initLevelP2(void){
 		  }
 
 	     if (nivelActual2==NIVEL3){
-		  initEnemy3(&e3_2, 240, 30, 15, 15, 15, &p2);
+		  initEnemy3(&e3_2, 240, 30, 15, 15, 3, &p2);
 		  IniciarLevel=0;
 		  }
 	  }
@@ -1645,7 +1647,7 @@ int main(void)
 
 
 	// Activar bandera interrupcion
-	HAL_UART_Receive_IT(&huart2, buffer, 1);
+	HAL_UART_Receive_IT(&huart5, buffer, 1);
 
 	// ESTADO DE INICIO DEL JUEGO
 	estadoActual = MENU;
@@ -1775,9 +1777,6 @@ int main(void)
 		}
 		break;
 	case SOLO:{
-		if(p1.isAlive == 0){
-			estadoActual = GAMEOVER;
-		}
 		if (nivelActual1==NIVEL1){
 				if(e1_1.isAlive==1){
 					animation_e1(&e1_1);
@@ -1792,8 +1791,11 @@ int main(void)
 					animation_e1_control(&e1_3);}
 
 				animation_e1_die(&e1_1);
+				animation_e1_dieS(&e1_1);
 				animation_e1_die(&e1_2);
+				animation_e1_dieS(&e1_2);
 				animation_e1_die(&e1_3);
+				animation_e1_dieS(&e1_3);
 				if (e1_1.isAlive==0&&e1_2.isAlive==0&&e1_3.isAlive==0 && e1_1.animationDie>=11 && e1_2.animationDie>=11 && e1_3.animationDie>=11){
 					nivelActual1=NIVEL2;
 					IniciarLevel=1;
@@ -1807,6 +1809,7 @@ int main(void)
 				e2_1.delay+=1; //1
 				E2_Appear(&e2_1);
 				E2_Hurt(&e2_1);
+				E2_HurtS(&e2_1);
 
 			}
 			E2_Die(&e2_1);
@@ -1821,11 +1824,13 @@ int main(void)
 			if (e3_1.isAlive==1){
 			E3_MoveX(&e3_1);
 			E3_Eye(&e3_1);
+			E3_EyeS(&e3_1);
 			E3_FireMove(&e3_1,&p1);
 			E3_Hitbox(&e3_1);
 			E3_FireAnimation(&e3_1);
+
 			}
-			if (e3_1.isAlive==0){
+			if (e3_1.health==0){
 				estadoActual = WIN1;
 			}
 		}
@@ -1836,17 +1841,20 @@ int main(void)
 		PlayerDamageSound(&p1);
 		PlayerDieAnimation(&p1);
 		PlayerDieSound(&p1);
+
+		if(p1.isAlive == 0){
+			estadoActual = GAMEOVER;
+		}
+
 		break;}
 
 	case DUO:{
-		if(p1.isAlive == 0 && p2.isAlive == 0){
-			estadoActual = GAMEOVER;
-		}
 		if (nivelActual1==NIVEL1){
 			if(e1_1.isAlive==1){
 				animation_e1(&e1_1);
 				animation_e1_control(&e1_1);}
 				animation_e1_die(&e1_1);
+				animation_e1_dieS(&e1_1);
 
 			if ( e1_1.isAlive==0&& e1_1.animationDie>=11 ){
 				nivelActual1=NIVEL2;
@@ -1865,6 +1873,7 @@ int main(void)
 				}
 				E2_Appear(&e2_1);
 				E2_Hurt(&e2_1);
+				E2_HurtS(&e2_1);
 			}
 			E2_Die(&e2_1);
 			if (e2_1.isAlive==0&&e2_1.animationDie>=6){
@@ -1878,11 +1887,12 @@ int main(void)
 			if (e3_1.isAlive==1){
 				E3_MoveX(&e3_1);
 				E3_Eye(&e3_1);
+				E3_EyeS(&e3_1);
 				E3_FireMove(&e3_1,&p1);
 				E3_Hitbox(&e3_1);
 				E3_FireAnimation(&e3_1);
 			}
-			if (e3_1.isAlive==0){
+			if (e3_1.health==0){
 				estadoActual = WIN1;
 			}
 		}
@@ -1892,6 +1902,7 @@ int main(void)
 				animation_e1(&e1_4);
 				animation_e1_control(&e1_4);}
 				animation_e1_die(&e1_4);
+				animation_e1_dieS(&e1_4);
 
 			if (e1_4.isAlive==0 && e1_4.animationDie>=11){
 				nivelActual2=NIVEL2;
@@ -1909,6 +1920,7 @@ int main(void)
 				e2_2.delay+=1;}
 				E2_Appear(&e2_2);
 				E2_Hurt(&e2_2);
+				E2_HurtS(&e2_2);
 			}
 			E2_Die(&e2_2);
 			if (e2_2.isAlive==0&&e2_2.animationDie>=6){
@@ -1923,23 +1935,35 @@ int main(void)
 			if (e3_2.isAlive==1){
 				E3_MoveX(&e3_2);
 				E3_Eye(&e3_2);
+				E3_EyeS(&e3_2);
 				E3_FireMove(&e3_2,&p2);
 				E3_Hitbox(&e3_2);
 				E3_FireAnimation(&e3_2);
 			}
-			if (e3_2.isAlive==0){
+			if (e3_2.health==0){
 				estadoActual = WIN2;
 			}
 		}
 
 
 		PlayerAttackAnimation(&p1);
+		PlayerAttackSound(&p1);
 		PlayerDamageAnimation(&p1);
+		PlayerDamageSound(&p1);
 		PlayerDieAnimation(&p1);
+		PlayerDieSound(&p1);
 
 		PlayerAttackAnimation(&p2);
+		PlayerAttackSound(&p2);
 		PlayerDamageAnimation(&p2);
+		PlayerDamageSound(&p2);
 		PlayerDieAnimation(&p2);
+		PlayerDieSound(&p2);
+
+		if(p1.isAlive == 0 && p2.isAlive == 0){
+			estadoActual = GAMEOVER;
+		}
+
 		break;}
 	case PAUSA:
 		//LCD_Bitmap(0, 0, 320, 240, pausa_menu);
@@ -2552,7 +2576,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 
 	// Vuelve a activar la recepción por interrupción
-	HAL_UART_Receive_IT(&huart2, buffer, 1);
+	HAL_UART_Receive_IT(&huart5, buffer, 1);
 }
 
 /* USER CODE END 4 */
