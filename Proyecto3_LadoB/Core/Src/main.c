@@ -61,11 +61,13 @@ UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-uint8_t availableParkings;
+uint8_t availableParkings = 0;
 volatile Disponibilidad Sensor1 = AVAILABLE;
 volatile Disponibilidad Sensor2 = AVAILABLE;
 volatile Disponibilidad Sensor3 = AVAILABLE;
 volatile Disponibilidad Sensor4 = AVAILABLE;
+uint8_t dataReceived[10]; // Buffer para almacenar los datos recibidos
+uint8_t DisponibilidadOtherSTM = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -116,7 +118,6 @@ int main(void)
   MX_USART1_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  availableParkings = 0;
   void verificarAP(void) {
       static GPIO_TypeDef* const ports[] = {
           SSD_A_GPIO_Port, SSD_B_GPIO_Port, SSD_C_GPIO_Port,
@@ -140,7 +141,7 @@ int main(void)
   }
   uint8_t contarSensoresDisponibles() {
       uint8_t contador = 0;
-
+      contador = contador + DisponibilidadOtherSTM;
       if (Sensor1 == AVAILABLE) {
               contador++;
 	  }
@@ -190,6 +191,9 @@ int main(void)
 		  HAL_GPIO_WritePin(LED_SENS4_R_GPIO_Port, LED_SENS4_R_Pin, 1);
 	  }
   }
+
+  // Inicia la recepción en modo interrupción
+  HAL_I2C_Slave_Receive_IT(&hi2c1, dataReceived, sizeof(dataReceived));
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -271,7 +275,7 @@ static void MX_I2C1_Init(void)
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 100000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.OwnAddress1 = 2;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
@@ -497,6 +501,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 				break;
 		}
 	}
+}
+
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+    if (hi2c->Instance == I2C1) { // Asegúrarnos de que es el periférico I2C correcto
+
+    	// AGREGAR LOGICA PARA RECIBIR CUANTOS HAY DISPONIBLES EN EL OTRO STM DESDE LA ESP32.
+
+        // Volver a activar la bandera de recepcion
+        HAL_I2C_Slave_Receive_IT(&hi2c1, dataReceived, sizeof(dataReceived));
+    }
 }
 
 /* USER CODE END 4 */
