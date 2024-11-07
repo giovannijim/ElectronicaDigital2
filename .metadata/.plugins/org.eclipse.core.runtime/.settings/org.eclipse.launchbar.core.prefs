@@ -8,3 +8,4 @@ org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:HolaMundo\ Debug/activeLaunchTa
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:ILI9341\ Debug/activeLaunchMode=run
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:ILI9341\ Debug/activeLaunchTarget=null\:---
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:ProbandoMenu\ Debug/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Proyecto3_LadoB\ Debug/activeLaunchMode=run

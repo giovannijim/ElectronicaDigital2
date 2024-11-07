@@ -59,6 +59,7 @@ I2C_HandleTypeDef hi2c1;
 
 UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart1;
+UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint8_t availableParkings = 0;
@@ -68,6 +69,11 @@ volatile Disponibilidad Sensor3 = AVAILABLE;
 volatile Disponibilidad Sensor4 = AVAILABLE;
 uint8_t dataReceived[10]; // Buffer para almacenar los datos recibidos
 uint8_t DisponibilidadOtherSTM = 0;
+uint8_t dataToSend = 0;
+uint8_t receivedData = 0;
+volatile uint8_t dataAvailable = 0;
+uint8_t bufferRx[1] = {};
+uint8_t responseData = 0xAA;  // Byte de respuesta de prueba
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -76,6 +82,7 @@ static void MX_GPIO_Init(void);
 static void MX_UART5_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -117,6 +124,7 @@ int main(void)
   MX_UART5_Init();
   MX_USART1_UART_Init();
   MX_I2C1_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   void verificarAP(void) {
       static GPIO_TypeDef* const ports[] = {
@@ -191,9 +199,15 @@ int main(void)
 		  HAL_GPIO_WritePin(LED_SENS4_R_GPIO_Port, LED_SENS4_R_Pin, 1);
 	  }
   }
-
+  HAL_GPIO_WritePin(SSD_G_GPIO_Port, SSD_G_Pin, 0);
+  HAL_GPIO_WritePin(SSD_F_GPIO_Port, SSD_F_Pin, 0);
+  HAL_GPIO_WritePin(SSD_A_GPIO_Port, SSD_A_Pin, 0);
+  HAL_GPIO_WritePin(SSD_B_GPIO_Port, SSD_B_Pin, 0);
+  HAL_GPIO_WritePin(SSD_C_GPIO_Port, SSD_C_Pin, 0);
+  HAL_GPIO_WritePin(SSD_D_GPIO_Port, SSD_D_Pin, 0);
+  HAL_GPIO_WritePin(SSD_E_GPIO_Port, SSD_E_Pin, 0);
   // Inicia la recepción en modo interrupción
-  HAL_I2C_Slave_Receive_IT(&hi2c1, dataReceived, sizeof(dataReceived));
+  HAL_I2C_Slave_Receive_IT(&hi2c1, &receivedData, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -201,8 +215,13 @@ int main(void)
   while (1)
   {
 	  availableParkings = contarSensoresDisponibles();
-	  verificarAP();
-	  verificarEstadoLEDS();
+	  //verificarAP();
+	  //verificarEstadoLEDS();
+	  if (dataAvailable) {
+		dataToSend = receivedData;
+		dataAvailable = 0;
+		HAL_I2C_Slave_Receive_IT(&hi2c1, &receivedData, 1);  // Prepararse para el siguiente byte
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -358,6 +377,39 @@ static void MX_USART1_UART_Init(void)
 }
 
 /**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -410,14 +462,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : USART_TX_Pin */
-  GPIO_InitStruct.Pin = USART_TX_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
-  HAL_GPIO_Init(USART_TX_GPIO_Port, &GPIO_InitStruct);
-
   /*Configure GPIO pins : BTN2_Pin BTN3_Pin BTN4_Pin */
   GPIO_InitStruct.Pin = BTN2_Pin|BTN3_Pin|BTN4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
@@ -430,12 +474,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : BTN1_Pin */
-  GPIO_InitStruct.Pin = BTN1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(BTN1_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
@@ -503,14 +541,25 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	}
 }
 
-void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
-    if (hi2c->Instance == I2C1) { // Asegúrarnos de que es el periférico I2C correcto
+// Función de callback cuando el maestro solicita un dato
+void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+  if (hi2c->Instance == I2C1) {
+    HAL_I2C_Slave_Transmit_IT(&hi2c1, &dataToSend, 1);  // Preparar el dato para el próximo envío
+  }
+}
 
-    	// AGREGAR LOGICA PARA RECIBIR CUANTOS HAY DISPONIBLES EN EL OTRO STM DESDE LA ESP32.
-
-        // Volver a activar la bandera de recepcion
-        HAL_I2C_Slave_Receive_IT(&hi2c1, dataReceived, sizeof(dataReceived));
-    }
+// Función de callback cuando el maestro envía un dato
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+  if (hi2c->Instance == I2C1) {
+	HAL_GPIO_WritePin(SSD_G_GPIO_Port, SSD_G_Pin, 1);
+	bufferRx[0] = receivedData;
+	HAL_UART_Transmit(&huart2, bufferRx, sizeof(bufferRx), 1000);
+	HAL_I2C_Slave_Transmit_IT(&hi2c1, &responseData, 1);  // Enviar respuesta
+    dataAvailable = 1;
+    HAL_I2C_Slave_Receive_IT(&hi2c1, &receivedData, 1);  // Prepararse para recibir otro byte
+  }
 }
 
 /* USER CODE END 4 */

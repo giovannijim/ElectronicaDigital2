@@ -109,9 +109,6 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 #define LED_SENS1_RB7_Pin GPIO_PIN_7
 #define LED_SENS1_RB7_GPIO_Port GPIOB
-#define BTN1_Pin GPIO_PIN_8
-#define BTN1_GPIO_Port GPIOB
-#define BTN1_EXTI_IRQn EXTI9_5_IRQn
 
 /* USER CODE BEGIN Private defines */
 
