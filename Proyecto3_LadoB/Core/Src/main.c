@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "string.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,8 +58,6 @@ const uint8_t pinStates[PIN_STATES_SIZE] = {
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
 
-UART_HandleTypeDef huart5;
-UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
@@ -79,8 +78,6 @@ uint8_t responseData = 0xAA;  // Byte de respuesta de prueba
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_UART5_Init(void);
-static void MX_USART1_UART_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
@@ -121,8 +118,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_UART5_Init();
-  MX_USART1_UART_Init();
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
@@ -199,6 +194,9 @@ int main(void)
 		  HAL_GPIO_WritePin(LED_SENS4_R_GPIO_Port, LED_SENS4_R_Pin, 1);
 	  }
   }
+
+
+
   HAL_GPIO_WritePin(SSD_G_GPIO_Port, SSD_G_Pin, 0);
   HAL_GPIO_WritePin(SSD_F_GPIO_Port, SSD_F_Pin, 0);
   HAL_GPIO_WritePin(SSD_A_GPIO_Port, SSD_A_Pin, 0);
@@ -311,72 +309,6 @@ static void MX_I2C1_Init(void)
 }
 
 /**
-  * @brief UART5 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_UART5_Init(void)
-{
-
-  /* USER CODE BEGIN UART5_Init 0 */
-
-  /* USER CODE END UART5_Init 0 */
-
-  /* USER CODE BEGIN UART5_Init 1 */
-
-  /* USER CODE END UART5_Init 1 */
-  huart5.Instance = UART5;
-  huart5.Init.BaudRate = 115200;
-  huart5.Init.WordLength = UART_WORDLENGTH_8B;
-  huart5.Init.StopBits = UART_STOPBITS_1;
-  huart5.Init.Parity = UART_PARITY_NONE;
-  huart5.Init.Mode = UART_MODE_TX_RX;
-  huart5.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart5.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart5) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN UART5_Init 2 */
-
-  /* USER CODE END UART5_Init 2 */
-
-}
-
-/**
-  * @brief USART1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART1_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART1_Init 0 */
-
-  /* USER CODE END USART1_Init 0 */
-
-  /* USER CODE BEGIN USART1_Init 1 */
-
-  /* USER CODE END USART1_Init 1 */
-  huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
-  huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
-  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART1_Init 2 */
-
-  /* USER CODE END USART1_Init 2 */
-
-}
-
-/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -425,7 +357,6 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, LED_SENS3_G_Pin|LED_SENS3_R_Pin|LED_SENS4_R_Pin|LED_SENS4_G_Pin
@@ -549,13 +480,18 @@ void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
   }
 }
 
+void transmit_uart(char *string){
+    uint8_t len=strlen(string);
+    HAL_UART_Transmit(&huart2, (uint8_t*)string, len, 200);
+}
+
 // Función de callback cuando el maestro envía un dato
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
+	//HAL_GPIO_WritePin(SSD_G_GPIO_Port, SSD_G_Pin, 1);
   if (hi2c->Instance == I2C1) {
 	HAL_GPIO_WritePin(SSD_G_GPIO_Port, SSD_G_Pin, 1);
-	bufferRx[0] = receivedData;
-	HAL_UART_Transmit(&huart2, bufferRx, sizeof(bufferRx), 1000);
+	transmit_uart("1");
 	HAL_I2C_Slave_Transmit_IT(&hi2c1, &responseData, 1);  // Enviar respuesta
     dataAvailable = 1;
     HAL_I2C_Slave_Receive_IT(&hi2c1, &receivedData, 1);  // Prepararse para recibir otro byte
