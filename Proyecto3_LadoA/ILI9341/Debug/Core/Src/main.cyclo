@@ -1,0 +1,11 @@
+../Core/Src/main.c:88:6:initParqueo	1
+../Core/Src/main.c:83:5:main	1
+../Core/Src/main.c:99:6:FanimationOut	6
+../Core/Src/main.c:111:6:FanimationEnter	6
+../Core/Src/main.c:124:6:actualizarEstadoParqueos	2
+../Core/Src/main.c:136:6:controlParqueo	1
+../Core/Src/main.c:228:6:SystemClock_Config	3
+../Core/Src/main.c:276:13:MX_SPI1_Init	2
+../Core/Src/main.c:314:13:MX_GPIO_Init	1
+../Core/Src/main.c:392:6:HAL_GPIO_EXTI_Callback	9
+../Core/Src/main.c:435:6:Error_Handler	1
