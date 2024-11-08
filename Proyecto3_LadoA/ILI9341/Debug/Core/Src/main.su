@@ -1,0 +1,11 @@
+../Core/Src/main.c:88:6:initParqueo	32	static
+../Core/Src/main.c:83:5:main	24	static
+../Core/Src/main.c:99:6:FanimationOut	48	static
+../Core/Src/main.c:111:6:FanimationEnter	48	static
+../Core/Src/main.c:124:6:actualizarEstadoParqueos	24	static
+../Core/Src/main.c:136:6:controlParqueo	24	static
+../Core/Src/main.c:228:6:SystemClock_Config	88	static
+../Core/Src/main.c:276:13:MX_SPI1_Init	8	static
+../Core/Src/main.c:314:13:MX_GPIO_Init	48	static
+../Core/Src/main.c:392:6:HAL_GPIO_EXTI_Callback	16	static
+../Core/Src/main.c:435:6:Error_Handler	4	static,ignoring_inline_asm
