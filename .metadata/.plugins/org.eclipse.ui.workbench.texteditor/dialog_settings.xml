@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="Instance"/>
+		<item key="selection" value="dataToSend"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="dataToSend"/>
+			<item value="receivedData"/>
+			<item value="responseData"/>
+			<item value="dataAvailable"/>
 			<item value="instance"/>
 			<item value="I2C"/>
 			<item value="0x01"/>
@@ -19,10 +23,6 @@
 			<item value="20000"/>
 			<item value="load_image_from_sd_to_play"/>
 			<item value="image"/>
-			<item value="image_buffer"/>
-			<item value="huart2"/>
-			<item value="fondo"/>
-			<item value="pausa_menu"/>
 		</list>
 		<list key="replacehistory">
 		</list>

@@ -1,21 +1,11 @@
-08:59:45 **** Incremental Build of configuration Debug for project Proyecto3_LadoB ****
+13:06:28 **** Incremental Build of configuration Debug for project Proyecto3_LadoB ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c: In function 'HAL_I2C_SlaveRxCpltCallback':
-../Core/Src/main.c:494:23: warning: pointer targets in passing argument 1 of 'transmit_uart' differ in signedness [-Wpointer-sign]
-  494 |         transmit_uart(dataReceived);
-      |                       ^~~~~~~~~~~~
-      |                       |
-      |                       uint8_t * {aka unsigned char *}
-../Core/Src/main.c:483:26: note: expected 'char *' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
-  483 | void transmit_uart(char *string){
-      |                    ~~~~~~^~~~~~
-../Core/Src/main.c: At top level:
-../Core/Src/main.c:163:8: warning: 'verificarEstadoLEDS' defined but not used [-Wunused-function]
-  163 |   void verificarEstadoLEDS(void){
+../Core/Src/main.c:164:8: warning: 'verificarEstadoLEDS' defined but not used [-Wunused-function]
+  164 |   void verificarEstadoLEDS(void){
       |        ^~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:124:8: warning: 'verificarAP' defined but not used [-Wunused-function]
-  124 |   void verificarAP(void) {
+../Core/Src/main.c:125:8: warning: 'verificarAP' defined but not used [-Wunused-function]
+  125 |   void verificarAP(void) {
       |        ^~~~~~~~~~~
 arm-none-eabi-gcc -o "Proyecto3_LadoB.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\Proyecto3_LadoB\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Proyecto3_LadoB.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: Proyecto3_LadoB.elf
@@ -23,8 +13,15 @@ Finished building target: Proyecto3_LadoB.elf
 arm-none-eabi-size  Proyecto3_LadoB.elf 
 arm-none-eabi-objdump -h -S Proyecto3_LadoB.elf  > "Proyecto3_LadoB.list"
    text	   data	    bss	    dec	    hex	filename
-  20484	     20	   1748	  22252	   56ec	Proyecto3_LadoB.elf
+  23444	     20	   1740	  25204	   6274	Proyecto3_LadoB.elf
 Finished building: default.size.stdout
  
 Finished building: Proyecto3_LadoB.list
+ 
+13:06:34 **** Incremental Build of configuration Debug for project Proyecto3_LadoB ****
+make -j8 all 
+arm-none-eabi-size  Proyecto3_LadoB.elf 
+   text	   data	    bss	    dec	    hex	filename
+  23444	     20	   1740	  25204	   6274	Proyecto3_LadoB.elf
+Finished building: default.size.stdout
  

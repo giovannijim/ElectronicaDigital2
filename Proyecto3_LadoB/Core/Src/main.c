@@ -47,7 +47,8 @@ const uint8_t pinStates[PIN_STATES_SIZE] = {
     0b01000111,  // 7: A, B, C, G
     0b01111111   // 8: Todos los segmentos
 };
-
+#define STM32_SLAVE_ADDR 0x01  // Dirección del STM32 esclavo
+#define ESP32_SLAVE_ADDR 0x02  // Dirección del ESP32 esclavo
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -66,10 +67,10 @@ volatile Disponibilidad Sensor1 = AVAILABLE;
 volatile Disponibilidad Sensor2 = AVAILABLE;
 volatile Disponibilidad Sensor3 = AVAILABLE;
 volatile Disponibilidad Sensor4 = AVAILABLE;
-uint8_t dataReceived[10]; // Buffer para almacenar los datos recibidos
+uint8_t dataReceived; // Buffer para almacenar los datos recibidos
 uint8_t DisponibilidadOtherSTM = 0;
-uint8_t dataToSend = 0;
-uint8_t receivedData = 0;
+uint8_t dataToSend = 0x55;
+uint8_t receivedData[8] = {};
 volatile uint8_t dataAvailable = 0;
 uint8_t bufferRx[1] = {};
 uint8_t responseData = 0xAA;  // Byte de respuesta de prueba
@@ -205,7 +206,7 @@ int main(void)
   HAL_GPIO_WritePin(SSD_D_GPIO_Port, SSD_D_Pin, 0);
   HAL_GPIO_WritePin(SSD_E_GPIO_Port, SSD_E_Pin, 0);
   // Inicia la recepción en modo interrupción
-  HAL_I2C_Slave_Receive_IT(&hi2c1, &receivedData, 1);
+  HAL_I2C_Slave_Receive_IT(&hi2c1, receivedData, 1);  // Prepararse para recibir otro byte
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -213,13 +214,18 @@ int main(void)
   while (1)
   {
 	  availableParkings = contarSensoresDisponibles();
+	  // Enviar datos al ESP32 esclavo
+	 HAL_I2C_Master_Transmit(&hi2c1, ESP32_SLAVE_ADDR << 1, &dataToSend, 1, HAL_MAX_DELAY);
+	 HAL_Delay(10);
+
+	 // Leer datos del ESP32 esclavo
+	 HAL_I2C_Master_Receive(&hi2c1, ESP32_SLAVE_ADDR << 1, &dataReceived, 1, HAL_MAX_DELAY);
+
+	 HAL_Delay(1000);  // Esperar antes de la próxima iteración
 	  //verificarAP();
 	  //verificarEstadoLEDS();
-	  if (dataAvailable) {
-		dataToSend = receivedData;
-		dataAvailable = 0;
-		HAL_I2C_Slave_Receive_IT(&hi2c1, &receivedData, 1);  // Prepararse para el siguiente byte
-	  }
+	  /*
+	  */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -292,7 +298,7 @@ static void MX_I2C1_Init(void)
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 100000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 2;
+  hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
@@ -476,7 +482,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
   if (hi2c->Instance == I2C1) {
-    HAL_I2C_Slave_Transmit_IT(&hi2c1, &dataToSend, 1);  // Preparar el dato para el próximo envío
+    HAL_I2C_Slave_Transmit_IT(&hi2c1, &responseData, 1);  // Preparar el dato para el próximo envío
   }
 }
 
@@ -490,11 +496,7 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 	//HAL_GPIO_WritePin(SSD_G_GPIO_Port, SSD_G_Pin, 1);
   if (hi2c->Instance == I2C1) {
-	HAL_GPIO_WritePin(SSD_G_GPIO_Port, SSD_G_Pin, 1);
-	transmit_uart("1");
-	HAL_I2C_Slave_Transmit_IT(&hi2c1, &responseData, 1);  // Enviar respuesta
-    dataAvailable = 1;
-    HAL_I2C_Slave_Receive_IT(&hi2c1, &receivedData, 1);  // Prepararse para recibir otro byte
+	  HAL_I2C_Slave_Receive_IT(&hi2c1, receivedData, 1);  // Prepararse para recibir otro byte
   }
 }
 
