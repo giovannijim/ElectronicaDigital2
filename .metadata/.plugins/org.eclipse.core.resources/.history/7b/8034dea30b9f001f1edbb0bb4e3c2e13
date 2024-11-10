@@ -74,11 +74,6 @@ uint8_t receivedData[8] = {};
 volatile uint8_t dataAvailable = 0;
 uint8_t bufferRx[1] = {};
 uint8_t responseData = 0xAA;  // Byte de respuesta de prueba
-//Variables I2C
-uint8_t I2C_Rx[1];
-uint8_t Rx[1];
-uint8_t Tx[1];
-uint8_t byteControl= 0x00;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -435,15 +430,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     	switch (Sensor1) {
 			case NOT_AVAILABLE:
 				Sensor1 = AVAILABLE;
-				byteControl^= 0b00010000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			case AVAILABLE:
 				Sensor1 = NOT_AVAILABLE;
-				byteControl^= 0b00010000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			default:
 				break;
@@ -453,15 +442,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	   switch (Sensor2) {
 			case NOT_AVAILABLE:
 				Sensor2 = AVAILABLE;
-				byteControl^= 0b00100000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			case AVAILABLE:
 				Sensor2 = NOT_AVAILABLE;
-				byteControl^= 0b00100000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			default:
 				break;
@@ -471,15 +454,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     	switch (Sensor3) {
 			case NOT_AVAILABLE:
 				Sensor3 = AVAILABLE;
-				byteControl^= 0b01000000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			case AVAILABLE:
 				Sensor3 = NOT_AVAILABLE;
-				byteControl^= 0b01000000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			default:
 				break;
@@ -490,16 +467,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 			case NOT_AVAILABLE:
 				availableParkings = availableParkings + 1;
 				Sensor4 = AVAILABLE;
-				byteControl^= 0b10000000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			case AVAILABLE:
 				availableParkings = availableParkings - 1;
 				Sensor4 = NOT_AVAILABLE;
-				byteControl^= 0b10000000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			default:
 				break;
@@ -507,39 +478,26 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	}
 }
 
-
-//I2C
-void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c){
-	//Pone el disposivo a escuchar
-	HAL_I2C_EnableListen_IT(hi2c);
+// Función de callback cuando el maestro solicita un dato
+void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+  if (hi2c->Instance == I2C1) {
+    HAL_I2C_Slave_Transmit_IT(&hi2c1, &responseData, 1);  // Preparar el dato para el próximo envío
+  }
 }
 
-void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode){
-	//Cuando recibe algo verifica la dirección
-	if (TransferDirection== I2C_DIRECTION_TRANSMIT){
-		HAL_I2C_Slave_Seq_Receive_IT(hi2c, I2C_Rx, sizeof(I2C_Rx), I2C_FIRST_AND_LAST_FRAME);
-	} else{
-		Tx[0]=byteControl;
-		HAL_I2C_Slave_Seq_Transmit_IT(hi2c, Tx, sizeof(Tx), I2C_FIRST_AND_LAST_FRAME);
-	}
+void transmit_uart(char *string){
+    uint8_t len=strlen(string);
+    HAL_UART_Transmit(&huart2, (uint8_t*)string, len, 200);
 }
 
-void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c){
-	//Al terminar la recepción de datos envía el byteControl (Parqueos) y vuelve a escuchar
-	byteControl=I2C_Rx[0];
-	HAL_UART_Transmit_IT(&huart2, I2C_Rx, sizeof(Tx));
-	HAL_I2C_EnableListen_IT(hi2c);
-}
-
-void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c){
-	//Al terminar el envío de datos se pone a escuchar
-	HAL_I2C_EnableListen_IT(hi2c);
-}
-
-void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c){{
-	//Si hay errores, se pone a escuchar
-}
-	HAL_I2C_EnableListen_IT(hi2c);
+// Función de callback cuando el maestro envía un dato
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+	//HAL_GPIO_WritePin(SSD_G_GPIO_Port, SSD_G_Pin, 1);
+  if (hi2c->Instance == I2C1) {
+	  HAL_I2C_Slave_Receive_IT(&hi2c1, receivedData, 1);  // Prepararse para recibir otro byte
+  }
 }
 
 /* USER CODE END 4 */

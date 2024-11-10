@@ -76,9 +76,6 @@ uint8_t bufferRx[1] = {};
 uint8_t responseData = 0xAA;  // Byte de respuesta de prueba
 //Variables I2C
 uint8_t I2C_Rx[1];
-uint8_t Rx[1];
-uint8_t Tx[1];
-uint8_t byteControl= 0x00;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -435,15 +432,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     	switch (Sensor1) {
 			case NOT_AVAILABLE:
 				Sensor1 = AVAILABLE;
-				byteControl^= 0b00010000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			case AVAILABLE:
 				Sensor1 = NOT_AVAILABLE;
-				byteControl^= 0b00010000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			default:
 				break;
@@ -453,15 +444,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	   switch (Sensor2) {
 			case NOT_AVAILABLE:
 				Sensor2 = AVAILABLE;
-				byteControl^= 0b00100000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			case AVAILABLE:
 				Sensor2 = NOT_AVAILABLE;
-				byteControl^= 0b00100000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			default:
 				break;
@@ -471,15 +456,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     	switch (Sensor3) {
 			case NOT_AVAILABLE:
 				Sensor3 = AVAILABLE;
-				byteControl^= 0b01000000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			case AVAILABLE:
 				Sensor3 = NOT_AVAILABLE;
-				byteControl^= 0b01000000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			default:
 				break;
@@ -490,16 +469,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 			case NOT_AVAILABLE:
 				availableParkings = availableParkings + 1;
 				Sensor4 = AVAILABLE;
-				byteControl^= 0b10000000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			case AVAILABLE:
 				availableParkings = availableParkings - 1;
 				Sensor4 = NOT_AVAILABLE;
-				byteControl^= 0b10000000;
-				Tx[0]=byteControl;
-				Rx[0]=byteControl;
 				break;
 			default:
 				break;
