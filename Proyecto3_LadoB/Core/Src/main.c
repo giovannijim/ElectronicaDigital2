@@ -78,7 +78,7 @@ uint8_t responseData = 0xAA;  // Byte de respuesta de prueba
 uint8_t I2C_Rx[1];
 uint8_t Rx[1];
 uint8_t Tx[1];
-uint8_t byteControl= 0x00;
+uint8_t byteControl= 0xF0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -151,16 +151,28 @@ int main(void)
   uint8_t contarSensoresDisponibles() {
       uint8_t contador = 0;
       contador = contador + DisponibilidadOtherSTM;
-      if (Sensor1 == AVAILABLE) {
+      if (byteControl & 0x01) {
               contador++;
 	  }
-	  if (Sensor2 == AVAILABLE) {
+	  if (byteControl & 0x02) {
 		  contador++;
 	  }
-	  if (Sensor3 == AVAILABLE) {
+	  if (byteControl & 0x04) {
 		  contador++;
 	  }
-	  if (Sensor4 == AVAILABLE) {
+	  if (byteControl & 0x08) {
+		  contador++;
+	  }
+	  if (byteControl & 0x10) {
+		  contador++;
+	  }
+	  if (byteControl & 0x20) {
+		  contador++;
+	  }
+	  if (byteControl & 0x40) {
+		  contador++;
+	  }
+	  if (byteControl & 0x80) {
 		  contador++;
 	  }
       return contador;
@@ -200,16 +212,6 @@ int main(void)
 		  HAL_GPIO_WritePin(LED_SENS4_R_GPIO_Port, LED_SENS4_R_Pin, 1);
 	  }
   }
-
-
-
-  HAL_GPIO_WritePin(SSD_G_GPIO_Port, SSD_G_Pin, 0);
-  HAL_GPIO_WritePin(SSD_F_GPIO_Port, SSD_F_Pin, 0);
-  HAL_GPIO_WritePin(SSD_A_GPIO_Port, SSD_A_Pin, 0);
-  HAL_GPIO_WritePin(SSD_B_GPIO_Port, SSD_B_Pin, 0);
-  HAL_GPIO_WritePin(SSD_C_GPIO_Port, SSD_C_Pin, 0);
-  HAL_GPIO_WritePin(SSD_D_GPIO_Port, SSD_D_Pin, 0);
-  HAL_GPIO_WritePin(SSD_E_GPIO_Port, SSD_E_Pin, 0);
   // Inicia la recepción en modo interrupción
   HAL_I2C_Slave_Receive_IT(&hi2c1, receivedData, 1);  // Prepararse para recibir otro byte
   /* USER CODE END 2 */
@@ -219,18 +221,8 @@ int main(void)
   while (1)
   {
 	  availableParkings = contarSensoresDisponibles();
-	  // Enviar datos al ESP32 esclavo
-	 HAL_I2C_Master_Transmit(&hi2c1, ESP32_SLAVE_ADDR << 1, &dataToSend, 1, HAL_MAX_DELAY);
-	 HAL_Delay(10);
-
-	 // Leer datos del ESP32 esclavo
-	 HAL_I2C_Master_Receive(&hi2c1, ESP32_SLAVE_ADDR << 1, &dataReceived, 1, HAL_MAX_DELAY);
-
-	 HAL_Delay(1000);  // Esperar antes de la próxima iteración
-	  //verificarAP();
-	  //verificarEstadoLEDS();
-	  /*
-	  */
+	  verificarAP();
+	  verificarEstadoLEDS();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -416,6 +408,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BTN1_Pin */
+  GPIO_InitStruct.Pin = BTN1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(BTN1_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
