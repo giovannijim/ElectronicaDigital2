@@ -79,6 +79,11 @@ uint8_t I2C_Rx[1];
 uint8_t Rx[1];
 uint8_t Tx[1];
 uint8_t byteControl= 0xF0;
+// Variables para antirrebote y conteo por botón
+uint32_t previousMillis[4] = {0, 0, 0, 0};
+uint32_t currentMillis = 0;
+uint32_t counterOutside = 0;
+uint32_t counterInside[4] = {0, 0, 0, 0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -295,7 +300,7 @@ static void MX_I2C1_Init(void)
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 100000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.OwnAddress1 = 2;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
@@ -427,8 +432,11 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+/*
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     //1
+
+
     if (GPIO_Pin == GPIO_PIN_8) {
     	switch (Sensor1) {
 			case NOT_AVAILABLE:
@@ -503,8 +511,53 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 				break;
 		}
 	}
-}
 
+}*/
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    counterOutside++; // Para pruebas
+    currentMillis = HAL_GetTick();
+
+    // Verificar qué botón fue presionado y aplicar el antirrebote
+    if (GPIO_Pin == GPIO_PIN_8 && (currentMillis - previousMillis[0] > 250))
+    {
+        counterInside[0]++; // Para pruebas del botón 1
+        previousMillis[0] = currentMillis;
+        byteControl^= 0b00010000;
+        Tx[0]=byteControl;
+        Rx[0]=byteControl;
+        //HAL_UART_Transmit_IT(&huart2, Tx, sizeof(Tx));
+    }
+    else if (GPIO_Pin == GPIO_PIN_5 && (currentMillis - previousMillis[1] > 250))
+    {
+        counterInside[1]++; // Para pruebas del botón 2
+        previousMillis[1] = currentMillis;
+        byteControl^= 0b00100000;
+        Tx[0]=byteControl;
+        Rx[0]=byteControl;
+        //HAL_UART_Transmit_IT(&huart2, Tx, sizeof(Tx));
+
+    }
+    else if (GPIO_Pin == GPIO_PIN_6 && (currentMillis - previousMillis[2] > 250))
+    {
+        counterInside[2]++; // Para pruebas del botón 3
+        previousMillis[2] = currentMillis;
+        byteControl^= 0b01000000;
+        Tx[0]=byteControl;
+        Rx[0]=byteControl;
+        //HAL_UART_Transmit_IT(&huart2, Tx, sizeof(Tx));
+    }
+    else if (GPIO_Pin == GPIO_PIN_7 && (currentMillis - previousMillis[3] > 250))
+    {
+        counterInside[3]++; // Para pruebas del botón 4
+
+        previousMillis[3] = currentMillis;
+        byteControl^= 0b10000000;
+		Tx[0]=byteControl;
+		Rx[0]=byteControl;
+		//HAL_UART_Transmit_IT(&huart2, Tx, sizeof(Tx));
+    }
+}
 
 //I2C
 void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c){

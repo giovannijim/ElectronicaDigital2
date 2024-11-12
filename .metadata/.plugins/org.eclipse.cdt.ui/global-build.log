@@ -1,53 +1,25 @@
-20:38:51 **** Incremental Build of configuration Debug for project Proyecto3_LadoB ****
+17:53:16 **** Incremental Build of configuration Debug for project Proyecto3_LadoB ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:169:8: warning: 'verificarEstadoLEDS' defined but not used [-Wunused-function]
-  169 |   void verificarEstadoLEDS(void){
-      |        ^~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:130:8: warning: 'verificarAP' defined but not used [-Wunused-function]
-  130 |   void verificarAP(void) {
-      |        ^~~~~~~~~~~
 arm-none-eabi-gcc -o "Proyecto3_LadoB.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\Proyecto3_LadoB\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Proyecto3_LadoB.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: Proyecto3_LadoB.elf
  
 arm-none-eabi-size  Proyecto3_LadoB.elf 
 arm-none-eabi-objdump -h -S Proyecto3_LadoB.elf  > "Proyecto3_LadoB.list"
    text	   data	    bss	    dec	    hex	filename
-  24184	     20	   1748	  25952	   6560	Proyecto3_LadoB.elf
+  20968	     20	   1788	  22776	   58f8	Proyecto3_LadoB.elf
 Finished building: default.size.stdout
  
 Finished building: Proyecto3_LadoB.list
  
-20:38:58 **** Incremental Build of configuration Debug for project Proyecto3_LadoB ****
+17:53:32 **** Incremental Build of configuration Debug for project Proyecto3_LadoB ****
 make -j8 all 
 arm-none-eabi-size  Proyecto3_LadoB.elf 
    text	   data	    bss	    dec	    hex	filename
-  24184	     20	   1748	  25952	   6560	Proyecto3_LadoB.elf
+  20968	     20	   1788	  22776	   58f8	Proyecto3_LadoB.elf
 Finished building: default.size.stdout
  
-13:02:35 **** Incremental Build of configuration Debug for project Proyecto3_LadoB ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc "../Core/Src/stm32f4xx_hal_msp.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32f4xx_hal_msp.d" -MT"Core/Src/stm32f4xx_hal_msp.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32f4xx_hal_msp.o"
-arm-none-eabi-gcc "../Core/Src/stm32f4xx_it.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32f4xx_it.d" -MT"Core/Src/stm32f4xx_it.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32f4xx_it.o"
-../Core/Src/main.c:169:8: warning: 'verificarEstadoLEDS' defined but not used [-Wunused-function]
-  169 |   void verificarEstadoLEDS(void){
-      |        ^~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:130:8: warning: 'verificarAP' defined but not used [-Wunused-function]
-  130 |   void verificarAP(void) {
-      |        ^~~~~~~~~~~
-arm-none-eabi-gcc -o "Proyecto3_LadoB.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\Proyecto3_LadoB\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Proyecto3_LadoB.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: Proyecto3_LadoB.elf
- 
-arm-none-eabi-size  Proyecto3_LadoB.elf 
-arm-none-eabi-objdump -h -S Proyecto3_LadoB.elf  > "Proyecto3_LadoB.list"
-   text	   data	    bss	    dec	    hex	filename
-  24220	     20	   1748	  25988	   6584	Proyecto3_LadoB.elf
-Finished building: default.size.stdout
- 
-Finished building: Proyecto3_LadoB.list
- 
-13:04:44 **** Incremental Build of configuration Debug for project Proyecto3_LadoB ****
+19:09:06 **** Incremental Build of configuration Debug for project Proyecto3_LadoB ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 arm-none-eabi-gcc -o "Proyecto3_LadoB.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\Proyecto3_LadoB\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Proyecto3_LadoB.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
@@ -56,35 +28,7 @@ Finished building target: Proyecto3_LadoB.elf
 arm-none-eabi-size  Proyecto3_LadoB.elf 
 arm-none-eabi-objdump -h -S Proyecto3_LadoB.elf  > "Proyecto3_LadoB.list"
    text	   data	    bss	    dec	    hex	filename
-  21028	     16	   1752	  22796	   590c	Proyecto3_LadoB.elf
-Finished building: default.size.stdout
- 
-Finished building: Proyecto3_LadoB.list
- 
-13:08:58 **** Incremental Build of configuration Debug for project Proyecto3_LadoB ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc -o "Proyecto3_LadoB.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\Proyecto3_LadoB\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Proyecto3_LadoB.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: Proyecto3_LadoB.elf
- 
-arm-none-eabi-size  Proyecto3_LadoB.elf 
-arm-none-eabi-objdump -h -S Proyecto3_LadoB.elf  > "Proyecto3_LadoB.list"
-   text	   data	    bss	    dec	    hex	filename
-  21092	     16	   1752	  22860	   594c	Proyecto3_LadoB.elf
-Finished building: default.size.stdout
- 
-Finished building: Proyecto3_LadoB.list
- 
-13:09:34 **** Incremental Build of configuration Debug for project Proyecto3_LadoB ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc -o "Proyecto3_LadoB.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\alesa\OneDrive\Documentos\GitHub\ElectronicaDigital2\Proyecto3_LadoB\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Proyecto3_LadoB.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: Proyecto3_LadoB.elf
- 
-arm-none-eabi-size  Proyecto3_LadoB.elf 
-arm-none-eabi-objdump -h -S Proyecto3_LadoB.elf  > "Proyecto3_LadoB.list"
-   text	   data	    bss	    dec	    hex	filename
-  21092	     20	   1748	  22860	   594c	Proyecto3_LadoB.elf
+  20968	     20	   1788	  22776	   58f8	Proyecto3_LadoB.elf
 Finished building: default.size.stdout
  
 Finished building: Proyecto3_LadoB.list
